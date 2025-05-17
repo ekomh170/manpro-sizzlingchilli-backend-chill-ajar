@@ -48,7 +48,10 @@ Sistem backend Laravel 12 dari platform Menjadi Mentor Sebaya "Chill Ajar" dari 
 
 ### AdminController
 <!-- Create Pelanggan, Mentor, Pelanggan & User  -->
-- `tambah Pengguna Sekalian fungsi tambah Mentor/Pelanggan`, `ubahRolePengguna`
+- `daftarPengguna`, `ubahRolePengguna`, `tambahPengguna`
+<!-- Validasi Kondisi Ketika Mengakses Fungsi Ini di Fungsi Bikin Akun Pengguna  -->
+- `tambahMentor`
+- `tambahPelanggan`
 <!-- Mentor -->
 - `daftarMentor`, `perbaruiMentor`, `hapusMentor`, `detailMentor`
 <!-- Pelanggan -->
