@@ -1,0 +1,484 @@
+openapi: 3.0.3
+info:
+  title: Admin API
+  version: 1.0.0
+  description: Dokumentasi endpoint AdminController untuk manajemen user, mentor, pelanggan, pembayaran, dan notifikasi.
+servers:
+  - url: http://localhost/api
+paths:
+  /admin/users:
+    get:
+      summary: Daftar semua pengguna
+      tags: [Admin]
+      responses:
+        "200":
+          description: Daftar pengguna
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    nama:
+                      type: string
+                      example: "Budi Santoso"
+                    email:
+                      type: string
+                      example: "budi@example.com"
+                    peran:
+                      type: string
+                      example: "mentor"
+                    nomorTelepon:
+                      type: string
+                      example: "08123456789"
+                    alamat:
+                      type: string
+                      example: "Jl. Mawar No. 1"
+                  required:
+                    - id
+                    - nama
+                    - email
+                    - peran
+    post:
+      summary: Tambah pengguna baru (admin/mentor/pelanggan)
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                peran:
+                  type: string
+                  enum: [admin, mentor, pelanggan]
+                deskripsi:
+                  type: string
+                biayaPerSesi:
+                  type: number
+                gayaMengajar:
+                  type: string
+                nomorTelepon:
+                  type: string
+                alamat:
+                  type: string
+              required:
+                - nama
+                - email
+                - password
+                - peran
+      responses:
+        "201":
+          description: Pengguna berhasil ditambah
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Pengguna berhasil ditambah"
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      nama:
+                        type: string
+                        example: "Siti Aminah"
+                      email:
+                        type: string
+                        example: "siti@example.com"
+                      peran:
+                        type: string
+                        example: "pelanggan"
+                      nomorTelepon:
+                        type: string
+                        example: "08129876543"
+                      alamat:
+                        type: string
+                        example: "Jl. Melati No. 2"
+                    required:
+                      - id
+                      - nama
+                      - email
+                      - peran
+
+  /admin/users/{userId}/role:
+    put:
+      summary: Ubah role pengguna
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                peran:
+                  type: string
+                  enum: [admin, mentor, pelanggan]
+              required:
+                - peran
+      responses:
+        "200":
+          description: Role pengguna berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Role pengguna berhasil diperbarui"
+                  user:
+                    $ref: "./auth.yml#/components/schemas/User"
+
+  /admin/mentor:
+    get:
+      summary: Daftar semua mentor
+      tags: [Admin]
+      responses:
+        "200":
+          description: Daftar mentor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./mentor.yml#/components/schemas/Mentor"
+
+  /admin/mentor/{id}:
+    get:
+      summary: Detail mentor
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detail mentor
+          content:
+            application/json:
+              schema:
+                $ref: "./mentor.yml#/components/schemas/Mentor"
+    put:
+      summary: Update data mentor
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                biayaPerSesi:
+                  type: number
+                gayaMengajar:
+                  type: string
+                deskripsi:
+                  type: string
+      responses:
+        "200":
+          description: Mentor berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  mentor:
+                    $ref: "./mentor.yml#/components/schemas/Mentor"
+    delete:
+      summary: Hapus mentor
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Mentor berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /admin/pelanggan:
+    get:
+      summary: Daftar semua pelanggan
+      tags: [Admin]
+      responses:
+        "200":
+          description: Daftar pelanggan
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./pelanggan.yml#/components/schemas/Pelanggan"
+
+  /admin/pelanggan/{id}:
+    get:
+      summary: Detail pelanggan
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detail pelanggan
+          content:
+            application/json:
+              schema:
+                $ref: "./pelanggan.yml#/components/schemas/Pelanggan"
+    put:
+      summary: Update data pelanggan
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statusPembayaran:
+                  type: string
+      responses:
+        "200":
+          description: Pelanggan berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  pelanggan:
+                    $ref: "./pelanggan.yml#/components/schemas/Pelanggan"
+    delete:
+      summary: Hapus pelanggan
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pelanggan berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /admin/payment/{paymentId}/verify:
+    post:
+      summary: Verifikasi pembayaran
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pembayaran berhasil diverifikasi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  payment:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 10
+                      user_id:
+                        type: integer
+                        example: 3
+                      mentor_id:
+                        type: integer
+                        example: 5
+                      session_id:
+                        type: integer
+                        example: 7
+                      jumlah:
+                        type: number
+                        example: 150000
+                      statusPembayaran:
+                        type: string
+                        example: "terverifikasi"
+                      metodePembayaran:
+                        type: string
+                        example: "transfer"
+                      tanggalPembayaran:
+                        type: string
+                        format: date-time
+                        example: "2025-05-18T10:00:00Z"
+                    required:
+                      - id
+                      - user_id
+                      - mentor_id
+                      - session_id
+                      - jumlah
+                      - statusPembayaran
+                      - metodePembayaran
+                      - tanggalPembayaran
+
+  /admin/payment/{paymentId}/reject:
+    post:
+      summary: Tolak pembayaran
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pembayaran ditolak
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  payment:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 10
+                      user_id:
+                        type: integer
+                        example: 3
+                      mentor_id:
+                        type: integer
+                        example: 5
+                      session_id:
+                        type: integer
+                        example: 7
+                      jumlah:
+                        type: number
+                        example: 150000
+                      statusPembayaran:
+                        type: string
+                        example: "ditolak"
+                      metodePembayaran:
+                        type: string
+                        example: "transfer"
+                      tanggalPembayaran:
+                        type: string
+                        format: date-time
+                        example: "2025-05-18T10:00:00Z"
+                    required:
+                      - id
+                      - user_id
+                      - mentor_id
+                      - session_id
+                      - jumlah
+                      - statusPembayaran
+                      - metodePembayaran
+                      - tanggalPembayaran
+
+  /admin/notifikasi/mentor/{sessionId}:
+    post:
+      summary: Kirim notifikasi ke mentor setelah pembayaran diverifikasi
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: integer
+          example: 12
+      responses:
+        "200":
+          description: Notifikasi ke mentor telah dikirim
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Notifikasi ke mentor telah dikirim (simulasi)
+                  sessionId:
+                    type: integer
+                    example: 12
+                  mentor:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 5
+                      nama:
+                        type: string
+                        example: "Fatiya Labibah"
+                      email:
+                        type: string
+                        example: "fatiya@example.com"
+                  pelanggan:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 7
+                      nama:
+                        type: string
+                        example: "Eko Muchamad Haryono"
+                      email:
+                        type: string
+                        example: "eko@example.com"
