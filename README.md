@@ -1,6 +1,6 @@
-# Team Manpro SizzlingChili - Backend Laravel 12 Platform Edukasi Privat
+# Team Manpro SizzlingChili - Backend Laravel 12 Platform Menjadi Mentor Sebaya "Chill Ajar"
 
-Sistem backend Laravel 12 untuk platform edukasi privat "Chill Ajar" dari Team Manpro SizzlingChili . Sistem ini mendukung manajemen user (admin, mentor, pelanggan), kursus, sesi pengajaran, pembayaran, testimoni, dan notifikasi sesuai kebutuhan bisnis.
+Sistem backend Laravel 12 dari platform Menjadi Mentor Sebaya "Chill Ajar" dari Tim Manpro SizzlingChili . Sistem ini mendukung manajemen user (admin, mentor, pelanggan), kursus, sesi pengajaran, pembayaran, testimoni, dan notifikasi sesuai kebutuhan bisnis.
 
 ---
 
@@ -47,13 +47,22 @@ Sistem backend Laravel 12 untuk platform edukasi privat "Chill Ajar" dari Team M
 - `registrasiPelanggan`, `registrasiMentor`, `login`, `logout`
 
 ### AdminController
-- `daftarPengguna`, `ubahRolePengguna`, `daftarMentor`, `daftarCourse`, `tambahCourse`, `perbaruiCourse`, `hapusCourse`, `daftarSesi`, `verifikasiPembayaran`, `tolakPembayaran`, `notifikasiKeMentor`
+<!-- Create Pelanggan, Mentor, Pelanggan & User  -->
+- `tambah Pengguna Sekalian fungsi tambah Mentor/Pelanggan`, `ubahRolePengguna`
+<!-- Mentor -->
+- `daftarMentor`, `perbaruiMentor`, `hapusMentor`, `detailMentor`
+<!-- Pelanggan -->
+- `daftarPelanggan`, `perbaruiPelanggan`, `hapusPelanggan`, `detailPelanggan`
+
+> ⚠️ **Note**: Fungsi CRUD **Kursus**, **Sesi**, dan **Pembayaran** telah dipindahkan ke controller masing-masing (`CourseController`, `SessionController`, dan `PaymentController`) untuk menjaga modularitas dan mengikuti prinsip RESTful.
 
 ### MentorController
-- `profilSaya`, `aturJadwal`, `aturGayaMengajar`, `daftarSesiSaya`, `konfirmasiSesi`, `selesaikanSesi`, `daftarTestimoni`
+- `profilSaya`, 
+- `aturJadwal`, `aturGayaMengajar`, `daftarSesiSaya`, `konfirmasiSesi`, `selesaikanSesi`, `daftarTestimoni`
 
 ### PelangganController
-- `profilSaya`, `daftarCourse`, `cariMentor`, `detailMentor`, `pesanSesi`, `daftarSesiMentor`, `unggahBuktiPembayaran`, `beriTestimoni`
+- `profilSaya`
+- `daftarCourse`, `cariMentor`, `detailMentor`, `pesanSesi`, `daftarSesiMentor`, `unggahBuktiPembayaran`, `beriTestimoni`
 
 ### CourseController (resource)
 - `index`, `store`, `show`, `update`, `destroy`
@@ -79,4 +88,4 @@ Sistem backend Laravel 12 untuk platform edukasi privat "Chill Ajar" dari Team M
 
 ## Catatan Penting Untuk Dev
 - Gunakan Sanctum untuk autentikasi token.
-- Notifikasi Telegram diintegrasikan pada proses pembayaran & konfirmasi sesi.
+- Notifikasi Telegram diintegrasikan pada proses pembayaran & konfirmasi sesi. (UnPrioritas)
