@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults
@@ -35,9 +34,15 @@ return [
     |
     */
 
+
     'guards' => [
+        // Kenapa di Pisah?
+        // Karena kita bisa menggunakan guard yang berbeda untuk web dan api
         'web' => [
-            // 'driver' => 'session',
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'api' => [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
@@ -112,5 +117,4 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
 ];
