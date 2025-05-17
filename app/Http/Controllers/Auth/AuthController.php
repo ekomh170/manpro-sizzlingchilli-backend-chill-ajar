@@ -72,12 +72,16 @@ class AuthController extends Controller
             'biayaPerSesi' => 'required|numeric',
             'gayaMengajar' => 'nullable',
             'deskripsi' => 'nullable',
+            'nomorTelepon' => 'required|string',
+            'alamat' => 'required|string',
         ]);
         $user = User::create([
             'nama' => $request->nama,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'peran' => 'mentor',
+            'nomorTelepon' => $request->nomorTelepon,
+            'alamat' => $request->alamat,
         ]);
         $mentor = \App\Models\Mentor::create([
             'user_id' => $user->id,
