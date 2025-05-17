@@ -1,0 +1,256 @@
+openapi: 3.0.0
+info:
+  title: Chill Ajar Auth API
+  version: 1.0.0
+  description: Dokumentasi endpoint autentikasi (register, login, logout) untuk Chill Ajar. Menggunakan Laravel Sanctum (token-based authentication).
+
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /api/login:
+    post:
+      summary: Login pengguna (pelanggan/mentor/admin)
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Login gagal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+
+  /api/register:
+    post:
+      summary: Registrasi pengguna baru (pelanggan/mentor)
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/RegisterPelanggan'
+                - $ref: '#/components/schemas/RegisterMentor'
+      responses:
+        '201':
+          description: Registrasi berhasil
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/RegisterPelangganResponse'
+                  - $ref: '#/components/schemas/RegisterMentorResponse'
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /api/logout:
+    post:
+      summary: Logout pengguna (wajib token)
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          description: Tidak terautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+
+  /api/user:
+    get:
+      summary: Mendapatkan data user yang sedang login (wajib token)
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Data user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Tidak terautentikasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterPelanggan:
+      type: object
+      required: [peran, nama, email, password, nomorTelepon, alamat]
+      properties:
+        peran:
+          type: string
+          enum: [pelanggan]
+        nama:
+          type: string
+          example: Eko Muchamad Haryono
+        email:
+          type: string
+          example: eko@example.com
+        password:
+          type: string
+          example: passwordku
+        nomorTelepon:
+          type: string
+          example: '08123456789'
+        alamat:
+          type: string
+          example: Jl. Kampus No. 1
+
+    RegisterMentor:
+      type: object
+      required: [peran, nama, email, password, biayaPerSesi, nomorTelepon, alamat]
+      properties:
+        peran:
+          type: string
+          enum: [mentor]
+        nama:
+          type: string
+          example: Fatiya Labibah
+        email:
+          type: string
+          example: fatiya@example.com
+        password:
+          type: string
+          example: passwordmentor
+        biayaPerSesi:
+          type: number
+          example: 100000
+        gayaMengajar:
+          type: string
+          example: Santai
+        deskripsi:
+          type: string
+          example: Berpengalaman mengajar
+        nomorTelepon:
+          type: string
+          example: '081298765432'
+        alamat:
+          type: string
+          example: Jl. Mentor No. 2
+
+    RegisterPelangganResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Pelanggan berhasil terdaftar
+        user:
+          $ref: '#/components/schemas/User'
+        pelanggan:
+          type: object
+        token:
+          type: string
+
+    RegisterMentorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Mentor berhasil terdaftar
+        user:
+          $ref: '#/components/schemas/User'
+        mentor:
+          type: object
+        token:
+          type: string
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          example: eko@example.com
+        password:
+          type: string
+          example: passwordku
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Login berhasil
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    LogoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Logout berhasil
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama:
+          type: string
+          example: Eko Muchamad Haryono
+        email:
+          type: string
+          example: eko@example.com
+        peran:
+          type: string
+          example: pelanggan
+        nomorTelepon:
+          type: string
+          example: '08123456789'
+        alamat:
+          type: string
+          example: Jl. Kampus No. 1
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: The given data was invalid.
+        errors:
+          type: object
+
+    UnauthorizedError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Tidak sah
