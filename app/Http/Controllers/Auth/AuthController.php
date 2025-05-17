@@ -10,28 +10,25 @@ use App\Http\Controllers\Controller;
 class AuthController extends Controller
 {
     /**
-     * Registrasi pengguna baru (Pelanggan / Mentor)
+     * Registrasi pengguna baru (memilih aktor: pelanggan/mentor)
+     * Akan mengarahkan ke fungsi registrasiPelanggan/registrasiMentor sesuai peran
      */
     public function registrasi(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'peran' => 'required|in:pelanggan,mentor',
         ]);
-
-        // Membuat pengguna baru
-        $user = User::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-
-        return response()->json(['message' => 'Pengguna berhasil terdaftar', 'user' => $user], 201);
+        if ($request->peran === 'pelanggan') {
+            return $this->registrasiPelanggan($request);
+        }
+        if ($request->peran === 'mentor') {
+            return $this->registrasiMentor($request);
+        }
+        return response()->json(['message' => 'Peran tidak valid'], 422);
     }
 
     /**
-     * Registrasi pelanggan baru
+     * Registrasi pelanggan baru (insert ke users & pelanggan)
      */
     public function registrasiPelanggan(Request $request)
     {
@@ -39,18 +36,32 @@ class AuthController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'nomorTelepon' => 'nullable',
+            'alamat' => 'nullable',
         ]);
         $user = User::create([
             'nama' => $request->nama,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'peran' => 'pelanggan',
+            'nomorTelepon' => $request->nomorTelepon ?? null,
+            'alamat' => $request->alamat ?? null,
         ]);
-        return response()->json(['message' => 'Pelanggan berhasil terdaftar', 'user' => $user], 201);
+        $pelanggan = \App\Models\Pelanggan::create([
+            'user_id' => $user->id,
+            'statusPembayaran' => 'belum pesen',
+        ]);
+        $token = $user->createToken('ChillAjarToken')->plainTextToken;
+        return response()->json([
+            'message' => 'Pelanggan berhasil terdaftar',
+            'user' => $user,
+            'pelanggan' => $pelanggan,
+            'token' => $token
+        ], 201);
     }
 
     /**
-     * Registrasi mentor baru
+     * Registrasi mentor baru (insert ke users & mentor)
      */
     public function registrasiMentor(Request $request)
     {
@@ -58,6 +69,9 @@ class AuthController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'biayaPerSesi' => 'required|numeric',
+            'gayaMengajar' => 'nullable',
+            'deskripsi' => 'nullable',
         ]);
         $user = User::create([
             'nama' => $request->nama,
@@ -65,7 +79,20 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
             'peran' => 'mentor',
         ]);
-        return response()->json(['message' => 'Mentor berhasil terdaftar', 'user' => $user], 201);
+        $mentor = \App\Models\Mentor::create([
+            'user_id' => $user->id,
+            'biayaPerSesi' => $request->biayaPerSesi,
+            'gayaMengajar' => $request->gayaMengajar ?? null,
+            'deskripsi' => $request->deskripsi ?? null,
+            'rating' => 0,
+        ]);
+        $token = $user->createToken('ChillAjarToken')->plainTextToken;
+        return response()->json([
+            'message' => 'Mentor berhasil terdaftar',
+            'user' => $user,
+            'mentor' => $mentor,
+            'token' => $token
+        ], 201);
     }
 
     /**
