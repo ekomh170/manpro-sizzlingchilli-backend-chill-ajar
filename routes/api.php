@@ -22,38 +22,40 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware(['auth:sanctum'])->group(function () {
     // [POST] Logout pengguna
     Route::post('/logout', [AuthController::class, 'logout']);
-    // [GET] Mendapatkan data user yang sedang login
-    Route::get('/user', [AuthController::class, 'me']);
 
     // ==================== ADMIN ====================
-    // [GET] Semua pengguna (admin, mentor, pelanggan)
-    Route::get('/admin/users', [AdminController::class, 'getAllUsers']);
-    // [POST] Tambah pengguna baru
-    Route::post('/admin/users', [AdminController::class, 'createUser']);
+    // [GET] Daftar semua pengguna
+    Route::get('/admin/users', [AdminController::class, 'daftarPengguna']);
     // [PUT] Ubah role pengguna
-    Route::put('/admin/users/{userId}/role', [AdminController::class, 'updateUserRole']);
-    // [GET] Semua mentor
-    Route::get('/admin/mentor', [AdminController::class, 'getAllMentors']);
+    Route::put('/admin/users/{userId}/role', [AdminController::class, 'ubahRolePengguna']);
+    // [POST] Tambah pengguna baru (admin/mentor/pelanggan)
+    Route::post('/admin/users', [AdminController::class, 'tambahPengguna']);
+    // [POST] Tambah mentor langsung
+    Route::post('/admin/mentor', [AdminController::class, 'tambahMentor']);
+    // [POST] Tambah pelanggan langsung
+    Route::post('/admin/pelanggan', [AdminController::class, 'tambahPelanggan']);
+    // [GET] Daftar mentor
+    Route::get('/admin/mentor', [AdminController::class, 'daftarMentor']);
     // [GET] Detail mentor
-    Route::get('/admin/mentor/{id}', [AdminController::class, 'getMentorById']);
-    // [PUT] Update data mentor
-    Route::put('/admin/mentor/{id}', [AdminController::class, 'updateMentor']);
+    Route::get('/admin/mentor/{id}', [AdminController::class, 'detailMentor']);
+    // [PUT] Update mentor
+    Route::put('/admin/mentor/{id}', [AdminController::class, 'perbaruiMentor']);
     // [DELETE] Hapus mentor
-    Route::delete('/admin/mentor/{id}', [AdminController::class, 'deleteMentor']);
-    // [GET] Semua pelanggan
-    Route::get('/admin/pelanggan', [AdminController::class, 'getAllPelanggan']);
+    Route::delete('/admin/mentor/{id}', [AdminController::class, 'hapusMentor']);
+    // [GET] Daftar pelanggan
+    Route::get('/admin/pelanggan', [AdminController::class, 'daftarPelanggan']);
     // [GET] Detail pelanggan
-    Route::get('/admin/pelanggan/{id}', [AdminController::class, 'getPelangganById']);
-    // [PUT] Update data pelanggan
-    Route::put('/admin/pelanggan/{id}', [AdminController::class, 'updatePelanggan']);
+    Route::get('/admin/pelanggan/{id}', [AdminController::class, 'detailPelanggan']);
+    // [PUT] Update pelanggan
+    Route::put('/admin/pelanggan/{id}', [AdminController::class, 'perbaruiPelanggan']);
     // [DELETE] Hapus pelanggan
-    Route::delete('/admin/pelanggan/{id}', [AdminController::class, 'deletePelanggan']);
-    // [POST] Verifikasi pembayaran
-    Route::post('/admin/payment/{paymentId}/verify', [AdminController::class, 'verifyPayment']);
-    // [POST] Tolak pembayaran
-    Route::post('/admin/payment/{paymentId}/reject', [AdminController::class, 'rejectPayment']);
+    Route::delete('/admin/pelanggan/{id}', [AdminController::class, 'hapusPelanggan']);
+    //  Pelanggan - Pembayaran Verifikasi - verifikasiPembayaran
+    Route::post('/admin/verifikasi-pembayaran/{paymentId}', [AdminController::class, 'verifikasiPembayaran']);
+    // Pelanggan - Pembayaran Tolak - tolakPembayaran
+    Route::post('/admin/tolak-pembayaran/{paymentId}', [AdminController::class, 'tolakPembayaran']);
     // [POST] Kirim notifikasi ke mentor setelah pembayaran diverifikasi
-    Route::post('/admin/notifikasi/mentor/{sessionId}', [AdminController::class, 'notifyMentorAfterPayment']);
+    Route::post('/admin/notifikasi/mentor/{sessionId}', [AdminController::class, 'notifikasiKeMentor']);
 
     // ==================== MENTOR ====================
     // [GET] Profil mentor yang sedang login
