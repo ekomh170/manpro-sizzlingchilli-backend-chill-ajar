@@ -116,4 +116,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/sessions/{id}/konfirmasi', [\App\Http\Controllers\Fitur\SessionController::class, 'konfirmasiSesi']);
     // [POST] Tandai sesi selesai
     Route::post('/sessions/{id}/selesai', [\App\Http\Controllers\Fitur\SessionController::class, 'selesaiSesi']);
+
+    // ==================== PAYMENT ====================
+    // [GET] Daftar semua pembayaran
+    Route::get('/payments', [\App\Http\Controllers\Fitur\PaymentController::class, 'index']);
+    // [POST] Tambah pembayaran
+    Route::post('/payments', [\App\Http\Controllers\Fitur\PaymentController::class, 'store']);
+    // [GET] Detail pembayaran
+    Route::get('/payments/{id}', [\App\Http\Controllers\Fitur\PaymentController::class, 'show']);
+    // [PUT] Update pembayaran
+    Route::put('/payments/{id}', [\App\Http\Controllers\Fitur\PaymentController::class, 'update']);
+    // [DELETE] Hapus pembayaran
+    Route::delete('/payments/{id}', [\App\Http\Controllers\Fitur\PaymentController::class, 'destroy']);
+    // [POST] Unggah bukti pembayaran
+    Route::post('/payments/{id}/unggah-bukti', [\App\Http\Controllers\Fitur\PaymentController::class, 'unggahBukti']);
+    // [POST] Verifikasi pembayaran
+    Route::post('/payments/{id}/verifikasi', [\App\Http\Controllers\Fitur\PaymentController::class, 'verifikasiPembayaran']);
+    // [POST] Tolak pembayaran
+    Route::post('/payments/{id}/tolak', [\App\Http\Controllers\Fitur\PaymentController::class, 'tolakPembayaran']);
 });
