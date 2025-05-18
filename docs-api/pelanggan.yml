@@ -1,0 +1,444 @@
+openapi: 3.0.3
+info:
+  title: Pelanggan API
+  version: 1.0.0
+  description: Dokumentasi endpoint PelangganController untuk fitur pelanggan pada platform Chill Ajar.
+servers:
+  - url: http://localhost/api
+paths:
+  /pelanggan/profil-saya:
+    get:
+      summary: Lihat profil pelanggan yang sedang login
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Data profil pelanggan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pelanggan"
+
+  /pelanggan/daftar-course:
+    get:
+      summary: Daftar semua course
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Daftar course
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+
+  /pelanggan/cari-mentor:
+    get:
+      summary: Cari mentor berdasarkan mata kuliah
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: namaCourse
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Daftar mentor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Mentor"
+              examples:
+                default:
+                  value:
+                    - id: 2
+                      user_id: 5
+                      rating: 4.8
+                      biayaPerSesi: 150000
+                      gayaMengajar: "Online"
+                      deskripsi: "Berpengalaman mengajar matematika SMA."
+                      user:
+                        id: 5
+                        nama: "Budi Santoso"
+                        email: "budi@example.com"
+
+  /pelanggan/detail-mentor/{mentorId}:
+    get:
+      summary: Lihat detail mentor
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: mentorId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detail mentor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mentor"
+
+  /pelanggan/pesan-sesi:
+    post:
+      summary: Pesan sesi pengajaran
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mentor_id:
+                  type: integer
+                  example: 2
+                pelanggan_id:
+                  type: integer
+                  example: 7
+                detailKursus:
+                  type: string
+                  example: "Kalkulus Dasar"
+                jadwal:
+                  type: string
+                  example: "Senin, 10:00-12:00"
+              required:
+                - mentor_id
+                - pelanggan_id
+                - detailKursus
+                - jadwal
+            examples:
+              default:
+                value:
+                  mentor_id: 2
+                  pelanggan_id: 7
+                  detailKursus: "Kalkulus Dasar"
+                  jadwal: "Senin, 10:00-12:00"
+      responses:
+        "201":
+          description: Sesi berhasil dipesan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+              examples:
+                default:
+                  value:
+                    id: 10
+                    mentor_id: 2
+                    pelanggan_id: 7
+                    detailKursus: "Kalkulus Dasar"
+                    jadwal: "Senin, 10:00-12:00"
+                    statusSesi: "booked"
+
+  /pelanggan/daftar-sesi:
+    get:
+      summary: Daftar sesi yang pernah diikuti pelanggan
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Daftar sesi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+
+  /pelanggan/unggah-bukti/{paymentId}:
+    post:
+      summary: Unggah bukti pembayaran
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                buktiPembayaran:
+                  type: string
+                  example: "bukti_transfer.jpg"
+              required:
+                - buktiPembayaran
+            examples:
+              default:
+                value:
+                  buktiPembayaran: "bukti_transfer.jpg"
+      responses:
+        "200":
+          description: Bukti pembayaran berhasil diunggah
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bukti pembayaran berhasil diunggah
+                  payment:
+                    $ref: "#/components/schemas/Payment"
+              examples:
+                default:
+                  value:
+                    message: Bukti pembayaran berhasil diunggah
+                    payment:
+                      id: 15
+                      user_id: 8
+                      mentor_id: 2
+                      session_id: 10
+                      jumlah: 150000
+                      statusPembayaran: "menunggu_verifikasi"
+                      metodePembayaran: "transfer"
+                      tanggalPembayaran: "2025-05-18T10:00:00Z"
+                      buktiPembayaran: "bukti_transfer.jpg"
+
+  /pelanggan/beri-testimoni/{sessionId}:
+    post:
+      summary: Beri testimoni setelah sesi selesai
+      tags: [Pelanggan]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pelanggan_id:
+                  type: integer
+                  example: 7
+                mentor_id:
+                  type: integer
+                  example: 2
+                rating:
+                  type: number
+                  example: 5
+                komentar:
+                  type: string
+                  example: "Mentor sangat membantu dan jelas dalam mengajar."
+              required:
+                - pelanggan_id
+                - mentor_id
+                - rating
+                - komentar
+            examples:
+              default:
+                value:
+                  pelanggan_id: 7
+                  mentor_id: 2
+                  rating: 5
+                  komentar: "Mentor sangat membantu dan jelas dalam mengajar."
+      responses:
+        "201":
+          description: Testimoni berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimoni"
+              examples:
+                default:
+                  value:
+                    id: 1
+                    session_id: 10
+                    pelanggan_id: 7
+                    mentor_id: 2
+                    rating: 5
+                    komentar: "Mentor sangat membantu dan jelas dalam mengajar."
+                    tanggal: "2025-05-18"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Pelanggan:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        user_id:
+          type: integer
+          example: 8
+        statusPembayaran:
+          type: string
+          example: "lunas"
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 8
+            nama:
+              type: string
+              example: "Siti Aminah"
+            email:
+              type: string
+              example: "siti@example.com"
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        namaCourse:
+          type: string
+          example: "Kalkulus Dasar"
+        deskripsi:
+          type: string
+          example: "Materi kalkulus untuk pemula."
+        mentor_id:
+          type: integer
+          example: 2
+        mentor:
+          $ref: "#/components/schemas/Mentor"
+    Mentor:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        user_id:
+          type: integer
+          example: 5
+        rating:
+          type: number
+          example: 4.8
+        biayaPerSesi:
+          type: number
+          example: 150000
+        gayaMengajar:
+          type: string
+          example: "Online"
+        deskripsi:
+          type: string
+          example: "Berpengalaman mengajar matematika SMA."
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 5
+            nama:
+              type: string
+              example: "Budi Santoso"
+            email:
+              type: string
+              example: "budi@example.com"
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        mentor_id:
+          type: integer
+          example: 2
+        pelanggan_id:
+          type: integer
+          example: 7
+        detailKursus:
+          type: string
+          example: "Kalkulus Dasar"
+        jadwal:
+          type: string
+          example: "Senin, 10:00-12:00"
+        statusSesi:
+          type: string
+          example: "booked"
+        mentor:
+          $ref: "#/components/schemas/Mentor"
+        pelanggan:
+          $ref: "#/components/schemas/Pelanggan"
+        testimoni:
+          $ref: "#/components/schemas/Testimoni"
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        user_id:
+          type: integer
+          example: 8
+        mentor_id:
+          type: integer
+          example: 2
+        session_id:
+          type: integer
+          example: 10
+        jumlah:
+          type: number
+          example: 150000
+        statusPembayaran:
+          type: string
+          example: "menunggu_verifikasi"
+        metodePembayaran:
+          type: string
+          example: "transfer"
+        tanggalPembayaran:
+          type: string
+          format: date-time
+          example: "2025-05-18T10:00:00Z"
+        buktiPembayaran:
+          type: string
+          example: "bukti_transfer.jpg"
+    Testimoni:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        session_id:
+          type: integer
+          example: 10
+        pelanggan_id:
+          type: integer
+          example: 7
+        mentor_id:
+          type: integer
+          example: 2
+        rating:
+          type: number
+          example: 5
+        komentar:
+          type: string
+          example: "Mentor sangat membantu dan jelas dalam mengajar."
+        tanggal:
+          type: string
+          format: date
+          example: "2025-05-18"
