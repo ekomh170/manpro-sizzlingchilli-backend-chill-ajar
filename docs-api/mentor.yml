@@ -1,0 +1,286 @@
+openapi: 3.0.3
+info:
+  title: Mentor API
+  version: 1.0.0
+  description: Dokumentasi endpoint MentorController untuk fitur mentor pada platform Chill Ajar.
+servers:
+  - url: http://localhost/api
+paths:
+  /mentor/profil-saya:
+    get:
+      summary: Lihat profil mentor yang sedang login
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Data profil mentor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mentor"
+
+  /mentor/atur-jadwal:
+    post:
+      summary: Atur atau perbarui jadwal pengajaran
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mentor_id:
+                  type: integer
+                  example: 2
+                jadwal:
+                  type: string
+                  example: "Senin, 10:00-12:00"
+              required:
+                - mentor_id
+                - jadwal
+      responses:
+        "200":
+          description: Jadwal berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Jadwal pengajaran diperbarui
+
+  /mentor/atur-gaya:
+    post:
+      summary: Atur atau perbarui gaya mengajar
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mentor_id:
+                  type: integer
+                  example: 2
+                gayaMengajar:
+                  type: string
+                  example: "Online"
+              required:
+                - mentor_id
+                - gayaMengajar
+      responses:
+        "200":
+          description: Gaya mengajar berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Gaya mengajar diperbarui
+
+  /mentor/daftar-sesi:
+    get:
+      summary: Daftar sesi yang diampu mentor
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Daftar sesi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+
+  /mentor/konfirmasi-sesi/{sessionId}:
+    post:
+      summary: Konfirmasi sesi pengajaran
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sesi berhasil dikonfirmasi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Sesi pengajaran dikonfirmasi
+
+  /mentor/selesai-sesi/{sessionId}:
+    post:
+      summary: Tandai sesi sebagai selesai
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sesi berhasil diselesaikan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Sesi pengajaran selesai
+
+  /mentor/daftar-testimoni:
+    get:
+      summary: Daftar testimoni yang diterima mentor
+      tags: [Mentor]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Daftar testimoni
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimoni"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Mentor:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        user_id:
+          type: integer
+          example: 5
+        rating:
+          type: number
+          example: 4.8
+        biayaPerSesi:
+          type: number
+          example: 150000
+        gayaMengajar:
+          type: string
+          example: "Online"
+        deskripsi:
+          type: string
+          example: "Berpengalaman mengajar matematika SMA."
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 5
+            nama:
+              type: string
+              example: "Budi Santoso"
+            email:
+              type: string
+              example: "budi@example.com"
+            nomorTelepon:
+              type: string
+              example: "08123456789"
+            alamat:
+              type: string
+              example: "Jl. Mawar No. 1"
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        mentor_id:
+          type: integer
+          example: 2
+        pelanggan_id:
+          type: integer
+          example: 7
+        detailKursus:
+          type: string
+          example: "Kalkulus Dasar"
+        jadwal:
+          type: string
+          example: "Senin, 10:00-12:00"
+        statusSesi:
+          type: string
+          example: "confirmed"
+        pelanggan:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 7
+            user_id:
+              type: integer
+              example: 8
+            statusPembayaran:
+              type: string
+              example: "lunas"
+            user:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 8
+                nama:
+                  type: string
+                  example: "Siti Aminah"
+                email:
+                  type: string
+                  example: "siti@example.com"
+    Testimoni:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        session_id:
+          type: integer
+          example: 10
+        pelanggan_id:
+          type: integer
+          example: 7
+        mentor_id:
+          type: integer
+          example: 2
+        rating:
+          type: number
+          example: 5
+        komentar:
+          type: string
+          example: "Mentor sangat membantu dan jelas dalam mengajar."
+        tanggal:
+          type: string
+          format: date
+          example: "2025-05-18"
