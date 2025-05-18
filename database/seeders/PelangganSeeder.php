@@ -25,8 +25,7 @@ class PelangganSeeder extends Seeder
             $user = User::where('email', $email)->first();
             if ($user) {
                 Pelanggan::firstOrCreate(
-                    ['user_id' => $user->id],
-                    ['statusPembayaran' => 'belum_bayar']
+                    ['user_id' => $user->id]
                 );
             }
         }

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('pelanggan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relasi ke users
-            $table->string('statusPembayaran')->default('belum_bayar'); // Status pembayaran
             $table->timestamps();
         });
     }

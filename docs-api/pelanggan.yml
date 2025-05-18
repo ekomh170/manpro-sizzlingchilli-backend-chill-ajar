@@ -31,7 +31,6 @@ paths:
               example:
                 id: 7
                 user_id: 8
-                statusPembayaran: "lunas"
                 user:
                   id: 8
                   nama: "Siti Aminah"
@@ -404,9 +403,6 @@ components:
         user_id:
           type: integer
           example: 8
-        statusPembayaran:
-          type: string
-          example: "lunas"
         user:
           type: object
           properties:

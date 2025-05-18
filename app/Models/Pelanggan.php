@@ -14,8 +14,7 @@ class Pelanggan extends Model
 
     // Kolom-kolom yang dapat diisi secara massal
     protected $fillable = [
-        'user_id',          // ID user yang terkait
-        'statusPembayaran', // Status pembayaran
+        'user_id', // ID user yang terkait
     ];
 
     /**
