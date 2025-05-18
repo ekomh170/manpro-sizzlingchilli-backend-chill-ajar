@@ -68,12 +68,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/mentor/daftar-testimoni', [MentorController::class, 'daftarTestimoni']);
 
     // ==================== PELANGGAN ====================
-    // [RESTful] CRUD Pelanggan
-    Route::apiResource('pelanggans', PelangganController::class);
+    // [GET] Profil pelanggan yang sedang login
+    Route::get('/pelanggan/profil-saya', [PelangganController::class, 'profilSaya']);
+    // [GET] Daftar course
+    Route::get('/pelanggan/daftar-course', [PelangganController::class, 'daftarCourse']);
     // [GET] Cari mentor berdasarkan mata kuliah
     Route::get('/pelanggan/cari-mentor', [PelangganController::class, 'cariMentor']);
+    // [GET] Detail mentor
+    Route::get('/pelanggan/detail-mentor/{mentorId}', [PelangganController::class, 'detailMentor']);
     // [POST] Pesan sesi pengajaran
     Route::post('/pelanggan/pesan-sesi', [PelangganController::class, 'pesanSesi']);
+    // [GET] Daftar sesi yang pernah diikuti pelanggan
+    Route::get('/pelanggan/daftar-sesi', [PelangganController::class, 'daftarSesiMentor']);
+    // [POST] Unggah bukti pembayaran
+    Route::post('/pelanggan/unggah-bukti/{paymentId}', [PelangganController::class, 'unggahBuktiPembayaran']);
     // [POST] Beri testimoni
     Route::post('/pelanggan/beri-testimoni/{sessionId}', [PelangganController::class, 'beriTestimoni']);
 
