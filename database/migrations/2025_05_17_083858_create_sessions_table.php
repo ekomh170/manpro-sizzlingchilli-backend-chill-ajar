@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('pelanggan_id')->constrained('pelanggan')->onDelete('cascade'); // Pelanggan
             $table->text('detailKursus'); // Materi sesi
             $table->dateTime('jadwal'); // Waktu pelaksanaan
-            $table->string('statusSesi')->default('menunggu'); // Status sesi
+            $table->string('statusSesi')->default('aktif'); // Status sesi
             $table->timestamps();
         });
     }

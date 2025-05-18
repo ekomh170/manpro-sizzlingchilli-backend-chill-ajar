@@ -50,4 +50,42 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/admin/payment/{paymentId}/reject', [AdminController::class, 'rejectPayment']);
     // [POST] Kirim notifikasi ke mentor setelah pembayaran diverifikasi
     Route::post('/admin/notifikasi/mentor/{sessionId}', [AdminController::class, 'notifyMentorAfterPayment']);
+
+    // ==================== MENTOR ====================
+    // [GET] Profil mentor yang sedang login
+    Route::get('/mentor/profil-saya', [MentorController::class, 'profilSaya']);
+    // [POST] Atur jadwal pengajaran
+    Route::post('/mentor/atur-jadwal', [MentorController::class, 'aturJadwal']);
+    // [POST] Atur gaya mengajar
+    Route::post('/mentor/atur-gaya', [MentorController::class, 'aturGayaMengajar']);
+    // [GET] Daftar sesi yang diampu mentor
+    Route::get('/mentor/daftar-sesi', [MentorController::class, 'daftarSesiSaya']);
+    // [POST] Konfirmasi sesi
+    Route::post('/mentor/konfirmasi-sesi/{sessionId}', [MentorController::class, 'konfirmasiSesi']);
+    // [POST] Selesaikan sesi
+    Route::post('/mentor/selesai-sesi/{sessionId}', [MentorController::class, 'selesaiSesi']);
+    // [GET] Daftar testimoni yang diterima mentor
+    Route::get('/mentor/daftar-testimoni', [MentorController::class, 'daftarTestimoni']);
+
+    // ==================== PELANGGAN ====================
+    // [RESTful] CRUD Pelanggan
+    Route::apiResource('pelanggans', PelangganController::class);
+    // [GET] Cari mentor berdasarkan mata kuliah
+    Route::get('/pelanggan/cari-mentor', [PelangganController::class, 'cariMentor']);
+    // [POST] Pesan sesi pengajaran
+    Route::post('/pelanggan/pesan-sesi', [PelangganController::class, 'pesanSesi']);
+    // [POST] Beri testimoni
+    Route::post('/pelanggan/beri-testimoni/{sessionId}', [PelangganController::class, 'beriTestimoni']);
+
+    // ==================== COURSE ====================
+    // [RESTful] CRUD Course
+    Route::apiResource('courses', CourseController::class);
+
+    // ==================== LAINNYA (Jika sudah ada controller) ====================
+    // [RESTful] CRUD Payment
+    // Route::apiResource('payments', PaymentController::class);
+    // [RESTful] CRUD Session
+    // Route::apiResource('sessions', SessionController::class);
+    // [RESTful] CRUD Testimoni
+    // Route::apiResource('testimonis', TestimoniController::class);
 });
