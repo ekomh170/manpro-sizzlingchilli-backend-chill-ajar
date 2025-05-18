@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: Testimoni API
+  version: "1.0"
+  description: |
+    API untuk manajemen testimoni pada platform mentoring. Mendukung CRUD testimoni dan daftar testimoni per mentor.
+servers:
+  - url: http://localhost:8000/api
+paths:
+  /testimoni:
+    get:
+      summary: Daftar semua testimoni
+      tags: [Testimoni]
+      responses:
+        "200":
+          description: Daftar testimoni
+          content:
+            application/json:
+              example:
+                - id: 1
+                  session_id: 2
+                  pelanggan_id: 3
+                  mentor_id: 4
+                  rating: 5
+                  komentar: "Sangat membantu!"
+                  tanggal: "2025-05-18T10:00:00"
+    post:
+      summary: Tambah testimoni
+      tags: [Testimoni]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: integer
+                pelanggan_id:
+                  type: integer
+                mentor_id:
+                  type: integer
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                komentar:
+                  type: string
+                tanggal:
+                  type: string
+                  format: date-time
+            example:
+              session_id: 2
+              pelanggan_id: 3
+              mentor_id: 4
+              rating: 5
+              komentar: "Sangat membantu!"
+              tanggal: "2025-05-18T10:00:00"
+      responses:
+        "201":
+          description: Testimoni berhasil dibuat
+          content:
+            application/json:
+              example:
+                id: 10
+                session_id: 2
+                pelanggan_id: 3
+                mentor_id: 4
+                rating: 5
+                komentar: "Sangat membantu!"
+                tanggal: "2025-05-18T10:00:00"
+  /testimoni/{id}:
+    get:
+      summary: Detail testimoni
+      tags: [Testimoni]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detail testimoni
+          content:
+            application/json:
+              example:
+                id: 10
+                session_id: 2
+                pelanggan_id: 3
+                mentor_id: 4
+                rating: 5
+                komentar: "Sangat membantu!"
+                tanggal: "2025-05-18T10:00:00"
+    put:
+      summary: Update testimoni
+      tags: [Testimoni]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                komentar:
+                  type: string
+                tanggal:
+                  type: string
+                  format: date-time
+            example:
+              rating: 4
+              komentar: "Bagus, tapi bisa lebih baik."
+              tanggal: "2025-05-18T12:00:00"
+      responses:
+        "200":
+          description: Testimoni berhasil diupdate
+          content:
+            application/json:
+              example:
+                id: 10
+                session_id: 2
+                pelanggan_id: 3
+                mentor_id: 4
+                rating: 4
+                komentar: "Bagus, tapi bisa lebih baik."
+                tanggal: "2025-05-18T12:00:00"
+    delete:
+      summary: Hapus testimoni
+      tags: [Testimoni]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Testimoni berhasil dihapus
+  /mentor/{mentorId}/testimoni:
+    get:
+      summary: Daftar testimoni untuk mentor tertentu
+      tags: [Testimoni]
+      parameters:
+        - in: path
+          name: mentorId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Daftar testimoni untuk mentor
+          content:
+            application/json:
+              example:
+                - id: 10
+                  session_id: 2
+                  pelanggan_id: 3
+                  mentor_id: 4
+                  rating: 5
+                  komentar: "Sangat membantu!"
+                  tanggal: "2025-05-18T10:00:00"
+                - id: 11
+                  session_id: 5
+                  pelanggan_id: 6
+                  mentor_id: 4
+                  rating: 4
+                  komentar: "Cukup baik."
+                  tanggal: "2025-05-17T09:00:00"
