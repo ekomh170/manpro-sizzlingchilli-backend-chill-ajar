@@ -19,7 +19,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Mentor"
+              example:
+                id: 2
+                user_id: 5
+                rating: 4.8
+                biayaPerSesi: 150000
+                gayaMengajar: "Online"
+                deskripsi: "Berpengalaman mengajar matematika SMA."
+                user:
+                  id: 5
+                  nama: "Budi Santoso"
+                  email: "budi@example.com"
+                  nomorTelepon: "08123456789"
+                  alamat: "Jl. Mawar No. 1"
+      description: |
+        Lihat profil mentor yang sedang login beserta data user terkait.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost:8000/api/mentor/profil-saya \
+          -H "Authorization: Bearer <token>"
+        ```
   /mentor/atur-jadwal:
     post:
       summary: Atur atau perbarui jadwal pengajaran
@@ -42,6 +63,9 @@ paths:
               required:
                 - mentor_id
                 - jadwal
+            example:
+              mentor_id: 2
+              jadwal: "Senin, 10:00-12:00"
       responses:
         "200":
           description: Jadwal berhasil diperbarui
@@ -53,7 +77,22 @@ paths:
                   message:
                     type: string
                     example: Jadwal pengajaran diperbarui
+              example:
+                message: Jadwal pengajaran diperbarui
+      description: |
+        Atur atau perbarui jadwal pengajaran.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost:8000/api/mentor/atur-jadwal \
+          -H "Authorization: Bearer <token>" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "mentor_id": 2,
+            "jadwal": "Senin, 10:00-12:00"
+          }'
+        ```
   /mentor/atur-gaya:
     post:
       summary: Atur atau perbarui gaya mengajar
@@ -76,6 +115,9 @@ paths:
               required:
                 - mentor_id
                 - gayaMengajar
+            example:
+              mentor_id: 2
+              gayaMengajar: "Online"
       responses:
         "200":
           description: Gaya mengajar berhasil diperbarui
@@ -87,10 +129,25 @@ paths:
                   message:
                     type: string
                     example: Gaya mengajar diperbarui
+              example:
+                message: Gaya mengajar diperbarui
+      description: |
+        Atur atau perbarui gaya mengajar.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost:8000/api/mentor/atur-gaya \
+          -H "Authorization: Bearer <token>" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "mentor_id": 2,
+            "gayaMengajar": "Online"
+          }'
+        ```
   /mentor/daftar-sesi:
     get:
-      summary: Daftar sesi yang diampu mentor
+      summary: Daftar sesi pengajaran yang dijadwalkan
       tags: [Mentor]
       security:
         - bearerAuth: []
@@ -103,7 +160,22 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Session"
+              example:
+                - id: 10
+                  mentor_id: 2
+                  pelanggan_id: 7
+                  detailKursus: "Kalkulus Dasar"
+                  jadwal: "Senin, 10:00-12:00"
+                  statusSesi: "booked"
+      description: |
+        Daftar sesi pengajaran yang dijadwalkan.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost:8000/api/mentor/daftar-sesi \
+          -H "Authorization: Bearer <token>"
+        ```
   /mentor/konfirmasi-sesi/{sessionId}:
     post:
       summary: Konfirmasi sesi pengajaran
@@ -126,8 +198,23 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: Sesi pengajaran dikonfirmasi
+                    example: Sesi dikonfirmasi
+                  session:
+                    $ref: "#/components/schemas/Session"
+              example:
+                message: Sesi dikonfirmasi
+                session:
+                  id: 10
+                  statusSesi: confirmed
+      description: |
+        Konfirmasi sesi pengajaran.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost:8000/api/mentor/konfirmasi-sesi/10 \
+          -H "Authorization: Bearer <token>"
+        ```
   /mentor/selesai-sesi/{sessionId}:
     post:
       summary: Tandai sesi sebagai selesai
@@ -150,8 +237,23 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: Sesi pengajaran selesai
+                    example: Sesi selesai
+                  session:
+                    $ref: "#/components/schemas/Session"
+              example:
+                message: Sesi selesai
+                session:
+                  id: 10
+                  statusSesi: completed
+      description: |
+        Tandai sesi sebagai selesai.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost:8000/api/mentor/selesai-sesi/10 \
+          -H "Authorization: Bearer <token>"
+        ```
   /mentor/daftar-testimoni:
     get:
       summary: Daftar testimoni yang diterima mentor
@@ -167,7 +269,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Testimoni"
+              example:
+                - id: 1
+                  session_id: 10
+                  pelanggan_id: 7
+                  mentor_id: 2
+                  rating: 5
+                  komentar: "Mentor sangat membantu dan jelas dalam mengajar."
+                  tanggal: "2025-05-18"
+      description: |
+        Daftar testimoni yang diterima mentor.
 
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost:8000/api/mentor/daftar-testimoni \
+          -H "Authorization: Bearer <token>"
+        ```
 components:
   securitySchemes:
     bearerAuth:
@@ -234,7 +352,8 @@ components:
           example: "Senin, 10:00-12:00"
         statusSesi:
           type: string
-          example: "confirmed"
+          description: Status sesi, hanya boleh "booked", "confirmed", atau "completed".
+          example: "booked"
         pelanggan:
           type: object
           properties:

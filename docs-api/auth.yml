@@ -17,21 +17,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              email: eko@example.com
+              password: passwordku
       responses:
-        '200':
+        "200":
           description: Login berhasil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
+                $ref: "#/components/schemas/LoginResponse"
+              example:
+                message: Login berhasil
+                token: "eyJ0eXAiOiJKV1QiLCJhbGciOi..."
+                user:
+                  id: 1
+                  nama: Eko Muchamad Haryono
+                  email: eko@example.com
+                  peran: pelanggan
+                  nomorTelepon: "08123456789"
+                  alamat: Jl. Kampus No. 1
+        "401":
           description: Login gagal
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnauthorizedError'
-
+                $ref: "#/components/schemas/UnauthorizedError"
+              example:
+                message: Tidak sah
   /api/register:
     post:
       summary: Registrasi pengguna baru (pelanggan/mentor)
@@ -42,24 +56,77 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/RegisterPelanggan'
-                - $ref: '#/components/schemas/RegisterMentor'
+                - $ref: "#/components/schemas/RegisterPelanggan"
+                - $ref: "#/components/schemas/RegisterMentor"
+            examples:
+              pelanggan:
+                summary: Register Pelanggan
+                value:
+                  peran: pelanggan
+                  nama: Eko Muchamad Haryono
+                  email: eko@example.com
+                  password: passwordku
+                  nomorTelepon: "08123456789"
+                  alamat: Jl. Kampus No. 1
+              mentor:
+                summary: Register Mentor
+                value:
+                  peran: mentor
+                  nama: Fatiya Labibah
+                  email: fatiya@example.com
+                  password: passwordmentor
+                  biayaPerSesi: 100000
+                  gayaMengajar: Santai
+                  deskripsi: Berpengalaman mengajar
+                  nomorTelepon: "081298765432"
+                  alamat: Jl. Mentor No. 2
       responses:
-        '201':
+        "201":
           description: Registrasi berhasil
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/RegisterPelangganResponse'
-                  - $ref: '#/components/schemas/RegisterMentorResponse'
-        '422':
+                  - $ref: "#/components/schemas/RegisterPelangganResponse"
+                  - $ref: "#/components/schemas/RegisterMentorResponse"
+              examples:
+                pelanggan:
+                  summary: Response Register Pelanggan
+                  value:
+                    message: Pelanggan berhasil terdaftar
+                    user:
+                      id: 2
+                      nama: Eko Muchamad Haryono
+                      email: eko@example.com
+                      peran: pelanggan
+                      nomorTelepon: "08123456789"
+                      alamat: Jl. Kampus No. 1
+                    pelanggan: {}
+                    token: "eyJ0eXAiOiJKV1QiLCJhbGciOi..."
+                mentor:
+                  summary: Response Register Mentor
+                  value:
+                    message: Mentor berhasil terdaftar
+                    user:
+                      id: 3
+                      nama: Fatiya Labibah
+                      email: fatiya@example.com
+                      peran: mentor
+                      nomorTelepon: "081298765432"
+                      alamat: Jl. Mentor No. 2
+                    mentor: {}
+                    token: "eyJ0eXAiOiJKV1QiLCJhbGciOi..."
+        "422":
           description: Validasi gagal
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationError'
-
+                $ref: "#/components/schemas/ValidationError"
+              example:
+                message: The given data was invalid.
+                errors:
+                  email:
+                    - The email has already been taken.
   /api/logout:
     post:
       summary: Logout pengguna (wajib token)
@@ -67,19 +134,22 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Logout berhasil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogoutResponse'
-        '401':
+                $ref: "#/components/schemas/LogoutResponse"
+              example:
+                message: Logout berhasil
+        "401":
           description: Tidak terautentikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnauthorizedError'
-
+                $ref: "#/components/schemas/UnauthorizedError"
+              example:
+                message: Tidak sah
   /api/user:
     get:
       summary: Mendapatkan data user yang sedang login (wajib token)
@@ -87,26 +157,33 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Data user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '401':
+                $ref: "#/components/schemas/User"
+              example:
+                id: 1
+                nama: Eko Muchamad Haryono
+                email: eko@example.com
+                peran: pelanggan
+                nomorTelepon: "08123456789"
+                alamat: Jl. Kampus No. 1
+        "401":
           description: Tidak terautentikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnauthorizedError'
-
+                $ref: "#/components/schemas/UnauthorizedError"
+              example:
+                message: Tidak sah
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
   schemas:
     RegisterPelanggan:
       type: object
@@ -117,107 +194,82 @@ components:
           enum: [pelanggan]
         nama:
           type: string
-          example: Eko Muchamad Haryono
         email:
           type: string
-          example: eko@example.com
         password:
           type: string
-          example: passwordku
         nomorTelepon:
           type: string
-          example: '08123456789'
         alamat:
           type: string
-          example: Jl. Kampus No. 1
-
     RegisterMentor:
       type: object
-      required: [peran, nama, email, password, biayaPerSesi, nomorTelepon, alamat]
+      required:
+        [peran, nama, email, password, biayaPerSesi, nomorTelepon, alamat]
       properties:
         peran:
           type: string
           enum: [mentor]
         nama:
           type: string
-          example: Fatiya Labibah
         email:
           type: string
-          example: fatiya@example.com
         password:
           type: string
-          example: passwordmentor
         biayaPerSesi:
           type: number
-          example: 100000
         gayaMengajar:
           type: string
-          example: Santai
         deskripsi:
           type: string
-          example: Berpengalaman mengajar
         nomorTelepon:
           type: string
-          example: '081298765432'
         alamat:
           type: string
-          example: Jl. Mentor No. 2
-
     RegisterPelangganResponse:
       type: object
       properties:
         message:
           type: string
-          example: Pelanggan berhasil terdaftar
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         pelanggan:
           type: object
         token:
           type: string
-
     RegisterMentorResponse:
       type: object
       properties:
         message:
           type: string
-          example: Mentor berhasil terdaftar
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         mentor:
           type: object
         token:
           type: string
-
     LoginRequest:
       type: object
       required: [email, password]
       properties:
         email:
           type: string
-          example: eko@example.com
         password:
           type: string
-          example: passwordku
-
     LoginResponse:
       type: object
       properties:
         message:
           type: string
-          example: Login berhasil
         token:
           type: string
         user:
-          $ref: '#/components/schemas/User'
-
+          $ref: "#/components/schemas/User"
     LogoutResponse:
       type: object
       properties:
         message:
           type: string
-          example: Logout berhasil
-
     User:
       type: object
       properties:
@@ -225,32 +277,23 @@ components:
           type: integer
         nama:
           type: string
-          example: Eko Muchamad Haryono
         email:
           type: string
-          example: eko@example.com
         peran:
           type: string
-          example: pelanggan
         nomorTelepon:
           type: string
-          example: '08123456789'
         alamat:
           type: string
-          example: Jl. Kampus No. 1
-
     ValidationError:
       type: object
       properties:
         message:
           type: string
-          example: The given data was invalid.
         errors:
           type: object
-
     UnauthorizedError:
       type: object
       properties:
         message:
           type: string
-          example: Tidak sah

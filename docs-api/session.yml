@@ -294,6 +294,7 @@ components:
           example: "2025-05-20T10:00:00Z"
         statusSesi:
           type: string
+          description: Status sesi, hanya boleh "booked", "confirmed", atau "completed".
           example: "booked"
         mentor:
           type: object

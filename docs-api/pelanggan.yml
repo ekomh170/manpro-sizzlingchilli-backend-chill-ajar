@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: Dokumentasi endpoint PelangganController untuk fitur pelanggan pada platform Chill Ajar.
 servers:
-  - url: http://localhost/api
+  - url: http://localhost:8000/api
 paths:
   /pelanggan/profil-saya:
     get:
@@ -12,6 +12,15 @@ paths:
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Mengambil data profil pelanggan yang sedang login beserta data user terkait.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost/api/pelanggan/profil-saya \
+          -H "Authorization: Bearer <token>"
+        ```
       responses:
         "200":
           description: Data profil pelanggan
@@ -19,13 +28,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Pelanggan"
-
+              example:
+                id: 7
+                user_id: 8
+                statusPembayaran: "lunas"
+                user:
+                  id: 8
+                  nama: "Siti Aminah"
+                  email: "siti@example.com"
   /pelanggan/daftar-course:
     get:
       summary: Daftar semua course
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Mengambil daftar seluruh course beserta data mentor dan user mentor.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost/api/pelanggan/daftar-course \
+          -H "Authorization: Bearer <token>"
+        ```
       responses:
         "200":
           description: Daftar course
@@ -35,13 +60,37 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Course"
-
+              example:
+                - id: 1
+                  namaCourse: "Kalkulus Dasar"
+                  deskripsi: "Materi kalkulus untuk pemula."
+                  mentor_id: 2
+                  mentor:
+                    id: 2
+                    user_id: 5
+                    rating: 4.8
+                    biayaPerSesi: 150000
+                    gayaMengajar: "Online"
+                    deskripsi: "Berpengalaman mengajar matematika SMA."
+                    user:
+                      id: 5
+                      nama: "Budi Santoso"
+                      email: "budi@example.com"
   /pelanggan/cari-mentor:
     get:
       summary: Cari mentor berdasarkan mata kuliah
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Cari mentor berdasarkan nama course.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          "http://localhost/api/pelanggan/cari-mentor?namaCourse=Kalkulus%20Dasar" \
+          -H "Authorization: Bearer <token>"
+        ```
       parameters:
         - in: query
           name: namaCourse
@@ -57,26 +106,32 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Mentor"
-              examples:
-                default:
-                  value:
-                    - id: 2
-                      user_id: 5
-                      rating: 4.8
-                      biayaPerSesi: 150000
-                      gayaMengajar: "Online"
-                      deskripsi: "Berpengalaman mengajar matematika SMA."
-                      user:
-                        id: 5
-                        nama: "Budi Santoso"
-                        email: "budi@example.com"
-
+              example:
+                - id: 2
+                  user_id: 5
+                  rating: 4.8
+                  biayaPerSesi: 150000
+                  gayaMengajar: "Online"
+                  deskripsi: "Berpengalaman mengajar matematika SMA."
+                  user:
+                    id: 5
+                    nama: "Budi Santoso"
+                    email: "budi@example.com"
   /pelanggan/detail-mentor/{mentorId}:
     get:
       summary: Lihat detail mentor
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Lihat detail mentor berdasarkan ID.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost/api/pelanggan/detail-mentor/2 \
+          -H "Authorization: Bearer <token>"
+        ```
       parameters:
         - in: path
           name: mentorId
@@ -90,13 +145,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Mentor"
-
+              example:
+                id: 2
+                user_id: 5
+                rating: 4.8
+                biayaPerSesi: 150000
+                gayaMengajar: "Online"
+                deskripsi: "Berpengalaman mengajar matematika SMA."
+                user:
+                  id: 5
+                  nama: "Budi Santoso"
+                  email: "budi@example.com"
   /pelanggan/pesan-sesi:
     post:
       summary: Pesan sesi pengajaran
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Pesan sesi pengajaran dengan mentor tertentu.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost/api/pelanggan/pesan-sesi \
+          -H "Authorization: Bearer <token>" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "mentor_id": 2,
+            "pelanggan_id": 7,
+            "detailKursus": "Kalkulus Dasar",
+            "jadwal": "Senin, 10:00-12:00"
+          }'
+        ```
       requestBody:
         required: true
         content:
@@ -121,13 +202,11 @@ paths:
                 - pelanggan_id
                 - detailKursus
                 - jadwal
-            examples:
-              default:
-                value:
-                  mentor_id: 2
-                  pelanggan_id: 7
-                  detailKursus: "Kalkulus Dasar"
-                  jadwal: "Senin, 10:00-12:00"
+            example:
+              mentor_id: 2
+              pelanggan_id: 7
+              detailKursus: "Kalkulus Dasar"
+              jadwal: "Senin, 10:00-12:00"
       responses:
         "201":
           description: Sesi berhasil dipesan
@@ -135,22 +214,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Session"
-              examples:
-                default:
-                  value:
-                    id: 10
-                    mentor_id: 2
-                    pelanggan_id: 7
-                    detailKursus: "Kalkulus Dasar"
-                    jadwal: "Senin, 10:00-12:00"
-                    statusSesi: "booked"
-
+              example:
+                id: 10
+                mentor_id: 2
+                pelanggan_id: 7
+                detailKursus: "Kalkulus Dasar"
+                jadwal: "Senin, 10:00-12:00"
+                statusSesi: "booked"
   /pelanggan/daftar-sesi:
     get:
       summary: Daftar sesi yang pernah diikuti pelanggan
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Mengambil daftar sesi yang pernah diikuti pelanggan.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X GET \
+          http://localhost/api/pelanggan/daftar-sesi \
+          -H "Authorization: Bearer <token>"
+        ```
       responses:
         "200":
           description: Daftar sesi
@@ -160,13 +245,32 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Session"
-
+              example:
+                - id: 10
+                  mentor_id: 2
+                  pelanggan_id: 7
+                  detailKursus: "Kalkulus Dasar"
+                  jadwal: "Senin, 10:00-12:00"
+                  statusSesi: "booked"
   /pelanggan/unggah-bukti/{paymentId}:
     post:
       summary: Unggah bukti pembayaran
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Unggah bukti pembayaran untuk pembayaran tertentu.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost/api/pelanggan/unggah-bukti/15 \
+          -H "Authorization: Bearer <token>" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "buktiPembayaran": "bukti_transfer.jpg"
+          }'
+        ```
       parameters:
         - in: path
           name: paymentId
@@ -185,10 +289,8 @@ paths:
                   example: "bukti_transfer.jpg"
               required:
                 - buktiPembayaran
-            examples:
-              default:
-                value:
-                  buktiPembayaran: "bukti_transfer.jpg"
+            example:
+              buktiPembayaran: "bukti_transfer.jpg"
       responses:
         "200":
           description: Bukti pembayaran berhasil diunggah
@@ -202,27 +304,40 @@ paths:
                     example: Bukti pembayaran berhasil diunggah
                   payment:
                     $ref: "#/components/schemas/Payment"
-              examples:
-                default:
-                  value:
-                    message: Bukti pembayaran berhasil diunggah
-                    payment:
-                      id: 15
-                      user_id: 8
-                      mentor_id: 2
-                      session_id: 10
-                      jumlah: 150000
-                      statusPembayaran: "menunggu_verifikasi"
-                      metodePembayaran: "transfer"
-                      tanggalPembayaran: "2025-05-18T10:00:00Z"
-                      buktiPembayaran: "bukti_transfer.jpg"
-
+              example:
+                message: Bukti pembayaran berhasil diunggah
+                payment:
+                  id: 15
+                  user_id: 8
+                  mentor_id: 2
+                  session_id: 10
+                  jumlah: 150000
+                  statusPembayaran: "menunggu_verifikasi"
+                  metodePembayaran: "transfer"
+                  tanggalPembayaran: "2025-05-18T10:00:00Z"
+                  buktiPembayaran: "bukti_transfer.jpg"
   /pelanggan/beri-testimoni/{sessionId}:
     post:
       summary: Beri testimoni setelah sesi selesai
       tags: [Pelanggan]
       security:
         - bearerAuth: []
+      description: |
+        Berikan testimoni untuk mentor setelah sesi selesai.
+
+        Contoh penggunaan (curl):
+        ```bash
+        curl -X POST \
+          http://localhost/api/pelanggan/beri-testimoni/10 \
+          -H "Authorization: Bearer <token>" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "pelanggan_id": 7,
+            "mentor_id": 2,
+            "rating": 5,
+            "komentar": "Mentor sangat membantu dan jelas dalam mengajar."
+          }'
+        ```
       parameters:
         - in: path
           name: sessionId
@@ -253,13 +368,11 @@ paths:
                 - mentor_id
                 - rating
                 - komentar
-            examples:
-              default:
-                value:
-                  pelanggan_id: 7
-                  mentor_id: 2
-                  rating: 5
-                  komentar: "Mentor sangat membantu dan jelas dalam mengajar."
+            example:
+              pelanggan_id: 7
+              mentor_id: 2
+              rating: 5
+              komentar: "Mentor sangat membantu dan jelas dalam mengajar."
       responses:
         "201":
           description: Testimoni berhasil dibuat
@@ -267,17 +380,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Testimoni"
-              examples:
-                default:
-                  value:
-                    id: 1
-                    session_id: 10
-                    pelanggan_id: 7
-                    mentor_id: 2
-                    rating: 5
-                    komentar: "Mentor sangat membantu dan jelas dalam mengajar."
-                    tanggal: "2025-05-18"
-
+              example:
+                id: 1
+                session_id: 10
+                pelanggan_id: 7
+                mentor_id: 2
+                rating: 5
+                komentar: "Mentor sangat membantu dan jelas dalam mengajar."
+                tanggal: "2025-05-18"
 components:
   securitySchemes:
     bearerAuth:
@@ -379,6 +489,7 @@ components:
           example: "Senin, 10:00-12:00"
         statusSesi:
           type: string
+          description: Status sesi, hanya boleh "booked", "confirmed", atau "completed".
           example: "booked"
         mentor:
           $ref: "#/components/schemas/Mentor"
