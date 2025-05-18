@@ -101,11 +101,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // [DELETE] Hapus course
     Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
 
-    // ==================== LAINNYA (Jika sudah ada controller) ====================
-    // [RESTful] CRUD Payment
-    // Route::apiResource('payments', PaymentController::class);
-    // [RESTful] CRUD Session
-    // Route::apiResource('sessions', SessionController::class);
-    // [RESTful] CRUD Testimoni
-    // Route::apiResource('testimonis', TestimoniController::class);
+    // ==================== SESSION ====================
+    // [GET] Daftar semua sesi
+    Route::get('/sessions', [\App\Http\Controllers\Fitur\SessionController::class, 'index']);
+    // [POST] Tambah sesi
+    Route::post('/sessions', [\App\Http\Controllers\Fitur\SessionController::class, 'store']);
+    // [GET] Detail sesi
+    Route::get('/sessions/{id}', [\App\Http\Controllers\Fitur\SessionController::class, 'show']);
+    // [PUT] Update sesi
+    Route::put('/sessions/{id}', [\App\Http\Controllers\Fitur\SessionController::class, 'update']);
+    // [DELETE] Hapus sesi
+    Route::delete('/sessions/{id}', [\App\Http\Controllers\Fitur\SessionController::class, 'destroy']);
+    // [POST] Konfirmasi sesi
+    Route::post('/sessions/{id}/konfirmasi', [\App\Http\Controllers\Fitur\SessionController::class, 'konfirmasiSesi']);
+    // [POST] Tandai sesi selesai
+    Route::post('/sessions/{id}/selesai', [\App\Http\Controllers\Fitur\SessionController::class, 'selesaiSesi']);
 });
