@@ -1,0 +1,45 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Mentor;
+
+class MentorSeeder extends Seeder
+{
+    public function run()
+    {
+        $mentorEmails = [
+            'eko@demo.com',
+            'firenze@demo.com',
+            'fatiya@demo.com',
+        ];
+        // 4 mentor dummy
+        for ($i = 1; $i <= 4; $i++) {
+            $mentorEmails[] = "mentordummy$i@demo.com";
+        }
+
+        $dummyMentorData = [
+            'rating' => 0,
+            'biayaPerSesi' => 100000,
+            'gayaMengajar' => 'Interaktif dan menyenangkan',
+            'deskripsi' => 'Mentor berpengalaman di bidangnya.'
+        ];
+
+        foreach ($mentorEmails as $email) {
+            $user = User::where('email', $email)->first();
+            if ($user) {
+                Mentor::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'rating' => $dummyMentorData['rating'],
+                        'biayaPerSesi' => $dummyMentorData['biayaPerSesi'],
+                        'gayaMengajar' => $dummyMentorData['gayaMengajar'],
+                        'deskripsi' => $dummyMentorData['deskripsi'],
+                    ]
+                );
+            }
+        }
+    }
+}
