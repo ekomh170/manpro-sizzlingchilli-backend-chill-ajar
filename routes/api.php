@@ -2,11 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CourseController;
+// Import controllers - Auth
+use App\Http\Controllers\Auth\AuthController;
+// Import controllers - Mentor, Pelanggan, Admin
 use App\Http\Controllers\Mentor\MentorController;
 use App\Http\Controllers\Pelanggan\PelangganController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Auth\AuthController;
+// Import controllers - Fitur
+use App\Http\Controllers\Fitur\FiturController;
+use App\Http\Controllers\Fitur\CourseController;
 
 // ==================== AUTH ====================
 // [POST] Login pengguna
@@ -86,8 +90,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/pelanggan/beri-testimoni/{sessionId}', [PelangganController::class, 'beriTestimoni']);
 
     // ==================== COURSE ====================
-    // [RESTful] CRUD Course
-    Route::apiResource('courses', CourseController::class);
+    // [GET] Daftar course
+    Route::get('/courses', [CourseController::class, 'index']);
+    // [POST] Tambah course
+    Route::post('/courses', [CourseController::class, 'store']);
+    // [GET] Detail course
+    Route::get('/courses/{id}', [CourseController::class, 'show']);
+    // [PUT] Update course
+    Route::put('/courses/{id}', [CourseController::class, 'update']);
+    // [DELETE] Hapus course
+    Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
 
     // ==================== LAINNYA (Jika sudah ada controller) ====================
     // [RESTful] CRUD Payment
