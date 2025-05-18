@@ -71,7 +71,7 @@ Sistem backend Laravel 12 dari platform Menjadi Mentor Sebaya "Chill Ajar" dari 
 - `index`, `store`, `show`, `update`, `destroy`
 
 ### SessionController (resource)
-- `index`, `store`, `show`, `update`, `destroy`, `konfirmasiSesi`, `selesaikanSesi`
+- `index`, `store`, `show`, `update`, `destroy`, `konfirmasiSesi`, `selesaiSesi`
 
 ### PaymentController (resource)
 - `index`, `store`, `show`, `update`, `destroy`, `unggahBukti`, `verifikasiPembayaran`, `tolakPembayaran`
