@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: Dokumentasi endpoint AdminController untuk manajemen user, mentor, pelanggan, pembayaran, dan notifikasi.
 servers:
-  - url: http://localhost/api
+  - url: http://localhost:8000/api/
 paths:
   /admin/users:
     get:
