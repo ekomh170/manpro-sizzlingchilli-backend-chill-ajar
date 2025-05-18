@@ -56,6 +56,10 @@ Sistem backend Laravel 12 dari platform Menjadi Mentor Sebaya "Chill Ajar" dari 
 - `daftarMentor`, `perbaruiMentor`, `hapusMentor`, `detailMentor`
 <!-- Pelanggan -->
 - `daftarPelanggan`, `perbaruiPelanggan`, `hapusPelanggan`, `detailPelanggan`
+<!-- Pembayaran -->
+- `verifikasiPembayaran`, `tolakPembayaran`
+<!-- Notif -->
+- `notifikasiKeMentor`
 
 > ⚠️ **Note**: Fungsi CRUD **Kursus**, **Sesi**, dan **Pembayaran** telah dipindahkan ke controller masing-masing (`CourseController`, `SessionController`, dan `PaymentController`) untuk menjaga modularitas dan mengikuti prinsip RESTful.
 
