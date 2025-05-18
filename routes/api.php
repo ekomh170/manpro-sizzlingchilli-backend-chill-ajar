@@ -134,4 +134,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/payments/{id}/verifikasi', [\App\Http\Controllers\Fitur\PaymentController::class, 'verifikasiPembayaran']);
     // [POST] Tolak pembayaran
     Route::post('/payments/{id}/tolak', [\App\Http\Controllers\Fitur\PaymentController::class, 'tolakPembayaran']);
+
+    // ==================== TESTIMONI ====================
+    // [GET] Daftar semua testimoni
+    Route::get('/testimoni', [\App\Http\Controllers\Fitur\TestimoniController::class, 'index']);
+    // [POST] Tambah testimoni
+    Route::post('/testimoni', [\App\Http\Controllers\Fitur\TestimoniController::class, 'store']);
+    // [GET] Detail testimoni
+    Route::get('/testimoni/{id}', [\App\Http\Controllers\Fitur\TestimoniController::class, 'show']);
+    // [PUT] Update testimoni
+    Route::put('/testimoni/{id}', [\App\Http\Controllers\Fitur\TestimoniController::class, 'update']);
+    // [DELETE] Hapus testimoni
+    Route::delete('/testimoni/{id}', [\App\Http\Controllers\Fitur\TestimoniController::class, 'destroy']);
+    // [GET] Daftar testimoni untuk mentor tertentu
+    Route::get('/mentor/{mentorId}/testimoni', [\App\Http\Controllers\Fitur\TestimoniController::class, 'testimoniMentor']);
 });
