@@ -1,0 +1,231 @@
+openapi: 3.0.3
+info:
+  title: Payment API
+  version: "1.0"
+  description: |
+    API untuk manajemen pembayaran pada platform mentoring. Mendukung CRUD, unggah bukti, verifikasi, dan tolak pembayaran.
+servers:
+  - url: http://localhost:8000/api
+paths:
+  /payments:
+    get:
+      summary: Daftar semua pembayaran
+      tags: [Payment]
+      responses:
+        "200":
+          description: Daftar pembayaran
+          content:
+            application/json:
+              example:
+                - id: 1
+                  user_id: 2
+                  mentor_id: 3
+                  session_id: 4
+                  jumlah: 100000
+                  statusPembayaran: "menunggu_verifikasi"
+                  metodePembayaran: "transfer"
+                  tanggalPembayaran: "2025-05-18"
+                  buktiPembayaran: "bukti1.jpg"
+    post:
+      summary: Tambah pembayaran
+      tags: [Payment]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                mentor_id:
+                  type: integer
+                session_id:
+                  type: integer
+                jumlah:
+                  type: number
+                statusPembayaran:
+                  type: string
+                metodePembayaran:
+                  type: string
+                tanggalPembayaran:
+                  type: string
+                  format: date
+            example:
+              user_id: 2
+              mentor_id: 3
+              session_id: 4
+              jumlah: 100000
+              statusPembayaran: "menunggu_verifikasi"
+              metodePembayaran: "transfer"
+              tanggalPembayaran: "2025-05-18"
+      responses:
+        "201":
+          description: Pembayaran berhasil dibuat
+          content:
+            application/json:
+              example:
+                id: 5
+                user_id: 2
+                mentor_id: 3
+                session_id: 4
+                jumlah: 100000
+                statusPembayaran: "menunggu_verifikasi"
+                metodePembayaran: "transfer"
+                tanggalPembayaran: "2025-05-18"
+                buktiPembayaran: null
+  /payments/{id}:
+    get:
+      summary: Detail pembayaran
+      tags: [Payment]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detail pembayaran
+          content:
+            application/json:
+              example:
+                id: 5
+                user_id: 2
+                mentor_id: 3
+                session_id: 4
+                jumlah: 100000
+                statusPembayaran: "menunggu_verifikasi"
+                metodePembayaran: "transfer"
+                tanggalPembayaran: "2025-05-18"
+                buktiPembayaran: null
+    put:
+      summary: Update pembayaran
+      tags: [Payment]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                jumlah:
+                  type: number
+                statusPembayaran:
+                  type: string
+                metodePembayaran:
+                  type: string
+                tanggalPembayaran:
+                  type: string
+                  format: date
+            example:
+              jumlah: 120000
+              statusPembayaran: "terverifikasi"
+              metodePembayaran: "transfer"
+              tanggalPembayaran: "2025-05-19"
+      responses:
+        "200":
+          description: Pembayaran berhasil diupdate
+          content:
+            application/json:
+              example:
+                id: 5
+                user_id: 2
+                mentor_id: 3
+                session_id: 4
+                jumlah: 120000
+                statusPembayaran: "terverifikasi"
+                metodePembayaran: "transfer"
+                tanggalPembayaran: "2025-05-19"
+                buktiPembayaran: null
+    delete:
+      summary: Hapus pembayaran
+      tags: [Payment]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Pembayaran berhasil dihapus
+  /payments/{id}/unggah-bukti:
+    post:
+      summary: Unggah bukti pembayaran
+      tags: [Payment]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                buktiPembayaran:
+                  type: string
+                  description: Nama file bukti pembayaran
+            example:
+              buktiPembayaran: "bukti_transfer_123.jpg"
+      responses:
+        "200":
+          description: Bukti pembayaran berhasil diunggah
+          content:
+            application/json:
+              example:
+                message: Bukti pembayaran berhasil diunggah
+                payment:
+                  id: 5
+                  statusPembayaran: "menunggu_verifikasi"
+                  buktiPembayaran: "bukti_transfer_123.jpg"
+  /payments/{id}/verifikasi:
+    post:
+      summary: Verifikasi pembayaran
+      tags: [Payment]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pembayaran berhasil diverifikasi
+          content:
+            application/json:
+              example:
+                message: Pembayaran berhasil diverifikasi
+                payment:
+                  id: 5
+                  statusPembayaran: "terverifikasi"
+  /payments/{id}/tolak:
+    post:
+      summary: Tolak pembayaran
+      tags: [Payment]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pembayaran ditolak
+          content:
+            application/json:
+              example:
+                message: Pembayaran ditolak
+                payment:
+                  id: 5
+                  statusPembayaran: "ditolak"
