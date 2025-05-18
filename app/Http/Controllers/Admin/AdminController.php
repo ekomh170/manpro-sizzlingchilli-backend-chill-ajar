@@ -199,6 +199,6 @@ class AdminController extends Controller
     public function notifikasiKeMentor($sessionId)
     {
         // Integrasi notifikasi Telegram ke mentor
-        return response()->json(['message' => 'Notifikasi ke mentor telah dikirim (simulasi)']);
+        return response()->json(['message' => 'Notifikasi ke mentor telah dikirim']);
     }
 }

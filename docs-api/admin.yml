@@ -2,9 +2,9 @@ openapi: 3.0.3
 info:
   title: Admin API
   version: 1.0.0
-  description: Dokumentasi endpoint AdminController untuk manajemen user, mentor, pelanggan, pembayaran, dan notifikasi.
+  description: Dokumentasi endpoint AdminController untuk manajemen user, mentor, pelanggan, dan notifikasi. CRUD Kursus, Sesi, dan Pembayaran ada di controller masing-masing.
 servers:
-  - url: http://localhost:8000/api/
+  - url: http://localhost:8000/api
 paths:
   /admin/users:
     get:
@@ -18,31 +18,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      example: 1
-                    nama:
-                      type: string
-                      example: "Budi Santoso"
-                    email:
-                      type: string
-                      example: "budi@example.com"
-                    peran:
-                      type: string
-                      example: "mentor"
-                    nomorTelepon:
-                      type: string
-                      example: "08123456789"
-                    alamat:
-                      type: string
-                      example: "Jl. Mawar No. 1"
-                  required:
-                    - id
-                    - nama
-                    - email
-                    - peran
+                  $ref: "#/components/schemas/User"
     post:
       summary: Tambah pengguna baru (admin/mentor/pelanggan)
       tags: [Admin]
@@ -51,70 +27,22 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                nama:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-                peran:
-                  type: string
-                  enum: [admin, mentor, pelanggan]
-                deskripsi:
-                  type: string
-                biayaPerSesi:
-                  type: number
-                gayaMengajar:
-                  type: string
-                nomorTelepon:
-                  type: string
-                alamat:
-                  type: string
-              required:
-                - nama
-                - email
-                - password
-                - peran
+              $ref: "#/components/schemas/UserInput"
+            example:
+              nama: "Budi Santoso"
+              email: "budi@example.com"
+              password: "password123"
+              peran: "mentor"
+              deskripsi: "Berpengalaman mengajar matematika SMA."
+              biayaPerSesi: 150000
+              gayaMengajar: "Online"
       responses:
         "201":
           description: Pengguna berhasil ditambah
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Pengguna berhasil ditambah"
-                  user:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 2
-                      nama:
-                        type: string
-                        example: "Siti Aminah"
-                      email:
-                        type: string
-                        example: "siti@example.com"
-                      peran:
-                        type: string
-                        example: "pelanggan"
-                      nomorTelepon:
-                        type: string
-                        example: "08129876543"
-                      alamat:
-                        type: string
-                        example: "Jl. Melati No. 2"
-                    required:
-                      - id
-                      - nama
-                      - email
-                      - peran
-
+                $ref: "#/components/schemas/UserResponse"
   /admin/users/{userId}/role:
     put:
       summary: Ubah role pengguna
@@ -135,25 +63,18 @@ paths:
                 peran:
                   type: string
                   enum: [admin, mentor, pelanggan]
-              required:
-                - peran
+            example:
+              peran: "mentor"
       responses:
         "200":
           description: Role pengguna berhasil diperbarui
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Role pengguna berhasil diperbarui"
-                  user:
-                    $ref: "./auth.yml#/components/schemas/User"
-
+                $ref: "#/components/schemas/UserResponse"
   /admin/mentor:
     get:
-      summary: Daftar semua mentor
+      summary: Daftar mentor
       tags: [Admin]
       responses:
         "200":
@@ -163,8 +84,31 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "./mentor.yml#/components/schemas/Mentor"
-
+                  $ref: "#/components/schemas/Mentor"
+    post:
+      summary: Tambah mentor langsung
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+            example:
+              nama: "Mentor Baru"
+              email: "mentorbaru@example.com"
+              password: "password123"
+              peran: "mentor"
+              deskripsi: "Ahli Fisika"
+              biayaPerSesi: 200000
+              gayaMengajar: "Offline"
+      responses:
+        "201":
+          description: Mentor berhasil ditambah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
   /admin/mentor/{id}:
     get:
       summary: Detail mentor
@@ -181,9 +125,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "./mentor.yml#/components/schemas/Mentor"
+                $ref: "#/components/schemas/Mentor"
     put:
-      summary: Update data mentor
+      summary: Update mentor
       tags: [Admin]
       parameters:
         - in: path
@@ -198,24 +142,23 @@ paths:
             schema:
               type: object
               properties:
+                deskripsi:
+                  type: string
                 biayaPerSesi:
                   type: number
                 gayaMengajar:
                   type: string
-                deskripsi:
-                  type: string
+            example:
+              deskripsi: "Update deskripsi"
+              biayaPerSesi: 180000
+              gayaMengajar: "Online"
       responses:
         "200":
           description: Mentor berhasil diperbarui
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  mentor:
-                    $ref: "./mentor.yml#/components/schemas/Mentor"
+                $ref: "#/components/schemas/Mentor"
     delete:
       summary: Hapus mentor
       tags: [Admin]
@@ -235,10 +178,9 @@ paths:
                 properties:
                   message:
                     type: string
-
   /admin/pelanggan:
     get:
-      summary: Daftar semua pelanggan
+      summary: Daftar pelanggan
       tags: [Admin]
       responses:
         "200":
@@ -248,8 +190,30 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "./pelanggan.yml#/components/schemas/Pelanggan"
-
+                  $ref: "#/components/schemas/Pelanggan"
+    post:
+      summary: Tambah pelanggan langsung
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+            example:
+              nama: "Pelanggan Baru"
+              email: "pelangganbaru@example.com"
+              password: "password123"
+              peran: "pelanggan"
+              nomorTelepon: "08123456789"
+              alamat: "Jl. Mawar No. 1"
+      responses:
+        "201":
+          description: Pelanggan berhasil ditambah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
   /admin/pelanggan/{id}:
     get:
       summary: Detail pelanggan
@@ -266,9 +230,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "./pelanggan.yml#/components/schemas/Pelanggan"
+                $ref: "#/components/schemas/Pelanggan"
     put:
-      summary: Update data pelanggan
+      summary: Update pelanggan
       tags: [Admin]
       parameters:
         - in: path
@@ -283,20 +247,20 @@ paths:
             schema:
               type: object
               properties:
-                statusPembayaran:
+                nomorTelepon:
                   type: string
+                alamat:
+                  type: string
+            example:
+              nomorTelepon: "08123456789"
+              alamat: "Jl. Melati No. 2"
       responses:
         "200":
           description: Pelanggan berhasil diperbarui
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  pelanggan:
-                    $ref: "./pelanggan.yml#/components/schemas/Pelanggan"
+                $ref: "#/components/schemas/Pelanggan"
     delete:
       summary: Hapus pelanggan
       tags: [Admin]
@@ -316,123 +280,6 @@ paths:
                 properties:
                   message:
                     type: string
-
-  /admin/payment/{paymentId}/verify:
-    post:
-      summary: Verifikasi pembayaran
-      tags: [Admin]
-      parameters:
-        - in: path
-          name: paymentId
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Pembayaran berhasil diverifikasi
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  payment:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 10
-                      user_id:
-                        type: integer
-                        example: 3
-                      mentor_id:
-                        type: integer
-                        example: 5
-                      session_id:
-                        type: integer
-                        example: 7
-                      jumlah:
-                        type: number
-                        example: 150000
-                      statusPembayaran:
-                        type: string
-                        example: "terverifikasi"
-                      metodePembayaran:
-                        type: string
-                        example: "transfer"
-                      tanggalPembayaran:
-                        type: string
-                        format: date-time
-                        example: "2025-05-18T10:00:00Z"
-                    required:
-                      - id
-                      - user_id
-                      - mentor_id
-                      - session_id
-                      - jumlah
-                      - statusPembayaran
-                      - metodePembayaran
-                      - tanggalPembayaran
-
-  /admin/payment/{paymentId}/reject:
-    post:
-      summary: Tolak pembayaran
-      tags: [Admin]
-      parameters:
-        - in: path
-          name: paymentId
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Pembayaran ditolak
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  payment:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 10
-                      user_id:
-                        type: integer
-                        example: 3
-                      mentor_id:
-                        type: integer
-                        example: 5
-                      session_id:
-                        type: integer
-                        example: 7
-                      jumlah:
-                        type: number
-                        example: 150000
-                      statusPembayaran:
-                        type: string
-                        example: "ditolak"
-                      metodePembayaran:
-                        type: string
-                        example: "transfer"
-                      tanggalPembayaran:
-                        type: string
-                        format: date-time
-                        example: "2025-05-18T10:00:00Z"
-                    required:
-                      - id
-                      - user_id
-                      - mentor_id
-                      - session_id
-                      - jumlah
-                      - statusPembayaran
-                      - metodePembayaran
-                      - tanggalPembayaran
-
   /admin/notifikasi/mentor/{sessionId}:
     post:
       summary: Kirim notifikasi ke mentor setelah pembayaran diverifikasi
@@ -443,7 +290,6 @@ paths:
           required: true
           schema:
             type: integer
-          example: 12
       responses:
         "200":
           description: Notifikasi ke mentor telah dikirim
@@ -455,30 +301,76 @@ paths:
                   message:
                     type: string
                     example: Notifikasi ke mentor telah dikirim (simulasi)
-                  sessionId:
-                    type: integer
-                    example: 12
-                  mentor:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 5
-                      nama:
-                        type: string
-                        example: "Fatiya Labibah"
-                      email:
-                        type: string
-                        example: "fatiya@example.com"
-                  pelanggan:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                        example: 7
-                      nama:
-                        type: string
-                        example: "Eko Muchamad Haryono"
-                      email:
-                        type: string
-                        example: "eko@example.com"
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        nama:
+          type: string
+        email:
+          type: string
+        peran:
+          type: string
+        nomorTelepon:
+          type: string
+        alamat:
+          type: string
+    UserInput:
+      type: object
+      properties:
+        nama:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        peran:
+          type: string
+        deskripsi:
+          type: string
+        biayaPerSesi:
+          type: number
+        gayaMengajar:
+          type: string
+        nomorTelepon:
+          type: string
+        alamat:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+    Mentor:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        deskripsi:
+          type: string
+        biayaPerSesi:
+          type: number
+        gayaMengajar:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+    Pelanggan:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        nomorTelepon:
+          type: string
+        alamat:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
