@@ -16,7 +16,7 @@ use App\Http\Controllers\Fitur\CourseController;
 // [POST] Login pengguna
 Route::post('/login', [AuthController::class, 'login']);
 // [POST] Registrasi pengguna baru
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'registrasi']);
 
 // ==================== PROTECTED ROUTES (SANCTUM) ====================
 Route::middleware(['auth:sanctum'])->group(function () {

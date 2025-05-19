@@ -49,7 +49,6 @@ class AuthController extends Controller
         ]);
         $pelanggan = \App\Models\Pelanggan::create([
             'user_id' => $user->id,
-            'statusPembayaran' => 'belum pesen',
         ]);
         $token = $user->createToken('ChillAjarToken')->plainTextToken;
         return response()->json([

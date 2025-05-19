@@ -16,9 +16,11 @@ class Mentor extends Model
     protected $fillable = [
         'user_id',       // ID user yang terkait
         'rating',        // Rating awal mentor
-        'biayaPerSesi',  // Tarif mentor per sesi
-        'gayaMengajar',  // Gaya mengajar (optional)
-        'deskripsi',     // Deskripsi tentang mentor (optional)
+
+        // boleh null buat field ini
+        // 'biayaPerSesi',  // Tarif mentor per sesi
+        // 'gayaMengajar',  // Gaya mengajar (optional)
+        // 'deskripsi',     // Deskripsi tentang mentor (optional)
     ];
 
     /**
