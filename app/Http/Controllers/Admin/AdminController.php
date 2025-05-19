@@ -52,12 +52,18 @@ class AdminController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'peran' => 'required|in:admin',
+            'nomorTelepon' => 'nullable',
+            'alamat' => 'nullable',
+
+
         ]);
         $user = User::create([
             'nama' => $request->nama,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'peran' => $request->peran,
+            'nomorTelepon' => $request->nomorTelepon,
+            'alamat' => $request->alamat,
         ]);
         return response()->json(['message' => 'Admin berhasil ditambah', 'user' => $user], 201);
     }
