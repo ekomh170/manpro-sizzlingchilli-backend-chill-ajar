@@ -69,7 +69,7 @@ class AuthController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'biayaPerSesi' => 'required|numeric',
+            'biayaPerSesi' => 'nullable',
             'gayaMengajar' => 'nullable',
             'deskripsi' => 'nullable',
             'nomorTelepon' => 'required|string',
