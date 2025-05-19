@@ -66,6 +66,16 @@ class MentorController extends Controller
         $mentor = Mentor::where('user_id', $user->id)->with('user')->firstOrFail();
         return response()->json($mentor);
     }
+    /**
+     * Menampilkan Kursus yang diampu oleh mentor
+     */
+    public function daftarKursusSaya(Request $request)
+    {
+        $user = $request->user();
+        $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
+        $kursus = $mentor->courses()->with(['mentor.user'])->get();
+        return response()->json($kursus);
+    }
 
     /**
      * Menampilkan daftar sesi yang diampu oleh mentor

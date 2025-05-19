@@ -64,6 +64,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/mentor/atur-jadwal', [MentorController::class, 'aturJadwal']);
     // [POST] Atur gaya mengajar
     Route::post('/mentor/atur-gaya', [MentorController::class, 'aturGayaMengajar']);
+    // [GET] Daftar kursus yang diampu mentor
+    Route::get('/mentor/daftar-course', [MentorController::class, 'daftarKursusSaya']);
     // [GET] Daftar sesi yang diampu mentor
     Route::get('/mentor/daftar-sesi', [MentorController::class, 'daftarSesiSaya']);
     // [POST] Konfirmasi sesi

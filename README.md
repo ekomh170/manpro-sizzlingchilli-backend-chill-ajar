@@ -65,7 +65,7 @@ Sistem backend Laravel 12 dari platform Menjadi Mentor Sebaya "Chill Ajar" dari 
 
 ### MentorController
 - `profilSaya`, 
-- `aturJadwal`, `aturGayaMengajar`, `daftarSesiSaya`, `konfirmasiSesi`, `selesaikanSesi`, `daftarTestimoni`
+- `aturJadwal`, `aturGayaMengajar`, `daftarKursusSaya`, `daftarSesiSaya`, `konfirmasiSesi`, `selesaikanSesi`, `daftarTestimoni`
 
 ### PelangganController
 - `profilSaya`
