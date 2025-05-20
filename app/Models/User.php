@@ -24,6 +24,7 @@ class User extends Authenticatable
         'nomorTelepon',     // Kolom nomor telepon pengguna
         'peran',            // Kolom peran pengguna (admin, mentor, pelanggan)
         'alamat',           // Kolom alamat pengguna
+        'foto_profil',      // Path/URL gambar profil user
     ];
 
     /**

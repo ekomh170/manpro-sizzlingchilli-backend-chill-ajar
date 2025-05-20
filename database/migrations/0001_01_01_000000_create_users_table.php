@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('nomorTelepon');
             $table->string('peran');
             $table->string('alamat');
+            $table->string('foto_profil')->nullable(); // Path/URL gambar profil user
             $table->rememberToken();
             $table->timestamps();
         });

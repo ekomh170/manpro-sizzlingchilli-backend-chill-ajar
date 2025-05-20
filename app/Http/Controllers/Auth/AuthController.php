@@ -129,4 +129,20 @@ class AuthController extends Controller
         });
         return response()->json(['message' => 'Logout berhasil']);
     }
+
+    /**
+     * Upload foto profil pengguna
+     */
+    public function uploadFotoProfil(Request $request)
+    {
+        $user = $request->user();
+        if ($request->hasFile('foto_profil')) {
+            $file = $request->file('foto_profil');
+            $path = $file->store('foto_profil', 'public');
+            $user->foto_profil = $path;
+            $user->save();
+            return response()->json(['message' => 'Foto profil berhasil diunggah', 'foto_profil' => $path]);
+        }
+        return response()->json(['message' => 'Tidak ada file yang diunggah'], 400);
+    }
 }
