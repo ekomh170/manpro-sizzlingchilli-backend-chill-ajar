@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('mentor_id')->constrained('mentor')->onDelete('cascade'); // Mentor
             $table->foreignId('pelanggan_id')->constrained('pelanggan')->onDelete('cascade'); // Pelanggan
+            $table->foreignId('course_schedule_id')->nullable()->constrained('course_schedules')->onDelete('set null'); // Jadwal kursus (opsional)
             $table->text('detailKursus'); // Materi sesi
             $table->dateTime('jadwal'); // Waktu pelaksanaan
             $table->string('statusSesi')->default('booked'); // Status sesi - booked, confirmed, completed

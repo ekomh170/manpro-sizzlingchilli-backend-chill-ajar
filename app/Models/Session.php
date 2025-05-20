@@ -56,4 +56,13 @@ class Session extends Model
     {
         return $this->hasOne(Testimoni::class);
     }
+
+    /**
+     * Relasi dengan model CourseSchedule
+     * Menunjukkan bahwa setiap Session berhubungan dengan satu CourseSchedule.
+     */
+    public function courseSchedule()
+    {
+        return $this->belongsTo(CourseSchedule::class);
+    }
 }

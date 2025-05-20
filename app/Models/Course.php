@@ -17,6 +17,7 @@ class Course extends Model
         'namaCourse',  // Nama kursus
         'deskripsi',   // Deskripsi kursus
         'mentor_id',   // ID mentor yang mengajar kursus ini
+        'gambar_kursus', // Path/URL gambar kursus
     ];
 
     /**
@@ -26,5 +27,14 @@ class Course extends Model
     public function mentor()
     {
         return $this->belongsTo(Mentor::class);
+    }
+
+    /**
+     * Relasi dengan model CourseSchedule
+     * Menunjukkan bahwa setiap Course dapat memiliki banyak jadwal.
+     */
+    public function schedules()
+    {
+        return $this->hasMany(CourseSchedule::class);
     }
 }

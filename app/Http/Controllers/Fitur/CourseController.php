@@ -63,4 +63,20 @@ class CourseController extends FiturController
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Mengunggah gambar kursus
+     */
+    public function uploadGambarKursus(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
+        if ($request->hasFile('gambar_kursus')) {
+            $file = $request->file('gambar_kursus');
+            $path = $file->store('gambar_kursus', 'public');
+            $course->gambar_kursus = $path;
+            $course->save();
+            return response()->json(['message' => 'Gambar kursus berhasil diunggah', 'gambar_kursus' => $path]);
+        }
+        return response()->json(['message' => 'Tidak ada file yang diunggah'], 400);
+    }
 }

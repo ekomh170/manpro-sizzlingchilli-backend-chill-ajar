@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('namaCourse'); // Nama kursus
             $table->text('deskripsi')->nullable(); // Deskripsi kursus
             $table->foreignId('mentor_id')->constrained('mentor')->onDelete('cascade'); // Relasi ke mentor
+            $table->string('gambar_kursus')->nullable(); // Path/URL gambar kursus
             $table->timestamps();
         });
     }
