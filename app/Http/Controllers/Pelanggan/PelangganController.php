@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Pelanggan;
 
+use App\Models\Pelanggan;
 use App\Models\Mentor;
-use App\Models\Session;
+use App\Models\Kursus;
+use App\Models\Sesi;
 use App\Models\Testimoni;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -16,17 +18,17 @@ class PelangganController extends Controller
     public function profilSaya(Request $request)
     {
         $user = $request->user();
-        $pelanggan = \App\Models\Pelanggan::where('user_id', $user->id)->with('user')->firstOrFail();
+        $pelanggan = Pelanggan::where('user_id', $user->id)->with('user')->firstOrFail();
         return response()->json($pelanggan);
     }
 
     /**
      * Menampilkan daftar course
      */
-    public function daftarCourse()
+    public function daftarKursus()
     {
-        $courses = \App\Models\Course::with('mentor.user')->get();
-        return response()->json($courses);
+        $kursus = Kursus::with('mentor.user')->get();
+        return response()->json($kursus);
     }
 
     /**
@@ -35,8 +37,8 @@ class PelangganController extends Controller
     public function cariMentor(Request $request)
     {
         // Mencari mentor yang mengajar mata kuliah tertentu
-        $mentors = Mentor::whereHas('courses', function ($query) use ($request) {
-            $query->where('namaCourse', 'like', '%' . $request->namaCourse . '%');
+        $mentors = Mentor::whereHas('kursus', function ($query) use ($request) {
+            $query->where('namaKursus', 'like', '%' . $request->namaKursus . '%');
         })->get();
 
         return response()->json($mentors);
@@ -47,7 +49,7 @@ class PelangganController extends Controller
      */
     public function detailMentor($mentorId)
     {
-        $mentor = \App\Models\Mentor::with('user', 'courses')->findOrFail($mentorId);
+        $mentor = Mentor::with('user', 'kursus')->findOrFail($mentorId);
         return response()->json($mentor);
     }
 
@@ -56,16 +58,15 @@ class PelangganController extends Controller
      */
     public function pesanSesi(Request $request)
     {
-        // Membuat sesi pengajaran baru untuk pelanggan
-        $session = Session::create([
-            'mentor_id' => $request->mentor_id,
-            'pelanggan_id' => $request->pelanggan_id,
-            'detailKursus' => $request->detailKursus,
-            'jadwal' => $request->jadwal,
-            'statusSesi' => 'booked', // Status sesi: booked
+        $request->validate([
+            'mentor_id' => 'required|exists:mentor,id',
+            'pelanggan_id' => 'required|exists:pelanggan,id',
+            'kursus_id' => 'required|exists:kursus,id',
+            'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id',
+            'detailKursus' => 'nullable|string',
         ]);
-
-        return response()->json($session, 201);
+        $sesi = Sesi::create($request->all());
+        return response()->json($sesi, 201);
     }
 
     /**
@@ -74,38 +75,36 @@ class PelangganController extends Controller
     public function daftarSesiMentor(Request $request)
     {
         $user = $request->user();
-        $pelanggan = \App\Models\Pelanggan::where('user_id', $user->id)->firstOrFail();
-        $sesi = $pelanggan->sessions()->with(['mentor.user', 'testimoni'])->get();
+        $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
+        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni'])->get();
         return response()->json($sesi);
     }
 
     /**
      * Mengunggah bukti pembayaran (simulasi)
      */
-    public function unggahBuktiPembayaran(Request $request, $paymentId)
+    public function unggahBuktiPembayaran(Request $request, $transaksiId)
     {
-        $payment = \App\Models\Payment::findOrFail($paymentId);
-        // Simulasi unggah bukti pembayaran (misal: simpan nama file bukti)
-        $payment->buktiPembayaran = $request->buktiPembayaran ?? 'bukti_dummy.jpg';
-        $payment->statusPembayaran = 'menunggu_verifikasi';
-        $payment->save();
-        return response()->json(['message' => 'Bukti pembayaran berhasil diunggah', 'payment' => $payment]);
+        $transaksi = \App\Models\Transaksi::findOrFail($transaksiId);
+        $transaksi->buktiPembayaran = $request->buktiPembayaran ?? 'bukti_dummy.jpg';
+        $transaksi->statusPembayaran = 'menunggu_verifikasi';
+        $transaksi->save();
+        return response()->json(['message' => 'Bukti pembayaran berhasil diunggah', 'transaksi' => $transaksi]);
     }
 
     /**
      * Memberikan testimoni setelah sesi selesai
      */
-    public function beriTestimoni(Request $request, $sessionId)
+    public function beriTestimoni(Request $request, $sesiId)
     {
-        // Membuat testimoni setelah sesi selesai
         $testimoni = Testimoni::create([
-            'session_id' => $sessionId,
+            'sesi_id' => $sesiId,
             'pelanggan_id' => $request->pelanggan_id,
             'mentor_id' => $request->mentor_id,
             'rating' => $request->rating,
             'komentar' => $request->komentar,
+            'tanggal' => now(),
         ]);
-
         return response()->json($testimoni, 201);
     }
 }

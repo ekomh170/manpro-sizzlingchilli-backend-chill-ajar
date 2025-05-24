@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use App\Models\Mentor;
-use App\Models\Payment;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -79,7 +79,6 @@ class AdminController extends Controller
             'password' => 'required',
             'deskripsi' => 'nullable',
             'biayaPerSesi' => 'nullable|numeric',
-            'gayaMengajar' => 'nullable',
         ]);
         $user = User::create([
             'nama' => $request->nama,
@@ -91,7 +90,7 @@ class AdminController extends Controller
             'user_id' => $user->id,
             'deskripsi' => $request->deskripsi,
             'biayaPerSesi' => $request->biayaPerSesi,
-            'gayaMengajar' => $request->gayaMengajar,
+            // 'gayaMengajar' sudah tidak ada di Mentor, hanya di Kursus
         ]);
         return response()->json([
             'message' => 'Mentor berhasil ditambah',
@@ -178,25 +177,25 @@ class AdminController extends Controller
     /**
      * Verifikasi pembayaran
      */
-    public function verifikasiPembayaran(Request $request, $paymentId)
+    public function verifikasiPembayaran(Request $request, $transaksiId)
     {
-        $payment = Payment::findOrFail($paymentId);
-        $payment->statusPembayaran = 'verified';
-        $payment->save();
+        $transaksi = Transaksi::findOrFail($transaksiId);
+        $transaksi->statusPembayaran = 'verified';
+        $transaksi->save();
         // Kirim notifikasi ke pelanggan & mentor (integrasi Telegram)
-        return response()->json(['message' => 'Pembayaran berhasil diverifikasi', 'payment' => $payment]);
+        return response()->json(['message' => 'Pembayaran berhasil diverifikasi', 'transaksi' => $transaksi]);
     }
 
     /**
      * Menolak pembayaran
      */
-    public function tolakPembayaran(Request $request, $paymentId)
+    public function tolakPembayaran(Request $request, $transaksiId)
     {
-        $payment = Payment::findOrFail($paymentId);
-        $payment->statusPembayaran = 'rejected';
-        $payment->save();
+        $transaksi = Transaksi::findOrFail($transaksiId);
+        $transaksi->statusPembayaran = 'rejected';
+        $transaksi->save();
         // Kirim notifikasi ke pelanggan (integrasi Telegram)
-        return response()->json(['message' => 'Pembayaran ditolak', 'payment' => $payment]);
+        return response()->json(['message' => 'Pembayaran ditolak', 'transaksi' => $transaksi]);
     }
 
     /**

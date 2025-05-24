@@ -3,44 +3,37 @@
 namespace App\Http\Controllers\Mentor;
 
 use App\Models\Mentor;
-use App\Models\Session;
+use App\Models\Sesi;
+use App\Models\Kursus;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class MentorController extends Controller
 {
     /**
-     * Menambahkan atau memperbarui jadwal pengajaran
+     * Menambahkan jadwal pengajaran (membuat JadwalKursus baru)
      */
     public function aturJadwal(Request $request)
     {
         $mentor = Mentor::findOrFail($request->mentor_id);
-        $mentor->jadwal = $request->jadwal; // Menyimpan jadwal pengajaran
-        $mentor->save();
+        $kursus = Kursus::where('mentor_id', $mentor->id)->firstOrFail();
+        $jadwal = $kursus->jadwalKursus()->create([
+            'tanggal' => $request->tanggal,
+            'waktu' => $request->waktu,
+            'keterangan' => $request->keterangan,
+        ]);
 
-        return response()->json(['message' => 'Jadwal pengajaran diperbarui']);
-    }
-
-    /**
-     * Menentukan gaya belajar (online/offline)
-     */
-    public function aturGayaMengajar(Request $request)
-    {
-        $mentor = Mentor::findOrFail($request->mentor_id);
-        $mentor->gayaMengajar = $request->gayaMengajar; // Menyimpan gaya mengajar
-        $mentor->save();
-
-        return response()->json(['message' => 'Gaya mengajar diperbarui']);
+        return response()->json(['message' => 'Jadwal pengajaran ditambahkan', 'jadwal' => $jadwal]);
     }
 
     /**
      * Konfirmasi sesi pengajaran
      */
-    public function konfirmasiSesi(Request $request, $sessionId)
+    public function konfirmasiSesi(Request $request, $sesiId)
     {
-        $session = Session::findOrFail($sessionId);
-        $session->statusSesi = 'confirmed'; // Mengonfirmasi sesi pengajaran
-        $session->save();
+        $sesi = Sesi::findOrFail($sesiId);
+        $sesi->statusSesi = 'confirmed';
+        $sesi->save();
 
         return response()->json(['message' => 'Sesi pengajaran dikonfirmasi']);
     }
@@ -48,11 +41,11 @@ class MentorController extends Controller
     /**
      * Menyelesaikan sesi pengajaran
      */
-    public function selesaiSesi(Request $request, $sessionId)
+    public function selesaiSesi(Request $request, $sesiId)
     {
-        $session = Session::findOrFail($sessionId);
-        $session->statusSesi = 'completed'; // Menyelesaikan sesi pengajaran
-        $session->save();
+        $sesi = Sesi::findOrFail($sesiId);
+        $sesi->statusSesi = 'selesai';
+        $sesi->save();
 
         return response()->json(['message' => 'Sesi pengajaran selesai']);
     }
@@ -66,6 +59,7 @@ class MentorController extends Controller
         $mentor = Mentor::where('user_id', $user->id)->with('user')->firstOrFail();
         return response()->json($mentor);
     }
+
     /**
      * Menampilkan Kursus yang diampu oleh mentor
      */
@@ -73,7 +67,7 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $kursus = $mentor->courses()->with(['mentor.user'])->get();
+        $kursus = $mentor->kursus()->with('jadwalKursus')->get();
         return response()->json($kursus);
     }
 
@@ -84,7 +78,7 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $sesi = $mentor->sessions()->with(['pelanggan.user'])->get();
+        $sesi = $mentor->sesi()->with(['pelanggan.user', 'kursus'])->get();
         return response()->json($sesi);
     }
 
@@ -95,7 +89,7 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $testimoni = $mentor->sessions()->with('testimoni')->get()->pluck('testimoni')->filter();
-        return response()->json($testimoni);
+        $testimoni = $mentor->sesi()->with('testimoni')->get()->pluck('testimoni')->filter();
+        return response()->json($testimoni->flatten());
     }
 }

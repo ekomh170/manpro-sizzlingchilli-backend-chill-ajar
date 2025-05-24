@@ -27,11 +27,20 @@ class Pelanggan extends Model
     }
 
     /**
-     * Relasi dengan model Session
-     * Menunjukkan bahwa seorang Pelanggan bisa memiliki banyak Session.
+     * Relasi dengan model Sesi
+     * Menunjukkan bahwa seorang Pelanggan bisa memiliki banyak Sesi.
      */
-    public function sessions()
+    public function sesi()
     {
-        return $this->hasMany(Session::class);
+        return $this->hasMany(Sesi::class, 'pelanggan_id');
+    }
+
+    /**
+     * Relasi dengan model Transaksi
+     * Menunjukkan bahwa seorang Pelanggan bisa memiliki banyak Transaksi.
+     */
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'pelanggan_id');
     }
 }

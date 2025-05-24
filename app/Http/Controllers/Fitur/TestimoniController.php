@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Fitur;
 
 use App\Models\Testimoni;
+use App\Models\Sesi;
+use App\Models\Pelanggan;
+use App\Models\Mentor;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Fitur\FiturController;
 
@@ -13,7 +16,7 @@ class TestimoniController extends FiturController
      */
     public function index()
     {
-        return response()->json(Testimoni::with(['session', 'pelanggan', 'mentor'])->get());
+        return response()->json(Testimoni::with(['sesi', 'pelanggan', 'mentor'])->get());
     }
 
     /**
@@ -21,7 +24,7 @@ class TestimoniController extends FiturController
      */
     public function show($id)
     {
-        $testimoni = Testimoni::with(['session', 'pelanggan', 'mentor'])->findOrFail($id);
+        $testimoni = Testimoni::with(['sesi', 'pelanggan', 'mentor'])->findOrFail($id);
         return response()->json($testimoni);
     }
 
@@ -31,7 +34,7 @@ class TestimoniController extends FiturController
     public function store(Request $request)
     {
         $request->validate([
-            'session_id' => 'required|exists:session,id',
+            'sesi_id' => 'required|exists:sesi,id',
             'pelanggan_id' => 'required|exists:pelanggan,id',
             'mentor_id' => 'required|exists:mentor,id',
             'rating' => 'required|integer|min:1|max:5',
@@ -67,7 +70,7 @@ class TestimoniController extends FiturController
      */
     public function testimoniMentor($mentorId)
     {
-        $testimoni = Testimoni::where('mentor_id', $mentorId)->with(['session', 'pelanggan'])->get();
+        $testimoni = Testimoni::where('mentor_id', $mentorId)->with(['sesi', 'pelanggan'])->get();
         return response()->json($testimoni);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\Mentor;
 
 class AuthController extends Controller
 {
@@ -69,7 +70,6 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'biayaPerSesi' => 'nullable',
-            'gayaMengajar' => 'nullable',
             'deskripsi' => 'nullable',
             'nomorTelepon' => 'required|string',
             'alamat' => 'required|string',
@@ -82,10 +82,9 @@ class AuthController extends Controller
             'nomorTelepon' => $request->nomorTelepon,
             'alamat' => $request->alamat,
         ]);
-        $mentor = \App\Models\Mentor::create([
+        $mentor = Mentor::create([
             'user_id' => $user->id,
             'biayaPerSesi' => $request->biayaPerSesi,
-            'gayaMengajar' => $request->gayaMengajar ?? null,
             'deskripsi' => $request->deskripsi ?? null,
             'rating' => 0,
         ]);

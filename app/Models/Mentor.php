@@ -16,11 +16,8 @@ class Mentor extends Model
     protected $fillable = [
         'user_id',       // ID user yang terkait
         'rating',        // Rating awal mentor
-
-        // boleh null buat field ini
-        // 'biayaPerSesi',  // Tarif mentor per sesi
-        // 'gayaMengajar',  // Gaya mengajar (optional)
-        // 'deskripsi',     // Deskripsi tentang mentor (optional)
+        'biayaPerSesi',  // Tarif mentor per sesi
+        'deskripsi',     // Deskripsi tentang mentor (optional)
     ];
 
     /**
@@ -33,20 +30,29 @@ class Mentor extends Model
     }
 
     /**
-     * Relasi dengan model Course
-     * Menunjukkan bahwa seorang Mentor bisa memiliki banyak Course.
+     * Relasi dengan model Kursus
+     * Menunjukkan bahwa seorang Mentor bisa memiliki banyak Kursus.
      */
-    public function courses()
+    public function kursus()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Kursus::class, 'mentor_id');
     }
 
     /**
-     * Relasi dengan model Session
-     * Menunjukkan bahwa seorang Mentor bisa memiliki banyak Session.
+     * Relasi dengan model Sesi
+     * Menunjukkan bahwa seorang Mentor bisa memiliki banyak Sesi.
      */
-    public function sessions()
+    public function sesi()
     {
-        return $this->hasMany(Session::class);
+        return $this->hasMany(Sesi::class, 'mentor_id');
+    }
+
+    /**
+     * Relasi dengan model Transaksi
+     * Menunjukkan bahwa seorang Mentor bisa memiliki banyak Transaksi.
+     */
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'mentor_id');
     }
 }
