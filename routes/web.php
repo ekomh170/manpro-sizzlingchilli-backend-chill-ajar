@@ -6,15 +6,28 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/api-docs/admin.yml', function () {
-    return response()->file(resource_path('views/docs-api/admin.yml'));
+// Pentest UI per controller
+Route::get('/pentest', function () {
+    return view('pentest.index');
 });
-
-// Route untuk serve seluruh file YAML di folder docs-api (langsung dari root project)
-Route::get('/api-docs/{filename}', function ($filename) {
-    $path = base_path('docs-api/' . $filename);
-    if (file_exists($path)) {
-        return response()->file($path);
-    }
-    abort(404);
-})->where('filename', '.*\\.ya?ml');
+Route::get('/pentest/auth', function () {
+    return view('pentest.auth');
+});
+Route::get('/pentest/mentor', function () {
+    return view('pentest.mentor');
+});
+Route::get('/pentest/pelanggan', function () {
+    return view('pentest.pelanggan');
+});
+Route::get('/pentest/kursus', function () {
+    return view('pentest.kursus');
+});
+Route::get('/pentest/sesi', function () {
+    return view('pentest.sesi');
+});
+Route::get('/pentest/transaksi', function () {
+    return view('pentest.transaksi');
+});
+Route::get('/pentest/testimoni', function () {
+    return view('pentest.testimoni');
+});
