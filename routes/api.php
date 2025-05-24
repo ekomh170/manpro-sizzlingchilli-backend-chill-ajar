@@ -10,8 +10,8 @@ use App\Http\Controllers\Pelanggan\PelangganController;
 use App\Http\Controllers\Admin\AdminController;
 // Import controllers - Fitur
 use App\Http\Controllers\Fitur\FiturController;
-use App\Http\Controllers\Fitur\CourseController;
-use App\Http\Controllers\Fitur\CourseScheduleController;
+use App\Http\Controllers\Fitur\KursusController;
+use App\Http\Controllers\Fitur\JadwalKursusController;
 
 // ==================== AUTH ====================
 // [POST] Login pengguna
@@ -54,9 +54,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // [DELETE] Hapus pelanggan
     Route::delete('/admin/pelanggan/{id}', [AdminController::class, 'hapusPelanggan']);
     //  Pelanggan - Pembayaran Verifikasi - verifikasiPembayaran
-    Route::post('/admin/verifikasi-pembayaran/{paymentId}', [AdminController::class, 'verifikasiPembayaran']);
+    Route::post('/admin/verifikasi-pembayaran/{transaksiId}', [AdminController::class, 'verifikasiPembayaran']);
     // Pelanggan - Pembayaran Tolak - tolakPembayaran
-    Route::post('/admin/tolak-pembayaran/{paymentId}', [AdminController::class, 'tolakPembayaran']);
+    Route::post('/admin/tolak-pembayaran/{transaksiId}', [AdminController::class, 'tolakPembayaran']);
     // [POST] Kirim notifikasi ke mentor setelah pembayaran diverifikasi
     Route::post('/admin/notifikasi/mentor/{sessionId}', [AdminController::class, 'notifikasiKeMentor']);
 
@@ -68,7 +68,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // [POST] Atur gaya mengajar
     Route::post('/mentor/atur-gaya', [MentorController::class, 'aturGayaMengajar']);
     // [GET] Daftar kursus yang diampu mentor
-    Route::get('/mentor/daftar-course', [MentorController::class, 'daftarKursusSaya']);
+    Route::get('/mentor/daftar-kursus', [MentorController::class, 'daftarKursusSaya']);
     // [GET] Daftar sesi yang diampu mentor
     Route::get('/mentor/daftar-sesi', [MentorController::class, 'daftarSesiSaya']);
     // [POST] Konfirmasi sesi
@@ -82,7 +82,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // [GET] Profil pelanggan yang sedang login
     Route::get('/pelanggan/profil-saya', [PelangganController::class, 'profilSaya']);
     // [GET] Daftar course
-    Route::get('/pelanggan/daftar-course', [PelangganController::class, 'daftarCourse']);
+    Route::get('/pelanggan/daftar-kursus', [PelangganController::class, 'daftarKursus']);
     // [GET] Cari mentor berdasarkan mata kuliah
     Route::get('/pelanggan/cari-mentor', [PelangganController::class, 'cariMentor']);
     // [GET] Detail mentor
@@ -92,57 +92,57 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // [GET] Daftar sesi yang pernah diikuti pelanggan
     Route::get('/pelanggan/daftar-sesi', [PelangganController::class, 'daftarSesiMentor']);
     // [POST] Unggah bukti pembayaran
-    Route::post('/pelanggan/unggah-bukti/{paymentId}', [PelangganController::class, 'unggahBuktiPembayaran']);
+    Route::post('/pelanggan/unggah-bukti/{transaksiId}', [PelangganController::class, 'unggahBuktiPembayaran']);
     // [POST] Beri testimoni
     Route::post('/pelanggan/beri-testimoni/{sessionId}', [PelangganController::class, 'beriTestimoni']);
 
-    // ==================== COURSE ====================
-    // [GET] Daftar course
-    Route::get('/courses', [CourseController::class, 'index']);
-    // [POST] Tambah course
-    Route::post('/courses', [CourseController::class, 'store']);
-    // [GET] Detail course
-    Route::get('/courses/{id}', [CourseController::class, 'show']);
-    // [PUT] Update course
-    Route::put('/courses/{id}', [CourseController::class, 'update']);
-    // [DELETE] Hapus course
-    Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
+    // ==================== KURSUS ====================
+    // [GET] Daftar kursus
+    Route::get('/kursus', [KursusController::class, 'index']);
+    // [POST] Tambah kursus
+    Route::post('/kursus', [KursusController::class, 'store']);
+    // [GET] Detail kursus
+    Route::get('/kursus/{id}', [KursusController::class, 'show']);
+    // [PUT] Update kursus
+    Route::put('/kursus/{id}', [KursusController::class, 'update']);
+    // [DELETE] Hapus kursus
+    Route::delete('/kursus/{id}', [KursusController::class, 'destroy']);
     // [POST] Upload gambar kursus
-    Route::post('/courses/{id}/upload-gambar', [CourseController::class, 'uploadGambarKursus']);
+    // Route::post('/kursus/{id}/upload-gambar', [KursusController::class, 'uploadGambarKursus']); // Uncomment jika ada fitur upload gambar
 
-    // ==================== SESSION ====================
+    // ==================== SESI ====================
     // [GET] Daftar semua sesi
-    Route::get('/sessions', [\App\Http\Controllers\Fitur\SessionController::class, 'index']);
+    Route::get('/sesi', [\App\Http\Controllers\Fitur\SesiController::class, 'index']);
     // [POST] Tambah sesi
-    Route::post('/sessions', [\App\Http\Controllers\Fitur\SessionController::class, 'store']);
+    Route::post('/sesi', [\App\Http\Controllers\Fitur\SesiController::class, 'store']);
     // [GET] Detail sesi
-    Route::get('/sessions/{id}', [\App\Http\Controllers\Fitur\SessionController::class, 'show']);
+    Route::get('/sesi/{id}', [\App\Http\Controllers\Fitur\SesiController::class, 'show']);
     // [PUT] Update sesi
-    Route::put('/sessions/{id}', [\App\Http\Controllers\Fitur\SessionController::class, 'update']);
+    Route::put('/sesi/{id}', [\App\Http\Controllers\Fitur\SesiController::class, 'update']);
     // [DELETE] Hapus sesi
-    Route::delete('/sessions/{id}', [\App\Http\Controllers\Fitur\SessionController::class, 'destroy']);
+    Route::delete('/sesi/{id}', [\App\Http\Controllers\Fitur\SesiController::class, 'destroy']);
     // [POST] Konfirmasi sesi
-    Route::post('/sessions/{id}/konfirmasi', [\App\Http\Controllers\Fitur\SessionController::class, 'konfirmasiSesi']);
+    Route::post('/sesi/{id}/konfirmasi', [\App\Http\Controllers\Fitur\SesiController::class, 'konfirmasiSesi']);
     // [POST] Tandai sesi selesai
-    Route::post('/sessions/{id}/selesai', [\App\Http\Controllers\Fitur\SessionController::class, 'selesaiSesi']);
+    Route::post('/sesi/{id}/selesai', [\App\Http\Controllers\Fitur\SesiController::class, 'selesaikanSesi']);
 
-    // ==================== PAYMENT ====================
-    // [GET] Daftar semua pembayaran
-    Route::get('/payments', [\App\Http\Controllers\Fitur\PaymentController::class, 'index']);
-    // [POST] Tambah pembayaran
-    Route::post('/payments', [\App\Http\Controllers\Fitur\PaymentController::class, 'store']);
-    // [GET] Detail pembayaran
-    Route::get('/payments/{id}', [\App\Http\Controllers\Fitur\PaymentController::class, 'show']);
-    // [PUT] Update pembayaran
-    Route::put('/payments/{id}', [\App\Http\Controllers\Fitur\PaymentController::class, 'update']);
-    // [DELETE] Hapus pembayaran
-    Route::delete('/payments/{id}', [\App\Http\Controllers\Fitur\PaymentController::class, 'destroy']);
+    // ==================== TRANSAKSI ====================
+    // [GET] Daftar semua transaksi
+    Route::get('/transaksi', [\App\Http\Controllers\Fitur\TransaksiController::class, 'index']);
+    // [POST] Tambah transaksi
+    Route::post('/transaksi', [\App\Http\Controllers\Fitur\TransaksiController::class, 'store']);
+    // [GET] Detail transaksi
+    Route::get('/transaksi/{id}', [\App\Http\Controllers\Fitur\TransaksiController::class, 'show']);
+    // [PUT] Update transaksi
+    Route::put('/transaksi/{id}', [\App\Http\Controllers\Fitur\TransaksiController::class, 'update']);
+    // [DELETE] Hapus transaksi
+    Route::delete('/transaksi/{id}', [\App\Http\Controllers\Fitur\TransaksiController::class, 'destroy']);
     // [POST] Unggah bukti pembayaran
-    Route::post('/payments/{id}/unggah-bukti', [\App\Http\Controllers\Fitur\PaymentController::class, 'unggahBukti']);
+    Route::post('/transaksi/{id}/unggah-bukti', [\App\Http\Controllers\Fitur\TransaksiController::class, 'unggahBukti']);
     // [POST] Verifikasi pembayaran
-    Route::post('/payments/{id}/verifikasi', [\App\Http\Controllers\Fitur\PaymentController::class, 'verifikasiPembayaran']);
+    Route::post('/transaksi/{id}/verifikasi', [\App\Http\Controllers\Fitur\TransaksiController::class, 'verifikasiPembayaran']);
     // [POST] Tolak pembayaran
-    Route::post('/payments/{id}/tolak', [\App\Http\Controllers\Fitur\PaymentController::class, 'tolakPembayaran']);
+    Route::post('/transaksi/{id}/tolak', [\App\Http\Controllers\Fitur\TransaksiController::class, 'tolakPembayaran']);
 
     // ==================== TESTIMONI ====================
     // [GET] Daftar semua testimoni
@@ -158,17 +158,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // [GET] Daftar testimoni untuk mentor tertentu
     Route::get('/mentor/{mentorId}/testimoni', [\App\Http\Controllers\Fitur\TestimoniController::class, 'testimoniMentor']);
 
-    // ==================== COURSE SCHEDULE ====================
+    // ==================== JADWAL KURSUS ====================
     // [GET] Daftar semua jadwal kursus
-    Route::get('/course-schedules', [CourseScheduleController::class, 'index']);
+    Route::get('/jadwal-kursus', [JadwalKursusController::class, 'index']);
     // [POST] Tambah jadwal kursus
-    Route::post('/course-schedules', [CourseScheduleController::class, 'store']);
+    Route::post('/jadwal-kursus', [JadwalKursusController::class, 'store']);
     // [GET] Detail jadwal kursus
-    Route::get('/course-schedules/{id}', [CourseScheduleController::class, 'show']);
+    Route::get('/jadwal-kursus/{id}', [JadwalKursusController::class, 'show']);
     // [PUT] Update jadwal kursus
-    Route::put('/course-schedules/{id}', [CourseScheduleController::class, 'update']);
+    Route::put('/jadwal-kursus/{id}', [JadwalKursusController::class, 'update']);
     // [DELETE] Hapus jadwal kursus
-    Route::delete('/course-schedules/{id}', [CourseScheduleController::class, 'destroy']);
+    Route::delete('/jadwal-kursus/{id}', [JadwalKursusController::class, 'destroy']);
     // [POST] Upload foto profil user
     Route::post('/user/upload-foto', [AuthController::class, 'uploadFotoProfil']);
 });
