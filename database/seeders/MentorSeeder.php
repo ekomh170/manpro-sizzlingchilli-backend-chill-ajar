@@ -22,7 +22,7 @@ class MentorSeeder extends Seeder
 
         $dummyMentorData = [
             'rating' => 0,
-            'biayaPerSesi' => 15000,
+            'biayaPerSesi' => 25000, // Semua mentor 25rb
             'deskripsi' => 'Mentor berpengalaman di bidangnya.'
         ];
 
@@ -39,5 +39,8 @@ class MentorSeeder extends Seeder
                 );
             }
         }
+
+        // Update semua mentor yang sudah ada di database jika biayaPerSesi kosong/null
+        \App\Models\Mentor::whereNull('biayaPerSesi')->orWhere('biayaPerSesi', '')->update(['biayaPerSesi' => 25000]);
     }
 }

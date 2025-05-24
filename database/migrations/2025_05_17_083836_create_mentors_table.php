@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relasi ke users
             $table->float('rating')->default(0); // Rating awal default 0
-            $table->float('biayaPerSesi')->nullable(); // Tarif mentor per sesi
+            $table->float('biayaPerSesi')->default(25000); // Tarif mentor per sesi, default 25rb
             $table->text('deskripsi')->nullable(); // Deskripsi tentang mentor
             $table->timestamps();
         });

@@ -22,7 +22,7 @@ class TransaksiSeeder extends Seeder
                 'pelanggan_id' => $pelangganIds[array_rand($pelangganIds)],
                 'mentor_id' => $mentorIds[array_rand($mentorIds)],
                 'sesi_id' => $sesiIds[array_rand($sesiIds)],
-                'jumlah' => rand(15000, 15000),
+                'jumlah' => rand(25000, 25000),
                 'statusPembayaran' => $status[array_rand($status)],
                 'metodePembayaran' => $metode[array_rand($metode)],
                 'tanggalPembayaran' => now()->subDays(rand(0, 30)),
