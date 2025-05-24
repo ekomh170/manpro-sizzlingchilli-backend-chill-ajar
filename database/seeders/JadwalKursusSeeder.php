@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\CourseSchedule;
-use App\Models\Course;
+use App\Models\JadwalKursus;
+use App\Models\Kursus;
 
-class CourseScheduleSeeder extends Seeder
+class JadwalKursusSeeder extends Seeder
 {
     public function run()
     {
-        $courseIds = Course::pluck('id')->toArray();
+        $kursusIds = Kursus::pluck('id')->toArray();
         for ($i = 1; $i <= 20; $i++) {
-            CourseSchedule::create([
-                'course_id' => $courseIds[array_rand($courseIds)],
+            JadwalKursus::create([
+                'kursus_id' => $kursusIds[array_rand($kursusIds)],
                 'tanggal' => now()->addDays(rand(1, 30)),
                 'waktu' => sprintf('%02d:00:00', rand(8, 18)),
                 'keterangan' => 'Jadwal dummy ke-' . $i,

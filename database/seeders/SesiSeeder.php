@@ -3,31 +3,33 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Session;
+use App\Models\Sesi;
 use App\Models\Mentor;
 use App\Models\Pelanggan;
-use App\Models\CourseSchedule;
+use App\Models\Kursus;
+use App\Models\JadwalKursus;
 
-class SessionSeeder extends Seeder
+class SesiSeeder extends Seeder
 {
     public function run()
     {
         $mentorIds = Mentor::pluck('id')->toArray();
         $pelangganIds = Pelanggan::pluck('id')->toArray();
-        $scheduleIds = CourseSchedule::pluck('id')->toArray();
-        $sessions = [];
+        $kursusIds = Kursus::pluck('id')->toArray();
+        $jadwalIds = JadwalKursus::pluck('id')->toArray();
+        $sesiList = [];
         for ($i = 1; $i <= 10; $i++) {
-            $sessions[] = [
+            $sesiList[] = [
                 'mentor_id' => $mentorIds[array_rand($mentorIds)],
                 'pelanggan_id' => $pelangganIds[array_rand($pelangganIds)],
-                'course_schedule_id' => $scheduleIds ? $scheduleIds[array_rand($scheduleIds)] : null,
+                'kursus_id' => $kursusIds[array_rand($kursusIds)],
+                'jadwal_kursus_id' => $jadwalIds[array_rand($jadwalIds)],
                 'detailKursus' => 'Materi sesi ke-' . $i,
-                'jadwal' => now()->addDays($i),
                 'statusSesi' => 'booked',
             ];
         }
-        foreach ($sessions as $session) {
-            Session::create($session);
+        foreach ($sesiList as $sesi) {
+            Sesi::create($sesi);
         }
     }
 }

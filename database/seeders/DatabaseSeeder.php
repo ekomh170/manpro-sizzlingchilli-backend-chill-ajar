@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             MentorSeeder::class,
             PelangganSeeder::class,
-            CourseSeeder::class,
-            CourseScheduleSeeder::class,
-            SessionSeeder::class,
-            PaymentSeeder::class,
+            KursusSeeder::class,
+            JadwalKursusSeeder::class,
+            SesiSeeder::class,
+            TransaksiSeeder::class,
             TestimoniSeeder::class,
         ]);
     }

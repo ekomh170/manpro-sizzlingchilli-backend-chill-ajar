@@ -23,7 +23,6 @@ class MentorSeeder extends Seeder
         $dummyMentorData = [
             'rating' => 0,
             'biayaPerSesi' => 100000,
-            'gayaMengajar' => 'Interaktif dan menyenangkan',
             'deskripsi' => 'Mentor berpengalaman di bidangnya.'
         ];
 
@@ -35,7 +34,6 @@ class MentorSeeder extends Seeder
                     [
                         'rating' => $dummyMentorData['rating'],
                         'biayaPerSesi' => $dummyMentorData['biayaPerSesi'],
-                        'gayaMengajar' => $dummyMentorData['gayaMengajar'],
                         'deskripsi' => $dummyMentorData['deskripsi'],
                     ]
                 );

@@ -3,27 +3,26 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Payment;
-use App\Models\Session;
+use App\Models\Transaksi;
+use App\Models\Sesi;
 use App\Models\Mentor;
-use App\Models\User;
+use App\Models\Pelanggan;
 
-class PaymentSeeder extends Seeder
+class TransaksiSeeder extends Seeder
 {
     public function run()
     {
-        $sessionIds = Session::pluck('id')->toArray();
+        $sesiIds = Sesi::pluck('id')->toArray();
         $mentorIds = Mentor::pluck('id')->toArray();
-        // Ambil hanya user dengan peran pelanggan
-        $userIds = User::where('peran', 'pelanggan')->pluck('id')->toArray();
+        $pelangganIds = Pelanggan::pluck('id')->toArray();
         $status = ['menunggu_verifikasi', 'lunas', 'gagal'];
         $metode = ['transfer', 'e-wallet', 'cash'];
         for ($i = 1; $i <= 20; $i++) {
-            Payment::create([
-                'user_id' => $userIds[array_rand($userIds)],
+            Transaksi::create([
+                'pelanggan_id' => $pelangganIds[array_rand($pelangganIds)],
                 'mentor_id' => $mentorIds[array_rand($mentorIds)],
-                'session_id' => $sessionIds[array_rand($sessionIds)],
-                'jumlah' => rand(50000, 200000),
+                'sesi_id' => $sesiIds[array_rand($sesiIds)],
+                'jumlah' => rand(15000, 15000),
                 'statusPembayaran' => $status[array_rand($status)],
                 'metodePembayaran' => $metode[array_rand($metode)],
                 'tanggalPembayaran' => now()->subDays(rand(0, 30)),
