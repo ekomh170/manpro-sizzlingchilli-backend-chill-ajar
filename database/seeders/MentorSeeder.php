@@ -22,7 +22,7 @@ class MentorSeeder extends Seeder
 
         $dummyMentorData = [
             'rating' => 0,
-            'biayaPerSesi' => 100000,
+            'biayaPerSesi' => 15000,
             'deskripsi' => 'Mentor berpengalaman di bidangnya.'
         ];
 

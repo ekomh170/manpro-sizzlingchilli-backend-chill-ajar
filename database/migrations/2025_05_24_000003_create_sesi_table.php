@@ -9,8 +9,8 @@ return new class extends Migration {
     {
         Schema::create('sesi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mentor_id')->constrained('mentors')->onDelete('cascade');
-            $table->foreignId('pelanggan_id')->constrained('pelanggans')->onDelete('cascade');
+            $table->foreignId('mentor_id')->constrained('mentor')->onDelete('cascade');
+            $table->foreignId('pelanggan_id')->constrained('pelanggan')->onDelete('cascade');
             $table->foreignId('kursus_id')->constrained('kursus')->onDelete('cascade');
             $table->foreignId('jadwal_kursus_id')->constrained('jadwal_kursus')->onDelete('cascade');
             $table->string('detailKursus')->nullable();

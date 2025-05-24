@@ -14,7 +14,7 @@ class Testimoni extends Model
 
     // Kolom-kolom yang dapat diisi secara massal
     protected $fillable = [
-        'session_id',      // ID sesi yang dinilai
+        'sesi_id',      // ID sesi yang dinilai
         'pelanggan_id',    // ID pelanggan yang memberi testimoni
         'mentor_id',       // ID mentor yang diberi testimoni
         'rating',          // Rating yang diberikan
@@ -23,12 +23,12 @@ class Testimoni extends Model
     ];
 
     /**
-     * Relasi dengan model Session
-     * Menunjukkan bahwa setiap Testimoni berhubungan dengan satu Session.
+     * Relasi dengan model Sesi
+     * Menunjukkan bahwa setiap Testimoni berhubungan dengan satu Sesi.
      */
-    public function session()
+    public function sesi()
     {
-        return $this->belongsTo(Session::class);
+        return $this->belongsTo(Sesi::class, 'sesi_id');
     }
 
     /**
