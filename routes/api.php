@@ -11,12 +11,15 @@ use App\Http\Controllers\Admin\AdminController;
 // Import controllers - Fitur
 use App\Http\Controllers\Fitur\FiturController;
 use App\Http\Controllers\Fitur\CourseController;
+use App\Http\Controllers\Fitur\CourseScheduleController;
 
 // ==================== AUTH ====================
 // [POST] Login pengguna
 Route::post('/login', [AuthController::class, 'login']);
 // [POST] Registrasi pengguna baru
 Route::post('/register', [AuthController::class, 'registrasi']);
+// [GET] Daftar sesi yang diampu mentor
+Route::get('/mentor/daftar-sesi', [MentorController::class, 'daftarSesiSaya']);
 
 // ==================== PROTECTED ROUTES (SANCTUM) ====================
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -104,6 +107,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/courses/{id}', [CourseController::class, 'update']);
     // [DELETE] Hapus course
     Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
+    // [POST] Upload gambar kursus
+    Route::post('/courses/{id}/upload-gambar', [CourseController::class, 'uploadGambarKursus']);
 
     // ==================== SESSION ====================
     // [GET] Daftar semua sesi
@@ -152,4 +157,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/testimoni/{id}', [\App\Http\Controllers\Fitur\TestimoniController::class, 'destroy']);
     // [GET] Daftar testimoni untuk mentor tertentu
     Route::get('/mentor/{mentorId}/testimoni', [\App\Http\Controllers\Fitur\TestimoniController::class, 'testimoniMentor']);
+
+    // ==================== COURSE SCHEDULE ====================
+    // [GET] Daftar semua jadwal kursus
+    Route::get('/course-schedules', [CourseScheduleController::class, 'index']);
+    // [POST] Tambah jadwal kursus
+    Route::post('/course-schedules', [CourseScheduleController::class, 'store']);
+    // [GET] Detail jadwal kursus
+    Route::get('/course-schedules/{id}', [CourseScheduleController::class, 'show']);
+    // [PUT] Update jadwal kursus
+    Route::put('/course-schedules/{id}', [CourseScheduleController::class, 'update']);
+    // [DELETE] Hapus jadwal kursus
+    Route::delete('/course-schedules/{id}', [CourseScheduleController::class, 'destroy']);
+    // [POST] Upload foto profil user
+    Route::post('/user/upload-foto', [AuthController::class, 'uploadFotoProfil']);
 });

@@ -17,6 +17,7 @@ class CourseSeeder extends Seeder
                 'namaCourse' => 'Course Dummy ' . $i,
                 'deskripsi' => 'Deskripsi untuk Course Dummy ' . $i,
                 'mentor_id' => $mentorIds[array_rand($mentorIds)],
+                'gambar_kursus' => 'gambar_kursus/course_dummy_' . $i . '.jpg',
             ];
         }
         foreach ($courses as $course) {

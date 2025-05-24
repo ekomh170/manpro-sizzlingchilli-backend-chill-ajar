@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             MentorSeeder::class,
             PelangganSeeder::class,
             CourseSeeder::class,
+            CourseScheduleSeeder::class,
             SessionSeeder::class,
             PaymentSeeder::class,
             TestimoniSeeder::class,
