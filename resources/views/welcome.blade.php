@@ -7,6 +7,7 @@
     <title>Chill Ajar Backend API</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon/favicon_eko.ico') }}">
     <style>
         body {
             font-family: 'Inter', Arial, sans-serif;
