@@ -18,13 +18,25 @@ use App\Http\Controllers\Fitur\JadwalKursusController;
 Route::post('/login', [AuthController::class, 'login']);
 // [POST] Registrasi pengguna baru
 Route::post('/register', [AuthController::class, 'registrasi']);
-// [GET] Daftar sesi yang diampu mentor
-Route::get('/mentor/daftar-sesi', [MentorController::class, 'daftarSesiSaya']);
+
+// ==================== PUBLIC ENDPOINTS ====================
+// [GET] Daftar kursus (public, tanpa data user)
+Route::get('/public/kursus', function () {
+    return \App\Models\Kursus::select('id', 'namaKursus', 'deskripsi', 'fotoKursus', 'mentor_id')->get();
+});
+// [GET] Daftar mentor (public, tanpa data user)
+Route::get('/public/mentor', function () {
+    return \App\Models\Mentor::select('id', 'user_id', 'rating', 'biayaPerSesi', 'deskripsi')->get();
+});
 
 // ==================== PROTECTED ROUTES (SANCTUM) ====================
 Route::middleware(['auth:sanctum'])->group(function () {
     // [POST] Logout pengguna
     Route::post('/logout', [AuthController::class, 'logout']);
+    // [PUT] Update profil user (data + foto profil sekaligus)
+    Route::put('/user/profil', [AuthController::class, 'updateProfil']);
+    // [POST] Upload foto profil user
+    Route::post('/user/upload-foto', [AuthController::class, 'uploadFotoProfil']);
 
     // ==================== ADMIN ====================
     // [GET] Daftar semua pengguna
@@ -107,8 +119,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/kursus/{id}', [KursusController::class, 'update']);
     // [DELETE] Hapus kursus
     Route::delete('/kursus/{id}', [KursusController::class, 'destroy']);
-    // [POST] Upload gambar kursus
-    // Route::post('/kursus/{id}/upload-gambar', [KursusController::class, 'uploadGambarKursus']); // Uncomment jika ada fitur upload gambar
 
     // ==================== SESI ====================
     // [GET] Daftar semua sesi
@@ -169,6 +179,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/jadwal-kursus/{id}', [JadwalKursusController::class, 'update']);
     // [DELETE] Hapus jadwal kursus
     Route::delete('/jadwal-kursus/{id}', [JadwalKursusController::class, 'destroy']);
-    // [POST] Upload foto profil user
-    Route::post('/user/upload-foto', [AuthController::class, 'uploadFotoProfil']);
 });

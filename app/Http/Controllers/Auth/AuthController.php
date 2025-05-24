@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\Mentor;
 
@@ -143,5 +144,43 @@ class AuthController extends Controller
             return response()->json(['message' => 'Foto profil berhasil diunggah', 'foto_profil' => $path]);
         }
         return response()->json(['message' => 'Tidak ada file yang diunggah'], 400);
+    }
+
+    /**
+     * Update profil user (data + foto profil sekaligus)
+     */
+    public function updateProfil(Request $request)
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'nama' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'nomorTelepon' => 'sometimes|nullable|string',
+            'alamat' => 'sometimes|nullable|string',
+            'foto_profil' => 'sometimes|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        // Update data user
+        foreach (['nama', 'email', 'nomorTelepon', 'alamat'] as $field) {
+            if ($request->has($field)) {
+                $user->$field = $request->$field;
+            }
+        }
+
+        // Proses upload foto profil jika ada file
+        if ($request->hasFile('foto_profil')) {
+            // Hapus file lama jika ada dan bukan default
+            if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
+                Storage::disk('public')->delete($user->foto_profil);
+            }
+            $file = $request->file('foto_profil');
+            $path = $file->store('foto_profil', 'public');
+            $user->foto_profil = $path;
+        }
+        $user->save();
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui',
+            'user' => $user
+        ]);
     }
 }

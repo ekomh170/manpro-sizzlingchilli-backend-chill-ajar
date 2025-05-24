@@ -35,7 +35,16 @@ class KursusController extends Controller
     public function update(Request $request, $id)
     {
         $kursus = Kursus::findOrFail($id);
-        $kursus->update($request->all());
+        $data = $request->all();
+
+        // Proses upload gambar jika ada file
+        if ($request->hasFile('fotoKursus')) {
+            $file = $request->file('fotoKursus');
+            $path = $file->store('foto_kursus', 'public');
+            $data['fotoKursus'] = $path;
+        }
+
+        $kursus->update($data);
         return response()->json($kursus);
     }
 

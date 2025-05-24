@@ -45,14 +45,15 @@
                 Endpoint, dokumentasi, dan UI pengujian hanya dapat diakses oleh tim pengembang dan admin melalui jalur
                 khusus.</span>
         </p>
-        <div class="mt-8 text-sm text-gray-500">
-            <span class="inline-flex items-center gap-1">
-                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2"
+        <div class="mt-8 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-2">
+                <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" stroke-width="2"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
                 </svg>
-                Backend Laravel 12, UI modern, dokumentasi otomatis, dan pengujian API interaktif.
+                <span>Developer lelah bukan berarti menyerah, Izinkan dia beristirahat, atau
+                    paling tidak... bermimpi.</span>
             </span>
         </div>
     </div>
