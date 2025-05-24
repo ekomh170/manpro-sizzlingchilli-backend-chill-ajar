@@ -31,3 +31,6 @@ Route::get('/pentest/transaksi', function () {
 Route::get('/pentest/testimoni', function () {
     return view('pentest.testimoni');
 });
+Route::get('/pentest/admin', function () {
+    return view('pentest.admin');
+});

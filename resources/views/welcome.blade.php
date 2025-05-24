@@ -1532,11 +1532,12 @@
             <span class="text-amber-700 font-semibold">Fitur utama backend:</span>
         </p>
         <ul class="text-left text-gray-700 mb-8 list-disc ml-8">
-            <li>Manajemen data <b>Mentor</b> dan <b>Pelanggan</b></li>
+            <li>Manajemen data <b>Admin</b>, <b>Mentor</b>, dan <b>Pelanggan</b></li>
             <li>Manajemen <b>Kursus</b> dan <b>Jadwal Kursus</b></li>
             <li>Pengelolaan <b>Sesi</b> dan <b>Transaksi</b></li>
             <li>Manajemen <b>Testimoni</b> dan autentikasi user</li>
             <li>API RESTful yang konsisten dengan diagram class Chill Ajar</li>
+            <li>Halaman pengujian endpoint API interaktif per controller (pentest UI)</li>
         </ul>
     </div>
 </body>
