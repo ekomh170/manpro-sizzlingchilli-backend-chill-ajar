@@ -38,7 +38,7 @@
             Ajar Backend API</h1>
         <p class="text-lg md:text-xl text-gray-700 mb-6 leading-relaxed">
             Selamat datang di backend <b>Chill Ajar</b>.<br>
-            Sistem backend Laravel 12 dengan API modern, dokumentasi otomatis, dan UI pengujian interaktif.<br><br>
+            Sistem backend Laravel 12 dengan API, dokumentasi, dan UI pengujian interaktif.<br><br>
             <span class="block text-amber-700 font-semibold mt-4">Akses API ini bersifat tersembunyi dan hanya untuk
                 kebutuhan internal aplikasi Chill Ajar.<br>
                 Endpoint, dokumentasi, dan UI pengujian hanya dapat diakses oleh tim pengembang dan admin melalui jalur
