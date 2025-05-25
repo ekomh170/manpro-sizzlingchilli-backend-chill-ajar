@@ -20,13 +20,17 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'registrasi']);
 
 // ==================== PUBLIC ENDPOINTS ====================
-// [GET] Daftar kursus (public, tanpa data user)
+// [GET] Daftar kursus (public, dengan relasi mentor dan user)
 Route::get('/public/kursus', function () {
-    return \App\Models\Kursus::select('id', 'namaKursus', 'deskripsi', 'fotoKursus', 'mentor_id')->get();
+    return \App\Models\Kursus::with('mentor.user')->get();
 });
-// [GET] Daftar mentor (public, tanpa data user)
+// [GET] Daftar mentor (public, dengan relasi user terpilih)
 Route::get('/public/mentor', function () {
-    return \App\Models\Mentor::select('id', 'user_id', 'rating', 'biayaPerSesi', 'deskripsi')->get();
+    return \App\Models\Mentor::with(['user' => function ($query) {
+        $query->select('id', 'nama', 'nomorTelepon', 'alamat');
+    }])
+        ->select('id', 'user_id', 'rating', 'biayaPerSesi', 'deskripsi')
+        ->get();
 });
 
 // ==================== PROTECTED ROUTES (SANCTUM) ====================
