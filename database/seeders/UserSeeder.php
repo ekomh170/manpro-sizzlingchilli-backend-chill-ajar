@@ -76,28 +76,68 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        // 4 mentor tambahan
+        // 4 mentor tambahan dengan nama, email, dan kota Indonesia acak
+        $namaMentor = [
+            'Budi Santoso',
+            'Siti Nurhaliza',
+            'Agus Pratama',
+            'Dewi Lestari',
+        ];
+        $kotaMentor = [
+            'Jakarta',
+            'Surabaya',
+            'Bandung',
+            'Yogyakarta'
+        ];
         for ($i = 1; $i <= 4; $i++) {
+            $nama = $namaMentor[$i - 1];
+            $namaEmail = strtolower(str_replace(' ', '', $nama));
             $users[] = [
-                'nama' => "Mentor Dummy $i",
-                'email' => "mentordummy$i@demo.com",
+                'nama' => $nama,
+                'email' => $namaEmail . rand(10, 99) . '@mail.com',
                 'password' => Hash::make('password'),
                 'nomorTelepon' => '0812345678' . (97 + $i),
                 'peran' => 'mentor',
-                'alamat' => 'Kota Dummy',
+                'alamat' => $kotaMentor[$i - 1],
                 'foto_profil' => "foto_profil/mentor_dummy_$i.jpg",
             ];
         }
 
-        // 10 pelanggan tambahan
+        // 10 pelanggan tambahan dengan nama, email, dan kota Indonesia acak
+        $namaPelanggan = [
+            'Rina Wulandari',
+            'Andi Saputra',
+            'Sari Dewi',
+            'Dian Prasetyo',
+            'Yusuf Maulana',
+            'Putri Ayu',
+            'Rizky Ramadhan',
+            'Lina Marlina',
+            'Bayu Nugroho',
+            'Tia Rahmawati',
+        ];
+        $kotaPelanggan = [
+            'Bandung',
+            'Surabaya',
+            'Medan',
+            'Makassar',
+            'Palembang',
+            'Semarang',
+            'Depok',
+            'Bekasi',
+            'Bogor',
+            'Malang',
+        ];
         for ($i = 1; $i <= 10; $i++) {
+            $nama = $namaPelanggan[$i - 1];
+            $namaEmail = strtolower(str_replace(' ', '', $nama));
             $users[] = [
-                'nama' => "Pelanggan Dummy $i",
-                'email' => "pelanggandummy$i@demo.com",
+                'nama' => $nama,
+                'email' => $namaEmail . rand(10, 99) . '@mail.com',
                 'password' => Hash::make('password'),
                 'nomorTelepon' => '0812345679' . str_pad($i, 2, '0', STR_PAD_LEFT),
                 'peran' => 'pelanggan',
-                'alamat' => 'Kota Dummy',
+                'alamat' => $kotaPelanggan[$i - 1],
                 'foto_profil' => "foto_profil/pelanggan_dummy_$i.jpg",
             ];
         }

@@ -10,20 +10,12 @@ class AdminSeeder extends Seeder
 {
     public function run()
     {
-        $adminEmails = [
-            'eko@demo.com',
-            'firenze@demo.com',
-            'farrel@demo.com',
-            'faiz@demo.com',
-        ];
-
-        foreach ($adminEmails as $email) {
-            $user = User::where('email', $email)->first();
-            if ($user) {
-                Admin::firstOrCreate([
-                    'user_id' => $user->id
-                ]);
-            }
+        // Ambil semua user dengan peran admin
+        $adminUsers = User::where('peran', 'admin')->get();
+        foreach ($adminUsers as $user) {
+            Admin::firstOrCreate([
+                'user_id' => $user->id
+            ]);
         }
     }
 }
