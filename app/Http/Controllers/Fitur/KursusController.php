@@ -28,7 +28,7 @@ class KursusController extends Controller
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
             'gayaMengajar' => 'required|in:online,offline',
-            'fotoKursus' => 'nullable|string',
+            'fotoKursus' => 'nullable|image|max:5048', // Validasi gambar, maksimal 5MB
         ]);
 
         $data = $request->all();
@@ -50,6 +50,12 @@ class KursusController extends Controller
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
         $kursus = Kursus::where('id', $id)->where('mentor_id', $mentor->id)->firstOrFail();
+        $request->validate([
+            'namaKursus' => 'required|string',
+            'deskripsi' => 'nullable|string',
+            'gayaMengajar' => 'required|in:online,offline',
+            'fotoKursus' => 'nullable|image|max:5048', // Validasi gambar, maksimal 5MB
+        ]);
         $data = $request->all();
 
         // Proses upload gambar jika ada file
