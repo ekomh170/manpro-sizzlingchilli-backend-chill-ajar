@@ -19,6 +19,13 @@ class JadwalKursusSeeder extends Seeder
         }
 
         // Untuk setiap mentor, buat 2-3 jadwal di tanggal yang sama tapi jam berbeda
+        $tempatList = [
+            'Kampus B - Rest Area Depan Kampus',
+            'Kampus A - Rest Area Kampus di Lantai Bawah',
+            'Kampus A - Lantai Paling Atas Perpus',
+            'Kampus B - Rest Area B1',
+        ];
+        $tempatIdx = 0;
         foreach ($mentorKursus as $userId => $kursusIds) {
             $tanggal = now()->addDays(rand(1, 10))->format('Y-m-d');
             $usedHours = [];
@@ -34,7 +41,7 @@ class JadwalKursusSeeder extends Seeder
                     'tanggal' => $tanggal,
                     'waktu' => sprintf('%02d:00:00', $jam),
                     'keterangan' => 'Jadwal mentor user_id ' . $userId,
-                    'tempat' => 'Ruang A - Kampus Pusat, Lantai 2', // Contoh default tempat
+                    'tempat' => $tempatIdx < count($tempatList) ? $tempatList[$tempatIdx++] : 'Ruang A - Kampus Pusat, Lantai 2',
                 ]);
             }
         }

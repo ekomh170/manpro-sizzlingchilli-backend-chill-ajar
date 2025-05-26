@@ -136,8 +136,18 @@ class AuthController extends Controller
     public function uploadFotoProfil(Request $request)
     {
         $user = $request->user();
+        $request->validate([
+            'foto_profil' => 'required|image|max:5120',
+        ]);
         if ($request->hasFile('foto_profil')) {
             $file = $request->file('foto_profil');
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Upload foto gagal.'], 422);
+            }
+            // Hapus foto lama jika bukan default
+            if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
+            }
             $path = $file->store('foto_profil', 'public');
             $user->foto_profil = $path;
             $user->save();
@@ -157,7 +167,7 @@ class AuthController extends Controller
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
             'nomorTelepon' => 'sometimes|nullable|string',
             'alamat' => 'sometimes|nullable|string',
-            'foto_profil' => 'sometimes|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'foto_profil' => 'sometimes|image|max:5120',
         ]);
 
         // Update data user
@@ -169,11 +179,14 @@ class AuthController extends Controller
 
         // Proses upload foto profil jika ada file
         if ($request->hasFile('foto_profil')) {
-            // Hapus file lama jika ada dan bukan default
-            if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
-                Storage::disk('public')->delete($user->foto_profil);
-            }
             $file = $request->file('foto_profil');
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Upload foto gagal.'], 422);
+            }
+            // Hapus foto lama jika bukan default
+            if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
+            }
             $path = $file->store('foto_profil', 'public');
             $user->foto_profil = $path;
         }

@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567890',
                 'peran' => 'admin',
                 'alamat' => 'Jakarta',
-                'foto_profil' => 'foto_profil/default_admin1.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
             [
                 'nama' => 'Firenze Higa Putra',
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567891',
                 'peran' => 'admin',
                 'alamat' => 'Bandung',
-                'foto_profil' => 'foto_profil/default_admin2.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
             [
                 'nama' => 'Fatiya Labibah',
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567892',
                 'peran' => 'mentor',
                 'alamat' => 'Surabaya',
-                'foto_profil' => 'foto_profil/default_mentor1.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
             [
                 'nama' => 'Muhammad Farrel Zilviano',
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567893',
                 'peran' => 'admin',
                 'alamat' => 'Yogyakarta',
-                'foto_profil' => 'foto_profil/default_admin3.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
             [
                 'nama' => 'Ahmad Faiz Al Asad',
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567894',
                 'peran' => 'admin',
                 'alamat' => 'Semarang',
-                'foto_profil' => 'foto_profil/default_admin4.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
             [
                 'nama' => 'Arby Ali Amludin',
@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567895',
                 'peran' => 'pelanggan',
                 'alamat' => 'Malang',
-                'foto_profil' => 'foto_profil/default_pelanggan1.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
             [
                 'nama' => 'Muhammad Wildan Ziyad Alfarabi',
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '081234567896',
                 'peran' => 'pelanggan',
                 'alamat' => 'Depok',
-                'foto_profil' => 'foto_profil/default_pelanggan2.jpg',
+                'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
         ];
 
@@ -99,7 +99,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '0812345678' . (97 + $i),
                 'peran' => 'mentor',
                 'alamat' => $kotaMentor[$i - 1],
-                'foto_profil' => "foto_profil/mentor_dummy_$i.jpg",
+                'foto_profil' => "foto_profil/default.png", // default foto profil
             ];
         }
 
@@ -138,7 +138,7 @@ class UserSeeder extends Seeder
                 'nomorTelepon' => '0812345679' . str_pad($i, 2, '0', STR_PAD_LEFT),
                 'peran' => 'pelanggan',
                 'alamat' => $kotaPelanggan[$i - 1],
-                'foto_profil' => "foto_profil/pelanggan_dummy_$i.jpg",
+                'foto_profil' => "foto_profil/default.png", // default foto profil
             ];
         }
 
