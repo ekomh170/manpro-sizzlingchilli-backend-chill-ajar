@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->foreignId('sesi_id')->constrained('sesi')->onDelete('cascade');
             $table->float('jumlah');
             $table->string('statusPembayaran');
-            $table->string('metodePembayaran');
-            $table->dateTime('tanggalPembayaran');
+            $table->string('metodePembayaran')->nullable();
+            $table->dateTime('tanggalPembayaran')->nullable();
             $table->timestamps();
         });
     }

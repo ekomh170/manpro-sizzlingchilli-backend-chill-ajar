@@ -21,6 +21,10 @@ class Transaksi extends Model
         'tanggalPembayaran',
     ];
 
+    protected $casts = [
+        'tanggalPembayaran' => 'datetime',
+    ];
+
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id');

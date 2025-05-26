@@ -55,22 +55,40 @@ class PelangganController extends Controller
 
     /**
      * Memesan sesi pengajaran
+     * Akan otomatis membuat entri pada tabel sesi dan transaksi pembayaran (status: menunggu_pembayaran)
+     * Jika metodePembayaran/tanggalPembayaran tidak dikirim, akan bernilai null
      */
     public function pesanSesi(Request $request)
     {
         $request->validate([
-            'mentor_id' => 'required|exists:mentor,id',
-            'pelanggan_id' => 'required|exists:pelanggan,id',
-            'kursus_id' => 'required|exists:kursus,id',
-            'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id',
+            'mentor_id' => 'required|exists:mentor,id', // Validasi mentor
+            'pelanggan_id' => 'required|exists:pelanggan,id', // Validasi pelanggan
+            'kursus_id' => 'required|exists:kursus,id', // Validasi kursus
+            'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id', // Validasi jadwal kursus
             'detailKursus' => 'nullable|string',
         ]);
+        // 1. Buat sesi pengajaran baru
         $sesi = Sesi::create($request->all());
-        return response()->json($sesi, 201);
+        // 2. Buat transaksi pembayaran otomatis untuk sesi ini
+        $mentor = \App\Models\Mentor::findOrFail($request->mentor_id);
+        $jumlah = $mentor->biayaPerSesi ?? 25000; // Default biaya jika tidak ada
+        $transaksi = \App\Models\Transaksi::create([
+            'pelanggan_id' => $request->pelanggan_id,
+            'mentor_id' => $request->mentor_id,
+            'sesi_id' => $sesi->id,
+            'jumlah' => $jumlah,
+            'statusPembayaran' => 'menunggu_pembayaran', // Status awal
+            'metodePembayaran' => $request->metodePembayaran ?? null, // Bisa null
+            'tanggalPembayaran' => $request->tanggalPembayaran ?? null, // Bisa null
+        ]);
+        return response()->json([
+            'sesi' => $sesi,
+            'transaksi' => $transaksi
+        ], 201);
     }
 
     /**
-     * Menampilkan daftar sesi yang pernah diikuti pelanggan
+     * Menampilkan daftar sesi yang pernah diikuti pelanggan (riwayat)
      */
     public function daftarSesiMentor(Request $request)
     {
@@ -81,13 +99,13 @@ class PelangganController extends Controller
     }
 
     /**
-     * Mengunggah bukti pembayaran (simulasi)
+     * Mengunggah bukti pembayaran (simulasi upload, update status pembayaran)
      */
     public function unggahBuktiPembayaran(Request $request, $transaksiId)
     {
         $transaksi = \App\Models\Transaksi::findOrFail($transaksiId);
         $transaksi->buktiPembayaran = $request->buktiPembayaran ?? 'bukti_dummy.jpg';
-        $transaksi->statusPembayaran = 'menunggu_verifikasi';
+        $transaksi->statusPembayaran = 'menunggu_verifikasi'; // Update status setelah upload
         $transaksi->save();
         return response()->json(['message' => 'Bukti pembayaran berhasil diunggah', 'transaksi' => $transaksi]);
     }
