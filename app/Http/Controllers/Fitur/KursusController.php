@@ -87,7 +87,7 @@ class KursusController extends Controller
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
             'gayaMengajar' => 'required|in:online,offline',
-            'fotoKursus' => 'nullable|string',
+            'fotoKursus' => 'nullable|image|max:5048', // Validasi gambar, maksimal 5MB
         ]);
         $data = $request->all();
         $data['mentor_id'] = $mentor->id;
