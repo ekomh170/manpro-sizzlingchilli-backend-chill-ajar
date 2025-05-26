@@ -30,8 +30,17 @@ class KursusController extends Controller
             'gayaMengajar' => 'required|in:online,offline',
             'fotoKursus' => 'nullable|string',
         ]);
+
         $data = $request->all();
         $data['mentor_id'] = $mentor->id;
+
+        // Proses upload gambar jika ada file
+        if ($request->hasFile('fotoKursus')) {
+            $file = $request->file('fotoKursus');
+            $path = $file->store('foto_kursus', 'public');
+            $data['fotoKursus'] = $path;
+        }
+
         $kursus = Kursus::create($data);
         return response()->json($kursus, 201);
     }
