@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->date('tanggal');
             $table->time('waktu');
             $table->string('keterangan')->nullable();
+            $table->string('tempat')->nullable();
             $table->timestamps();
         });
     }

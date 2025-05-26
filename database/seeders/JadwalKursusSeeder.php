@@ -34,6 +34,7 @@ class JadwalKursusSeeder extends Seeder
                     'tanggal' => $tanggal,
                     'waktu' => sprintf('%02d:00:00', $jam),
                     'keterangan' => 'Jadwal mentor user_id ' . $userId,
+                    'tempat' => 'Ruang A - Kampus Pusat, Lantai 2', // Contoh default tempat
                 ]);
             }
         }
@@ -46,6 +47,7 @@ class JadwalKursusSeeder extends Seeder
                 'tanggal' => now()->addDays(rand(11, 30)),
                 'waktu' => sprintf('%02d:00:00', rand(8, 18)),
                 'keterangan' => 'Jadwal dummy ke-' . $i,
+                'tempat' => 'Ruang A - Kampus Pusat, Lantai 2', // Contoh default tempat
             ]);
         }
     }

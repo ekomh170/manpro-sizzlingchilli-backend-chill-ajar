@@ -26,6 +26,7 @@ class JadwalKursusController extends Controller
             'tanggal' => 'required|date',
             'waktu' => 'required',
             'keterangan' => 'nullable|string',
+            'tempat' => 'nullable|string',
         ]);
         $jadwal = JadwalKursus::create($request->all());
         return response()->json($jadwal, 201);
@@ -34,6 +35,13 @@ class JadwalKursusController extends Controller
     public function update(Request $request, $id)
     {
         $jadwal = JadwalKursus::findOrFail($id);
+        $request->validate([
+            'kursus_id' => 'sometimes|exists:kursus,id',
+            'tanggal' => 'sometimes|date',
+            'waktu' => 'sometimes',
+            'keterangan' => 'nullable|string',
+            'tempat' => 'nullable|string',
+        ]);
         $jadwal->update($request->all());
         return response()->json($jadwal);
     }

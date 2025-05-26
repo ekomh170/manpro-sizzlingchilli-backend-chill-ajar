@@ -16,6 +16,7 @@ class JadwalKursus extends Model
         'tanggal',
         'waktu',
         'keterangan',
+        'tempat',
     ];
 
     public function kursus()
