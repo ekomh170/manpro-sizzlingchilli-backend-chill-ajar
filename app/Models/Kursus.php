@@ -21,7 +21,7 @@ class Kursus extends Model
 
     public function mentor()
     {
-        return $this->belongsTo(Mentor::class);
+        return $this->belongsTo(Mentor::class, 'mentor_id');
     }
 
     public function jadwalKursus()

@@ -10,7 +10,12 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        return response()->json(Transaksi::with(['pelanggan', 'mentor', 'sesi'])->get());
+        $transaksi = Transaksi::with([
+            'pelanggan.user',
+            'mentor.user',
+            'sesi.kursus'
+        ])->get();
+        return response()->json($transaksi);
     }
 
     public function show($id)

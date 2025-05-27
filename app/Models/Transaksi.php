@@ -19,7 +19,6 @@ class Transaksi extends Model
         'statusPembayaran',
         'metodePembayaran',
         'tanggalPembayaran',
-        'buktiPembayaran',
     ];
 
     protected $casts = [

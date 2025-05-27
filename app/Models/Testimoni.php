@@ -37,7 +37,7 @@ class Testimoni extends Model
      */
     public function pelanggan()
     {
-        return $this->belongsTo(Pelanggan::class);
+        return $this->belongsTo(Pelanggan::class, 'pelanggan_id');
     }
 
     /**
@@ -46,6 +46,6 @@ class Testimoni extends Model
      */
     public function mentor()
     {
-        return $this->belongsTo(Mentor::class);
+        return $this->belongsTo(Mentor::class, 'mentor_id');
     }
 }
