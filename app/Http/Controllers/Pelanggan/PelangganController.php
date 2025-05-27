@@ -61,25 +61,31 @@ class PelangganController extends Controller
     public function pesanSesi(Request $request)
     {
         $request->validate([
-            'mentor_id' => 'required|exists:mentor,id', // Validasi mentor
-            'pelanggan_id' => 'required|exists:pelanggan,id', // Validasi pelanggan
-            'kursus_id' => 'required|exists:kursus,id', // Validasi kursus
-            'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id', // Validasi jadwal kursus
+            'mentor_id' => 'required|exists:mentor,id',
+            'pelanggan_id' => 'required|exists:pelanggan,id',
+            'kursus_id' => 'required|exists:kursus,id',
+            'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id',
             'detailKursus' => 'nullable|string',
+            'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'metodePembayaran' => 'required|string',
+            'tanggalPembayaran' => 'required|date',
         ]);
         // 1. Buat sesi pengajaran baru
-        $sesi = Sesi::create($request->all());
+        $sesi = Sesi::create($request->except('buktiPembayaran'));
         // 2. Buat transaksi pembayaran otomatis untuk sesi ini
         $mentor = \App\Models\Mentor::findOrFail($request->mentor_id);
-        $jumlah = $mentor->biayaPerSesi ?? 25000; // Default biaya jika tidak ada
+        $jumlah = $mentor->biayaPerSesi ?? 25000;
+        // Simpan file bukti pembayaran
+        $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
         $transaksi = \App\Models\Transaksi::create([
             'pelanggan_id' => $request->pelanggan_id,
             'mentor_id' => $request->mentor_id,
             'sesi_id' => $sesi->id,
             'jumlah' => $jumlah,
-            'statusPembayaran' => 'menunggu_pembayaran', // Status awal
-            'metodePembayaran' => $request->metodePembayaran ?? null, // Bisa null
-            'tanggalPembayaran' => $request->tanggalPembayaran ?? null, // Bisa null
+            'statusPembayaran' => 'menunggu_verifikasi',
+            'metodePembayaran' => $request->metodePembayaran ?? null,
+            'tanggalPembayaran' => $request->tanggalPembayaran ?? null,
+            'buktiPembayaran' => $buktiPath,
         ]);
         return response()->json([
             'sesi' => $sesi,

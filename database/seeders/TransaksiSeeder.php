@@ -25,8 +25,9 @@ class TransaksiSeeder extends Seeder
                 'sesi_id' => $sesi->id,
                 'jumlah' => 25000,
                 'statusPembayaran' => $status[array_rand($status)],
-                'metodePembayaran' => $metode[array_rand($metode)],
-                'tanggalPembayaran' => now()->subDays(rand(0, 30)),
+                'metodePembayaran' => $metode[array_rand($metode)], // wajib
+                'tanggalPembayaran' => now()->subDays(rand(0, 30)), // wajib
+                'buktiPembayaran' => 'bukti_dummy.jpg', // wajib file, dummy path
             ]);
         }
     }

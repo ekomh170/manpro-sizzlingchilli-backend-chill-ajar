@@ -29,6 +29,7 @@ class TransaksiController extends Controller
             'statusPembayaran' => 'required',
             'metodePembayaran' => 'required',
             'tanggalPembayaran' => 'required|date',
+            'buktiPembayaran' => 'nullable|string',
         ]);
         $transaksi = Transaksi::create($request->all());
         return response()->json($transaksi, 201);
