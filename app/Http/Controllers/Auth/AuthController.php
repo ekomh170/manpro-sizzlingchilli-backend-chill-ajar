@@ -108,7 +108,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->with('pelanggan')->first();
             $token = $user->createToken('ChillAjarToken')->plainTextToken;
             return response()->json([
                 'message' => 'Login berhasil',
