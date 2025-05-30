@@ -62,7 +62,7 @@ class KursusSeeder extends Seeder
                     'deskripsi' => $deskripsiKursus[$nama] ?? ('Deskripsi untuk ' . $nama),
                     'mentor_id' => $mentorId,
                     'gayaMengajar' => $idx % 2 === 0 ? 'online' : 'offline',
-                    'fotoKursus' => 'foto_kursus/kursus_' . ($idx + 1) . '.jpg',
+                    'fotoKursus' => 'foto_kursus/default.jpg', // default semua
                 ];
             }
         }

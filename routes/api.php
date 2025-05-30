@@ -22,7 +22,7 @@ Route::post('/register', [AuthController::class, 'registrasi']);
 // ==================== PUBLIC ENDPOINTS ====================
 // [GET] Daftar kursus (public, dengan relasi mentor dan user)
 Route::get('/public/kursus', function () {
-    return \App\Models\Kursus::with('mentor.user')->get();
+    return \App\Models\Kursus::with('mentor.user', 'jadwalKursus')->get();
 });
 // [GET] Daftar mentor (public, dengan relasi user terpilih)
 Route::get('/public/mentor', function () {

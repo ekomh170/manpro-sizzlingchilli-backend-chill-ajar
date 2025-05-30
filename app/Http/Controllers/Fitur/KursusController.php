@@ -11,7 +11,7 @@ class KursusController extends Controller
 {
     public function index()
     {
-        return response()->json(Kursus::with('mentor')->get());
+        return response()->json(Kursus::with(['mentor', 'jadwalKursus'])->get());
     }
 
     public function show($id)

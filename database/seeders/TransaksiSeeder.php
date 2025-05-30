@@ -14,7 +14,7 @@ class TransaksiSeeder extends Seeder
     {
         // Buat transaksi berdasarkan data sesi, mentor, dan pelanggan yang valid
         $sesiObjs = Sesi::all();
-        $status = ['menunggu_verifikasi', 'lunas', 'gagal'];
+        $status = ['menunggu_verifikasi', 'lunas', 'gagal', 'accepted'];
         $metode = ['transfer', 'e-wallet', 'cash'];
         foreach ($sesiObjs as $sesi) {
             Transaksi::firstOrCreate([

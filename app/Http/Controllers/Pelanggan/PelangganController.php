@@ -27,7 +27,7 @@ class PelangganController extends Controller
      */
     public function daftarKursus()
     {
-        $kursus = Kursus::with('mentor.user')->get();
+        $kursus = Kursus::with('mentor.user', 'jadwalKursus')->get();
         return response()->json($kursus);
     }
 

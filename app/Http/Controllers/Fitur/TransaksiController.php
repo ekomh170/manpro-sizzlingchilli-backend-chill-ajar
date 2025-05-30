@@ -13,7 +13,8 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::with([
             'pelanggan.user',
             'mentor.user',
-            'sesi.kursus'
+            'sesi.kursus',
+            'sesi.jadwalKursus'
         ])->get();
         return response()->json($transaksi);
     }

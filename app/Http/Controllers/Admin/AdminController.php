@@ -180,7 +180,7 @@ class AdminController extends Controller
     public function verifikasiPembayaran(Request $request, $transaksiId)
     {
         $transaksi = Transaksi::findOrFail($transaksiId);
-        $transaksi->statusPembayaran = 'verified';
+        $transaksi->statusPembayaran = 'accepted';
         $transaksi->save();
         // Kirim notifikasi ke pelanggan & mentor (integrasi Telegram)
         return response()->json(['message' => 'Pembayaran berhasil diverifikasi', 'transaksi' => $transaksi]);
