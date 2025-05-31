@@ -7,6 +7,8 @@ use App\Models\Sesi;
 use App\Models\Kursus;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\JadwalKursus;
 
 class MentorController extends Controller
 {
@@ -15,15 +17,55 @@ class MentorController extends Controller
      */
     public function aturJadwal(Request $request)
     {
-        $mentor = Mentor::findOrFail($request->mentor_id);
-        $kursus = Kursus::where('mentor_id', $mentor->id)->firstOrFail();
-        $jadwal = $kursus->jadwalKursus()->create([
+        // Validasi input
+        $request->validate([
+            'kursus_id' => 'required|exists:kursus,id',
+            'id' => 'nullable|exists:jadwal_kursus,id',
+            'tanggal' => 'required|date',
+            'waktu' => 'required',
+            'keterangan' => 'nullable|string',
+            'tempat' => 'nullable|string',
+        ]);
+
+        // Ambil data mentor dan kursus
+        $mentor = Mentor::where('user_id', Auth::id())->firstOrFail();
+        $kursus = Kursus::findOrFail($request->kursus_id);
+
+        // Pastikan mentor memiliki akses ke kursus ini
+        if ($kursus->mentor_id !== $mentor->id) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke kursus ini'], 403);
+        }
+
+        // Buat jadwal pengajaran baru
+        $jadwalData = [
+            'kursus_id' => $request->kursus_id,
             'tanggal' => $request->tanggal,
             'waktu' => $request->waktu,
             'keterangan' => $request->keterangan,
-        ]);
+            'tempat' => $request->tempat,
+        ];
 
-        return response()->json(['message' => 'Jadwal pengajaran ditambahkan', 'jadwal' => $jadwal]);
+        if ($request->has('id')) {
+            // Jika ID jadwal sudah ada, update jadwal yang ada
+            $jadwal = JadwalKursus::findOrFail($request->id);
+            // Pastikan jadwal ini milik kursus yang benar
+            if ($jadwal->kursus_id !== $kursus->id) {
+                return response()->json(['message' => 'Jadwal tidak ditemukan untuk kursus ini'], 404);
+            }
+            // Perbarui jadwal dengan data baru
+            $jadwal->update($jadwalData);
+            $messege = 'Jadwal pengajaran berhasil diperbarui';
+        } else {
+            // Jika ID tidak ada, buat jadwal baru, pastikan kursus ada
+            $jadwal = $kursus->jadwalKursus()->create($jadwalData);
+            $messege = 'Jadwal pengajaran berhasil dibuat';
+        }
+
+        // Jika ada file yang diunggah, simpan file tersebut
+        return response()->json([
+            'message' => $messege ?? 'Jadwal pengajaran berhasil diperbarui',
+            'jadwal' => $jadwal
+        ]);
     }
 
     /**
