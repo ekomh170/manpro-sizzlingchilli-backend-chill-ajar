@@ -28,17 +28,51 @@ class TransaksiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'id' => 'nullable|exists:transaksi,id', // Opsional, untuk update
             'pelanggan_id' => 'required|exists:pelanggan,id',
             'mentor_id' => 'required|exists:mentor,id',
             'sesi_id' => 'required|exists:sesi,id',
             'jumlah' => 'required|numeric',
-            'statusPembayaran' => 'required',
+            'statusPembayaran' => 'required', // Bisa diatur ulang ke 'menunggu_verifikasi'
             'metodePembayaran' => 'required',
             'tanggalPembayaran' => 'required|date',
-            'buktiPembayaran' => 'nullable|string',
+            'buktiPembayaran' => 'image|max:2048', // Opsional untuk update
         ]);
-        $transaksi = Transaksi::create($request->all());
-        return response()->json($transaksi, 201);
+
+        $transaksiData = [
+            'pelanggan_id' => $request->pelanggan_id,
+            'mentor_id' => $request->mentor_id,
+            'sesi_id' => $request->sesi_id,
+            'jumlah' => $request->jumlah,
+            'statusPembayaran' => $request->statusPembayaran,
+            'metodePembayaran' => $request->metodePembayaran,
+            'tanggalPembayaran' => $request->tanggalPembayaran,
+        ];
+
+        if ($request->hasFile('buktiPembayaran')) {
+            $file = $request->file('buktiPembayaran');
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Upload gambar gagal.'], 422);
+            }
+            $path = $file->store('bukti_bayar', 'public');
+            $transaksiData['buktiPembayaran'] = $path;
+        }
+
+        if ($request->has('id')) {
+            // Update transaksi yang sudah ada
+            $transaksi = Transaksi::findOrFail($request->id);
+            $transaksi->update($transaksiData);
+            // Set status kembali ke 'menunggu_verifikasi' saat update bukti
+            $transaksi->statusPembayaran = 'menunggu_verifikasi';
+            $transaksi->save();
+            $message = 'Transaksi diperbarui dan menunggu verifikasi.';
+        } else {
+            // Create transaksi baru
+            $transaksi = Transaksi::create($transaksiData);
+            $message = 'Transaksi baru berhasil dibuat.';
+        }
+
+        return response()->json(['message' => $message, 'transaksi' => $transaksi], $request->has('id') ? 200 : 201);
     }
 
     public function update(Request $request, $id)

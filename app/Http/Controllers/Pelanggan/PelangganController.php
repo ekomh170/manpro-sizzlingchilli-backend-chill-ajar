@@ -112,22 +112,41 @@ class PelangganController extends Controller
         return response()->json($sesi);
     }
 
-    /**
-     * Mengunggah bukti pembayaran (simulasi upload, update status pembayaran)
-     */
     public function unggahBuktiPembayaran(Request $request, $transaksiId)
     {
         $transaksi = \App\Models\Transaksi::findOrFail($transaksiId);
-        $transaksi->buktiPembayaran = $request->buktiPembayaran ?? 'bukti_dummy.jpg';
-        $transaksi->statusPembayaran = 'menunggu_verifikasi'; // Update status setelah upload
+        // Jika status pembayaran sebelumnya 'ditolak', wajib file dan tanggal
+        if ($transaksi->statusPembayaran === 'ditolak') {
+            $request->validate([
+                'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+                'tanggalPembayaran' => 'required|date',
+            ]);
+            $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
+            $transaksi->buktiPembayaran = $buktiPath;
+            $transaksi->tanggalPembayaran = $request->tanggalPembayaran;
+            $transaksi->statusPembayaran = 'menunggu_verifikasi';
+            $transaksi->save();
+            return response()->json([
+                'message' => 'Bukti pembayaran berhasil diunggah ulang, menunggu verifikasi.',
+                'transaksi' => $transaksi
+            ]);
+        }
+        // Jika status pembayaran bukan 'ditolak', tetap bisa upload (simulasi, misal upload pertama kali)
+        // File tidak wajib, hanya update status dan simpan nama file jika ada
+        if ($request->hasFile('buktiPembayaran')) {
+            $request->validate([
+                'buktiPembayaran' => 'file|mimes:jpg,jpeg,png,pdf|max:5120',
+            ]);
+            $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
+            $transaksi->buktiPembayaran = $buktiPath;
+        } else if (!$transaksi->buktiPembayaran) {
+            $transaksi->buktiPembayaran = 'bukti_dummy.jpg';
+        }
+        $transaksi->statusPembayaran = 'menunggu_verifikasi';
         $transaksi->save();
         return response()->json(['message' => 'Bukti pembayaran berhasil diunggah', 'transaksi' => $transaksi]);
     }
 
-    /**
-     * Mengunggah ulang bukti pembayaran jika pembayaran sebelumnya ditolak
-     * Akan mengupdate tanggal pembayaran dan status menjadi menunggu_verifikasi
-     */
     public function unggahUlangBuktiPembayaran(Request $request, $transaksiId)
     {
         $request->validate([
