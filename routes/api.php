@@ -123,6 +123,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/pelanggan/unggah-bukti/{transaksiId}', [PelangganController::class, 'unggahBuktiPembayaran']);
     // [POST] Beri testimoni
     Route::post('/pelanggan/beri-testimoni/{sessionId}', [PelangganController::class, 'beriTestimoni']);
+    // [POST] Unggah ulang bukti pembayaran
+    Route::post('/pelanggan/unggah-ulang-bukti/{transaksiId}', [PelangganController::class, 'unggahUlangBuktiPembayaran']);
 
     // ==================== KURSUS ====================
     // [GET] Daftar kursus

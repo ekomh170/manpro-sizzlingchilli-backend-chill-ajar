@@ -125,6 +125,32 @@ class PelangganController extends Controller
     }
 
     /**
+     * Mengunggah ulang bukti pembayaran jika pembayaran sebelumnya ditolak
+     * Akan mengupdate tanggal pembayaran dan status menjadi menunggu_verifikasi
+     */
+    public function unggahUlangBuktiPembayaran(Request $request, $transaksiId)
+    {
+        $request->validate([
+            'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'tanggalPembayaran' => 'required|date',
+        ]);
+        $transaksi = \App\Models\Transaksi::findOrFail($transaksiId);
+        if ($transaksi->statusPembayaran !== 'ditolak') {
+            return response()->json(['message' => 'Bukti pembayaran hanya dapat diunggah ulang jika status pembayaran ditolak.'], 422);
+        }
+        // Simpan file baru
+        $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
+        $transaksi->buktiPembayaran = $buktiPath;
+        $transaksi->tanggalPembayaran = $request->tanggalPembayaran;
+        $transaksi->statusPembayaran = 'menunggu_verifikasi';
+        $transaksi->save();
+        return response()->json([
+            'message' => 'Bukti pembayaran berhasil diunggah ulang, menunggu verifikasi.',
+            'transaksi' => $transaksi
+        ]);
+    }
+
+    /**
      * Memberikan testimoni setelah sesi selesai
      */
     public function beriTestimoni(Request $request, $sesiId)
