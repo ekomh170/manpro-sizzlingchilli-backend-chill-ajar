@@ -132,7 +132,7 @@ class AdminController extends Controller
     // CRUD Mentor
     public function daftarMentor()
     {
-        return response()->json(Mentor::all());
+        return response()->json(Mentor::with('user')->get());
     }
     public function detailMentor($id)
     {

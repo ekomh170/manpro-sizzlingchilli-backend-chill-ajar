@@ -108,7 +108,7 @@ class PelangganController extends Controller
     {
         $user = $request->user();
         $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
-        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni'])->get();
+        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus'])->get();
         return response()->json($sesi);
     }
 
