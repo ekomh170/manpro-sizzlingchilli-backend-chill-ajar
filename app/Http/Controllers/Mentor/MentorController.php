@@ -120,7 +120,7 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $sesi = $mentor->sesi()->with(['pelanggan.user', 'kursus'])->get();
+        $sesi = $mentor->sesi()->with(['pelanggan.user', 'kursus', 'jadwalKursus'])->get();
         return response()->json($sesi);
     }
 
