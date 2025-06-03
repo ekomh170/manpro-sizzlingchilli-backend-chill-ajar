@@ -1,0 +1,26 @@
+# Instruksi Tim untuk Git Pull
+
+1. Pastikan sudah berada di folder project Laravel:
+   cd /path/ke/project
+
+2. Jalankan perintah berikut untuk menarik update terbaru dari repository:
+   git pull origin main
+
+3. Setelah git pull, jalankan:
+   composer install
+   composer dump-autoload
+
+4. Jika ada perubahan migration atau seeder:
+   php artisan migrate
+   php artisan db:seed
+
+5. Pastikan permission storage dan cache sudah benar:
+   chmod -R 775 storage bootstrap/cache
+
+6. Untuk update asset (jika ada):
+   npm install
+   npm run build
+
+# Catatan:
+- Pastikan tidak ada perubahan lokal yang belum di-commit sebelum git pull.
+- Jika ada konflik, selesaikan terlebih dahulu.

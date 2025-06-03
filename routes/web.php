@@ -35,3 +35,4 @@ Route::get('/pentest/testimoni', function () {
 Route::get('/pentest/admin', function () {
     return view('pentest.admin');
 });
+// (endpoint automation hapus sesi expired dipindah ke api.php)

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 // Import controllers - Auth
 use App\Http\Controllers\Auth\AuthController;
 // Import controllers - Mentor, Pelanggan, Admin
@@ -197,4 +198,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/jadwal-kursus/{id}', [JadwalKursusController::class, 'update']);
     // [DELETE] Hapus jadwal kursus
     Route::delete('/jadwal-kursus/{id}', [JadwalKursusController::class, 'destroy']);
+});
+
+// ==================== PENTEST ====================
+// Endpoint ini bebas CSRF dan bisa dipanggil dari UI automation/admin
+Route::post('/pentest/exec-hapus-sesi-expired', function () {
+    Artisan::call('sesi:hapus-expired');
+    return response()->json([
+        'message' => 'Command sesi:hapus-expired telah dijalankan.',
+        'output' => Artisan::output(),
+    ]);
+});
+Route::post('/pentest/exec-update-rating-mentor', function () {
+    Artisan::call('mentor:update-rating');
+    return response()->json([
+        'message' => 'Command mentor:update-rating telah dijalankan.',
+        'output' => Artisan::output(),
+    ]);
 });

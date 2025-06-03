@@ -1,0 +1,7 @@
+# Cara eksekusi dump-autoload Laravel
+
+Jalankan perintah berikut di root project Laravel:
+
+composer dump-autoload
+
+Perintah ini akan meregenerasi autoload file agar command artisan baru (misal: sesi:hapus-expired) bisa dikenali oleh Laravel.
