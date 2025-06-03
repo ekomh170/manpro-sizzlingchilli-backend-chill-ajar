@@ -66,33 +66,9 @@ class PelangganController extends Controller
             'kursus_id' => 'required|exists:kursus,id',
             'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id',
             'detailKursus' => 'nullable|string',
-
-            // 'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            // 'metodePembayaran' => 'required|string',
-            // 'tanggalPembayaran' => 'required|date',
+            'statusSesi' => 'required|string',
+            // Misal: 'pending', 'confirmed', 'selesai'
         ]);
-
-        // // 1. Buat sesi pengajaran baru
-        // $sesi = Sesi::create($request->except('buktiPembayaran'));
-        // // 2. Buat transaksi pembayaran otomatis untuk sesi ini
-        // $mentor = \App\Models\Mentor::findOrFail($request->mentor_id);
-        // $jumlah = $mentor->biayaPerSesi ?? 25000;
-        // // Simpan file bukti pembayaran
-        // $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
-        // $transaksi = \App\Models\Transaksi::create([
-        //     'pelanggan_id' => $request->pelanggan_id,
-        //     'mentor_id' => $request->mentor_id,
-        //     'sesi_id' => $sesi->id,
-        //     'jumlah' => $jumlah,
-        //     'statusPembayaran' => 'menunggu_verifikasi',
-        //     'metodePembayaran' => $request->metodePembayaran ?? null,
-        //     'tanggalPembayaran' => $request->tanggalPembayaran ?? null,
-        //     'buktiPembayaran' => $buktiPath,
-        // ]);
-        // return response()->json([
-        //     'sesi' => $sesi,
-        //     'transaksi' => $transaksi
-        // ], 201);
 
         $sesi = Sesi::create($request->all());
         return response()->json([
@@ -174,14 +150,41 @@ class PelangganController extends Controller
      */
     public function beriTestimoni(Request $request, $sesiId)
     {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'komentar' => 'nullable|string',
+        ]);
+        $user = $request->user();
+        $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
+        $sesi = Sesi::with(['mentor'])->findOrFail($sesiId);
+        // Pastikan sesi milik pelanggan ini
+        if ($sesi->pelanggan_id !== $pelanggan->id) {
+            return response()->json(['message' => 'Anda tidak berhak memberi testimoni untuk sesi ini.'], 403);
+        }
+        // Pastikan sesi sudah selesai
+        if ($sesi->statusSesi !== 'selesai') {
+            return response()->json(['message' => 'Testimoni hanya dapat diberikan setelah sesi selesai.'], 422);
+        }
+        // Cek jika testimoni sudah ada untuk sesi ini
+        if ($sesi->testimoni) {
+            return response()->json([
+                'message' => 'Testimoni untuk sesi ini sudah pernah diberikan.',
+                'already_testimoni' => true
+            ], 422);
+        }
         $testimoni = Testimoni::create([
             'sesi_id' => $sesiId,
-            'pelanggan_id' => $request->pelanggan_id,
-            'mentor_id' => $request->mentor_id,
+            'pelanggan_id' => $pelanggan->id,
+            'mentor_id' => $sesi->mentor_id,
             'rating' => $request->rating,
             'komentar' => $request->komentar,
             'tanggal' => now(),
         ]);
-        return response()->json($testimoni, 201);
+        return response()->json([
+            'message' => 'Testimoni berhasil dikirim',
+            'testimoni' => $testimoni,
+            'sesi' => $sesi,
+            'mentor' => $sesi->mentor
+        ], 201);
     }
 }

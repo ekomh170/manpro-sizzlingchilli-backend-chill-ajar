@@ -17,6 +17,7 @@ class SesiSeeder extends Seeder
         $pelangganIds = Pelanggan::pluck('id')->toArray();
         $kursusIds = Kursus::pluck('id')->toArray();
         $jadwalIds = JadwalKursus::pluck('id')->toArray();
+        $statusList = ['pending', 'confirmed', 'selesai'];
         // Buat sesi untuk setiap kombinasi mentor, pelanggan, kursus, dan jadwal_kursus
         $sesiList = [];
         foreach ($mentorIds as $mentorId) {
@@ -31,7 +32,7 @@ class SesiSeeder extends Seeder
                                 'kursus_id' => $kursusId,
                                 'jadwal_kursus_id' => $jadwalId,
                                 'detailKursus' => 'Materi sesi antara mentor ' . (\App\Models\Mentor::find($mentorId)?->user?->nama ?? '-') . ' dan pelanggan ' . (\App\Models\Pelanggan::find($pelangganId)?->user?->nama ?? '-') . '.',
-                                'statusSesi' => 'booked',
+                                'statusSesi' => $statusList[array_rand($statusList)],
                             ];
                         }
                     }
@@ -47,7 +48,7 @@ class SesiSeeder extends Seeder
                     'kursus_id' => $kursusIds[array_rand($kursusIds)],
                     'jadwal_kursus_id' => $jadwalIds[array_rand($jadwalIds)],
                     'detailKursus' => 'Materi sesi ke-' . $i . ' antara mentor ' . (\App\Models\Mentor::find($mentorIds[array_rand($mentorIds)])?->user?->nama ?? '-') . ' dan pelanggan ' . (\App\Models\Pelanggan::find($pelangganIds[array_rand($pelangganIds)])?->user?->nama ?? '-') . '.',
-                    'statusSesi' => 'booked',
+                    'statusSesi' => $statusList[array_rand($statusList)],
                 ];
             }
         }

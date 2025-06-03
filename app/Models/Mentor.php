@@ -55,4 +55,13 @@ class Mentor extends Model
     {
         return $this->hasMany(Transaksi::class, 'mentor_id');
     }
+
+    /**
+     * Relasi dengan model Testimoni
+     * Menunjukkan bahwa seorang Mentor bisa memiliki banyak Testimoni.
+     */
+    public function testimoni()
+    {
+        return $this->hasMany(Testimoni::class, 'mentor_id');
+    }
 }
