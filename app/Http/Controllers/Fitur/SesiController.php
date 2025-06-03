@@ -50,15 +50,15 @@ class SesiController extends Controller
     public function konfirmasiSesi(Request $request, $id)
     {
         $sesi = Sesi::findOrFail($id);
-        $sesi->statusSesi = 'confirmed';
+        $sesi->statusSesi = 'started';
         $sesi->save();
-        return response()->json(['message' => 'Sesi dikonfirmasi', 'sesi' => $sesi]);
+        return response()->json(['message' => 'Sesi dimulai', 'sesi' => $sesi]);
     }
 
     public function selesaikanSesi(Request $request, $id)
     {
         $sesi = Sesi::findOrFail($id);
-        $sesi->statusSesi = 'selesai';
+        $sesi->statusSesi = 'end';
         $sesi->save();
         return response()->json(['message' => 'Sesi selesai', 'sesi' => $sesi]);
     }

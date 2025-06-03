@@ -162,14 +162,20 @@ class PelangganController extends Controller
             return response()->json(['message' => 'Anda tidak berhak memberi testimoni untuk sesi ini.'], 403);
         }
         // Pastikan sesi sudah selesai
-        if ($sesi->statusSesi !== 'selesai') {
+        if ($sesi->statusSesi !== 'end') {
             return response()->json(['message' => 'Testimoni hanya dapat diberikan setelah sesi selesai.'], 422);
         }
         // Cek jika testimoni sudah ada untuk sesi ini
         if ($sesi->testimoni) {
+            // Jika sudah ada testimoni, status sesi diubah ke 'reviewed' jika belum
+            if ($sesi->statusSesi !== 'reviewed') {
+                $sesi->statusSesi = 'reviewed';
+                $sesi->save();
+            }
             return response()->json([
                 'message' => 'Testimoni untuk sesi ini sudah pernah diberikan.',
-                'already_testimoni' => true
+                'already_testimoni' => true,
+                'statusSesi' => $sesi->statusSesi
             ], 422);
         }
         $testimoni = Testimoni::create([
@@ -180,6 +186,9 @@ class PelangganController extends Controller
             'komentar' => $request->komentar,
             'tanggal' => now(),
         ]);
+        // Setelah testimoni berhasil, update status sesi ke 'reviewed'
+        $sesi->statusSesi = 'reviewed';
+        $sesi->save();
         return response()->json([
             'message' => 'Testimoni berhasil dikirim',
             'testimoni' => $testimoni,

@@ -101,7 +101,7 @@ class TransaksiController extends Controller
     public function verifikasiPembayaran(Request $request, $id)
     {
         $transaksi = Transaksi::findOrFail($id);
-        $transaksi->statusPembayaran = 'verified';
+        $transaksi->statusPembayaran = 'accepted';
         $transaksi->save();
         return response()->json(['message' => 'Pembayaran berhasil diverifikasi', 'transaksi' => $transaksi]);
     }

@@ -86,7 +86,7 @@ class MentorController extends Controller
     public function selesaiSesi(Request $request, $sesiId)
     {
         $sesi = Sesi::findOrFail($sesiId);
-        $sesi->statusSesi = 'selesai';
+        $sesi->statusSesi = 'end';
         $sesi->save();
 
         return response()->json(['message' => 'Sesi pengajaran selesai']);
