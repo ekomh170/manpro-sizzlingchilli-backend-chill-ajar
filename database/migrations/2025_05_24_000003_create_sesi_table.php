@@ -14,7 +14,12 @@ return new class extends Migration {
             $table->foreignId('kursus_id')->constrained('kursus')->onDelete('cascade');
             $table->foreignId('jadwal_kursus_id')->constrained('jadwal_kursus')->onDelete('cascade');
             $table->string('detailKursus')->nullable();
-            $table->string('statusSesi');
+            $table->string('statusSesi'); //  ['pending', 'started', 'end', 'reviewed'];
+            // pending : sesi belum dimulai
+            // started : sesi sedang berlangsung
+            // end : sesi telah selesai
+            // reviewed : sesi telah direview oleh mentor
+
             $table->timestamps();
         });
     }
