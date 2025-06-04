@@ -15,30 +15,36 @@ class TestimoniSeeder extends Seeder
         $mentorObjs = Mentor::with('user')->get();
         $pelangganObjs = Pelanggan::with('user')->get();
         $sesiIds = Sesi::pluck('id')->toArray();
-        // Buat testimoni untuk setiap kombinasi mentor dan pelanggan (user akun)
-        foreach ($mentorObjs as $mentor) {
-            foreach ($pelangganObjs as $pelanggan) {
-                // Cari sesi yang cocok (jika ada) untuk relasi ini
-                $sesiId = null;
-                foreach ($sesiIds as $sid) {
-                    $sesi = \App\Models\Sesi::find($sid);
-                    if ($sesi && $sesi->mentor_id == $mentor->id && $sesi->pelanggan_id == $pelanggan->id) {
-                        $sesiId = $sid;
-                        break;
-                    }
+        // Buat testimoni hanya untuk sesi yang statusnya 'reviewed'
+        $sesiReviewed = Sesi::where('statusSesi', 'reviewed')->get();
+        foreach ($sesiReviewed as $sesi) {
+            $mentor = $sesi->mentor;
+            $pelanggan = $sesi->pelanggan;
+            $mentorNama = $mentor && $mentor->user ? $mentor->user->nama : 'Mentor';
+            $pelangganNama = $pelanggan && $pelanggan->user ? $pelanggan->user->nama : 'Pelanggan';
+            $namaKursus = $sesi->kursus ? $sesi->kursus->namaKursus : 'Kursus';
+            // Deteksi mentor cewek berdasarkan nama depan (misal: Siti, Dewi, Fatiya, dsb)
+            $namaCewek = ['Siti', 'Dewi', 'Fatiya', 'Sari', 'Putri', 'Lina', 'Tia', 'Rina', 'Ayu', 'Labibah', 'Lestari', 'Marlina', 'Rahmawati', 'Nurhaliza'];
+            $isCewek = false;
+            foreach ($namaCewek as $namaC) {
+                if (stripos($mentorNama, $namaC) === 0) {
+                    $isCewek = true;
+                    break;
                 }
-                $mentorNama = $mentor->user ? $mentor->user->nama : 'Mentor';
-                $pelangganNama = $pelanggan->user ? $pelanggan->user->nama : 'Pelanggan';
-                Testimoni::firstOrCreate([
-                    'mentor_id' => $mentor->id,
-                    'pelanggan_id' => $pelanggan->id,
-                ], [
-                    'sesi_id' => $sesiId ?? ($sesiIds ? $sesiIds[array_rand($sesiIds)] : null),
-                    'rating' => rand(3, 5),
-                    'komentar' => "Testimoni dari $pelangganNama untuk $mentorNama. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant.",
-                    'tanggal' => now()->subDays(rand(0, 30)),
-                ]);
             }
+            $komentar = "Testimoni dari $pelangganNama untuk $mentorNama pada kursus $namaKursus. Materi sangat bermanfaat dan penjelasan mudah dipahami!";
+            if ($isCewek) {
+                $komentar .= " Mentor cantik dan ramah.";
+            }
+            Testimoni::firstOrCreate([
+                'mentor_id' => $sesi->mentor_id,
+                'pelanggan_id' => $sesi->pelanggan_id,
+                'sesi_id' => $sesi->id,
+            ], [
+                'rating' => rand(3, 5),
+                'komentar' => $komentar,
+                'tanggal' => now()->subDays(rand(0, 30)),
+            ]);
         }
     }
 }

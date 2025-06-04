@@ -17,39 +17,34 @@ class SesiSeeder extends Seeder
         $pelangganIds = Pelanggan::pluck('id')->toArray();
         $kursusIds = Kursus::pluck('id')->toArray();
         $jadwalIds = JadwalKursus::pluck('id')->toArray();
-        $statusList = ['pending', 'confirmed', 'selesai'];
-        // Buat sesi untuk setiap kombinasi mentor, pelanggan, kursus, dan jadwal_kursus
+        $statusList = ['pending', 'started', 'end', 'reviewed'];
+        // Hapus seluruh sesiList random, hanya generate 4 sesi unik per pelanggan
         $sesiList = [];
-        foreach ($mentorIds as $mentorId) {
-            foreach ($pelangganIds as $pelangganId) {
-                foreach ($kursusIds as $kursusId) {
-                    foreach ($jadwalIds as $jadwalId) {
-                        // Batasi jumlah sesi agar tidak terlalu banyak (misal: 1 sesi per kombinasi mentor-pelanggan)
-                        if (rand(0, 100) < 2) { // 2% chance, randomize for variety
-                            $sesiList[] = [
-                                'mentor_id' => $mentorId,
-                                'pelanggan_id' => $pelangganId,
-                                'kursus_id' => $kursusId,
-                                'jadwal_kursus_id' => $jadwalId,
-                                'detailKursus' => 'Materi sesi antara mentor ' . (\App\Models\Mentor::find($mentorId)?->user?->nama ?? '-') . ' dan pelanggan ' . (\App\Models\Pelanggan::find($pelangganId)?->user?->nama ?? '-') . '.',
-                                'statusSesi' => $statusList[array_rand($statusList)],
-                            ];
-                        }
+        // Setiap pelanggan punya 5 sesi: 2 pending, 1 started, 1 end, 1 reviewed
+        $statusAktifList = ['pending', 'pending', 'started', 'end', 'reviewed'];
+        foreach ($pelangganIds as $pelangganId) {
+            // Ambil 5 kursus acak (boleh sama/beda mentor)
+            $kursusArr = \App\Models\Kursus::inRandomOrder()->limit(5)->get();
+            for ($i = 0; $i < 5; $i++) {
+                $kursus = $kursusArr[$i] ?? \App\Models\Kursus::inRandomOrder()->first();
+                if ($kursus) {
+                    $kursusId = $kursus->id;
+                    $mentorId = $kursus->mentor_id;
+                    // Cari jadwal yang sesuai kursus
+                    $jadwal = \App\Models\JadwalKursus::where('kursus_id', $kursusId)->inRandomOrder()->first();
+                    if ($jadwal) {
+                        $jadwalId = $jadwal->id;
+                        $statusSesi = $statusAktifList[$i];
+                        $sesiList[] = [
+                            'mentor_id' => $mentorId,
+                            'pelanggan_id' => $pelangganId,
+                            'kursus_id' => $kursusId,
+                            'jadwal_kursus_id' => $jadwalId,
+                            'detailKursus' => 'Sesi history (' . $statusSesi . ') antara mentor ' . (\App\Models\Mentor::find($mentorId)?->user?->nama ?? '-') . ' dan pelanggan ' . (\App\Models\Pelanggan::find($pelangganId)?->user?->nama ?? '-') . '.',
+                            'statusSesi' => $statusSesi,
+                        ];
                     }
                 }
-            }
-        }
-        // Jika terlalu sedikit, tambahkan random
-        if (count($sesiList) < 10) {
-            for ($i = 1; $i <= 10; $i++) {
-                $sesiList[] = [
-                    'mentor_id' => $mentorIds[array_rand($mentorIds)],
-                    'pelanggan_id' => $pelangganIds[array_rand($pelangganIds)],
-                    'kursus_id' => $kursusIds[array_rand($kursusIds)],
-                    'jadwal_kursus_id' => $jadwalIds[array_rand($jadwalIds)],
-                    'detailKursus' => 'Materi sesi ke-' . $i . ' antara mentor ' . (\App\Models\Mentor::find($mentorIds[array_rand($mentorIds)])?->user?->nama ?? '-') . ' dan pelanggan ' . (\App\Models\Pelanggan::find($pelangganIds[array_rand($pelangganIds)])?->user?->nama ?? '-') . '.',
-                    'statusSesi' => $statusList[array_rand($statusList)],
-                ];
             }
         }
         foreach ($sesiList as $sesi) {
