@@ -136,7 +136,7 @@ class AdminController extends Controller
     }
     public function detailMentor($id)
     {
-        return response()->json(Mentor::findOrFail($id));
+        return response()->json(Mentor::with('user')->findOrFail($id));
     }
     public function perbaruiMentor(Request $request, $id)
     {
