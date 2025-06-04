@@ -16,7 +16,7 @@ class TestimoniController extends FiturController
      */
     public function index()
     {
-        return response()->json(Testimoni::with(['sesi', 'pelanggan', 'mentor'])->get());
+        return response()->json(Testimoni::with(['sesi.kursus', 'pelanggan.user', 'mentor.user'])->get());
     }
 
     /**
