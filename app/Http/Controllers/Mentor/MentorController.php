@@ -69,16 +69,17 @@ class MentorController extends Controller
     }
 
     /**
-     * Konfirmasi sesi pengajaran
+     * Mulai sesi pengajaran
      */
-    public function konfirmasiSesi(Request $request, $sesiId)
+    public function mulaiSesi(Request $request, $sesiId)
     {
         $sesi = Sesi::findOrFail($sesiId);
-        $sesi->statusSesi = 'confirmed';
+        $sesi->statusSesi = 'started';
         $sesi->save();
 
         return response()->json(['message' => 'Sesi pengajaran dikonfirmasi']);
     }
+
 
     /**
      * Menyelesaikan sesi pengajaran
@@ -131,7 +132,17 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $testimoni = $mentor->sesi()->with('testimoni')->get()->pluck('testimoni')->filter();
-        return response()->json($testimoni->flatten());
+        
+        // Ambil sesi dengan relasi testimoni, pelanggan, kursus, dan jadwal_kursus
+        $sesi = $mentor->sesi()
+            ->with([
+                'testimoni',
+                'pelanggan.user', // Relasi pelanggan dan user dari pelanggan
+                'kursus',        // Relasi kursus
+            ])
+            ->has('testimoni') // Hanya ambil sesi yang memiliki testimoni
+            ->get();
+    
+        return response()->json($sesi);
     }
 }
