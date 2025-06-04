@@ -12,40 +12,40 @@ class KursusSeeder extends Seeder
     {
         $mentorIds = Mentor::pluck('id')->toArray();
         $namaKursusList = [
-            'MANAJEMEN PROYEK',
-            'KECERDASAN ARTIFISIAL',
-            'CLOUD COMPUTING',
-            'ETIKA PROFESI',
-            'KEAMANAN KOMPUTER DAN JARINGAN',
-            'JAMINAN KUALITAS PERANGKAT LUNAK',
-            'PEMROGRAMAN FRONTEND',
-            'VISUALISASI DATA',
-            'REKAYASA PERANGKAT LUNAK',
-            'BIG DATA',
-            'KEWIRAUSAHAAN',
-            'BAHASA INGGRIS 2',
-            'TEORI BAHASA DAN OTOMATA',
-            'PEMROGRAMAN BACKEND',
-            'POLA DESAIN PERANGKAT LUNAK',
-            'KEAMANAN WEB',
+            'Manajemen Proyek',
+            'Kecerdasan Artifisial',
+            'Cloud Computing',
+            'Etika Profesi',
+            'Keamanan Komputer dan Jaringan',
+            'Jaminan Kualitas Perangkat Lunak',
+            'Pemrograman Frontend',
+            'Visualisasi Data',
+            'Rekayasa Perangkat Lunak',
+            'Big Data',
+            'Kewirausahaan',
+            'Bahasa Inggris',
+            'Teori Bahasa dan Otomata',
+            'Pemrograman Backend',
+            'Pola Desain Perangkat Lunak',
+            'Keamanan Web',
         ];
         $deskripsiKursus = [
-            'MANAJEMEN PROYEK' => 'Belajar teknik perencanaan, pelaksanaan, dan evaluasi proyek IT secara profesional.',
-            'KECERDASAN ARTIFISIAL' => 'Mengenal konsep, algoritma, dan aplikasi AI dalam dunia nyata.',
-            'CLOUD COMPUTING' => 'Penerapan komputasi awan untuk solusi bisnis dan pengembangan aplikasi modern.',
-            'ETIKA PROFESI' => 'Memahami etika, tanggung jawab, dan profesionalisme di bidang teknologi informasi.',
-            'KEAMANAN KOMPUTER DAN JARINGAN' => 'Dasar-dasar keamanan sistem, jaringan, dan perlindungan data digital.',
-            'JAMINAN KUALITAS PERANGKAT LUNAK' => 'Teknik pengujian, validasi, dan jaminan kualitas software.',
-            'PEMROGRAMAN FRONTEND' => 'Membangun antarmuka web modern dengan HTML, CSS, dan JavaScript.',
-            'VISUALISASI DATA' => 'Mengolah dan menampilkan data secara visual untuk insight bisnis.',
-            'REKAYASA PERANGKAT LUNAK' => 'Prinsip, metodologi, dan praktik pengembangan perangkat lunak skala besar.',
-            'BIG DATA' => 'Pengelolaan, analisis, dan pemanfaatan data berukuran besar.',
-            'KEWIRAUSAHAAN' => 'Membangun mindset dan skill bisnis di bidang teknologi.',
-            'BAHASA INGGRIS 2' => 'Peningkatan kemampuan bahasa Inggris untuk dunia profesional IT.',
-            'TEORI BAHASA DAN OTOMATA' => 'Dasar teori komputasi, automata, dan bahasa formal.',
-            'PEMROGRAMAN BACKEND' => 'Membangun API dan logika server dengan framework backend populer.',
-            'POLA DESAIN PERANGKAT LUNAK' => 'Menerapkan design pattern untuk solusi software yang scalable.',
-            'KEAMANAN WEB' => 'Strategi dan teknik melindungi aplikasi web dari serangan.',
+            'Manajemen Proyek' => 'Belajar teknik perencanaan, pelaksanaan, dan evaluasi proyek IT secara profesional.',
+            'Kecerdasan Artifisial' => 'Mengenal konsep, algoritma, dan aplikasi AI dalam dunia nyata.',
+            'Cloud Computing' => 'Penerapan komputasi awan untuk solusi bisnis dan pengembangan aplikasi modern.',
+            'Etika Profesi' => 'Memahami etika, tanggung jawab, dan profesionalisme di bidang teknologi informasi.',
+            'Keamanan Komputer dan Jaringan' => 'Dasar-dasar keamanan sistem, jaringan, dan perlindungan data digital.',
+            'Jaminan Kualitas Perangkat Lunak' => 'Teknik pengujian, validasi, dan jaminan kualitas software.',
+            'Pemrograman Frontend' => 'Membangun antarmuka web modern dengan HTML, CSS, dan JavaScript.',
+            'Visualisasi Data' => 'Mengolah dan menampilkan data secara visual untuk insight bisnis.',
+            'Rekayasa Perangkat Lunak' => 'Prinsip, metodologi, dan praktik pengembangan perangkat lunak skala besar.',
+            'Big Data' => 'Pengelolaan, analisis, dan pemanfaatan data berukuran besar.',
+            'Kewirausahaan' => 'Membangun mindset dan skill bisnis di bidang teknologi.',
+            'Bahasa Inggris' => 'Peningkatan kemampuan bahasa Inggris untuk dunia profesional IT.',
+            'Teori Bahasa dan Otomata' => 'Dasar teori komputasi, automata, dan bahasa formal.',
+            'Pemrograman Backend' => 'Membangun API dan logika server dengan framework backend populer.',
+            'Pola Desain Perangkat Lunak' => 'Menerapkan design pattern untuk solusi software yang scalable.',
+            'Keamanan Web' => 'Strategi dan teknik melindungi aplikasi web dari serangan.',
         ];
         shuffle($namaKursusList);
         // Setiap mentor akan dapat beberapa kursus dari daftar
@@ -57,11 +57,13 @@ class KursusSeeder extends Seeder
         foreach ($mentorIds as $mentorId) {
             for ($j = 0; $j < $kursusPerMentor && $idx < $kursusCount; $j++, $idx++) {
                 $nama = $namaKursusList[$idx];
+                // Acak gayaMengajar antara 'online' dan 'offline' untuk setiap kursus
+                $gayaMengajar = ['online', 'offline'][array_rand(['online', 'offline'])];
                 $kursusList[] = [
                     'namaKursus' => $nama,
                     'deskripsi' => $deskripsiKursus[$nama] ?? ('Deskripsi untuk ' . $nama),
                     'mentor_id' => $mentorId,
-                    'gayaMengajar' => $idx % 2 === 0 ? 'online' : 'offline',
+                    'gayaMengajar' => $gayaMengajar,
                     'fotoKursus' => 'foto_kursus/default.jpg', // default semua
                 ];
             }

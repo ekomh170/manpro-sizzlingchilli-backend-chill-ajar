@@ -24,6 +24,10 @@ class JadwalKursusSeeder extends Seeder
             'Kampus A - Rest Area Kampus di Lantai Bawah',
             'Kampus A - Lantai Paling Atas Perpus',
             'Kampus B - Rest Area B1',
+            'Kampus Pusat - Ruang A, Lantai 2',
+            'Rumah Mentor - Ruang Kerja',
+            'Taman Belakang Kampus A',
+            'Taman Belakang Kampus B',
         ];
         $tempatIdx = 0;
         foreach ($mentorKursus as $userId => $kursusIds) {
@@ -42,6 +46,20 @@ class JadwalKursusSeeder extends Seeder
                     'waktu' => sprintf('%02d:00:00', $jam),
                     'keterangan' => 'Jadwal mentor user_id ' . $userId,
                     'tempat' => $tempatIdx < count($tempatList) ? $tempatList[$tempatIdx++] : 'Ruang A - Kampus Pusat, Lantai 2',
+                ]);
+            }
+        }
+
+        // Untuk setiap kursus, pastikan minimal ada 1 jadwal
+        foreach ($kursusMentor as $k) {
+            $adaJadwal = JadwalKursus::where('kursus_id', $k->id)->exists();
+            if (!$adaJadwal) {
+                JadwalKursus::create([
+                    'kursus_id' => $k->id,
+                    'tanggal' => now()->addDays(rand(1, 10))->format('Y-m-d'),
+                    'waktu' => sprintf('%02d:00:00', rand(8, 18)),
+                    'keterangan' => 'Jadwal minimal otomatis',
+                    'tempat' => 'Ruang A - Kampus Pusat, Lantai 2',
                 ]);
             }
         }
