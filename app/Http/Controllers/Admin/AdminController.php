@@ -7,6 +7,7 @@ use App\Models\Mentor;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -194,8 +195,57 @@ class AdminController extends Controller
         $transaksi = Transaksi::findOrFail($transaksiId);
         $transaksi->statusPembayaran = 'rejected';
         $transaksi->save();
-        // Kirim notifikasi ke pelanggan (integrasi Telegram)
-        return response()->json(['message' => 'Pembayaran ditolak', 'transaksi' => $transaksi]);
+
+        // Kirim notifikasi WhatsApp ke pelanggan untuk upload ulang bukti pembayaran
+        $waResult = null;
+        try {
+            $pelanggan = $transaksi->pelanggan;
+            if ($pelanggan && $pelanggan->user && $pelanggan->user->nomorTelepon) {
+                $waNumber = $pelanggan->user->nomorTelepon;
+                // Format nomor WhatsApp pelanggan ke standar Indonesia (628xxxxxxxxxx)
+                $waNumber = trim($waNumber);
+                if (strpos($waNumber, '62') === 0 && substr($waNumber, 2, 1) !== '8') {
+                    $waNumber = '628' . substr($waNumber, 2);
+                } elseif (strpos($waNumber, '08') === 0) {
+                    $waNumber = '62' . substr($waNumber, 1);
+                }
+                $waNumber = preg_replace('/[^0-9]/', '', $waNumber);
+                $mentorName = $transaksi->mentor && $transaksi->mentor->user ? ($transaksi->mentor->user->nama ?? '-') : '-';
+                $kursusName = $transaksi->sesi && $transaksi->sesi->kursus ? ($transaksi->sesi->kursus->namaKursus ?? '-') : '-';
+                $pelangganName = $pelanggan && $pelanggan->user ? ($pelanggan->user->nama ?? '-') : '-';
+                $message = "Halo kak $pelangganName, kami dari tim Chill Ajar ingin menyampaikan bahwa pembayaran Anda untuk sesi bersama mentor $mentorName (kursus $kursusName) ditolak.\n\nSilakan upload ulang bukti pembayaran melalui website Chill Ajar agar sesi Anda dapat diproses kembali. Segera upload agar kami bisa segera proses ya! 🙏😊 Terima kasih.";
+                $client = new \GuzzleHttp\Client();
+                $gatewayUrl = env('WHATSAPP_GATEWAY_URL', 'http://localhost:3000/send-message');
+                $response = $client->post($gatewayUrl, [
+                    'json' => [
+                        'phone' => $waNumber,
+                        'message' => $message,
+                        'sender' => '6285173028290', // nomor sistem
+                    ],
+                    'timeout' => 10,
+                ]);
+                $waResult = json_decode($response->getBody()->getContents(), true);
+            } else {
+                $waResult = [
+                    'status' => false,
+                    'message' => 'Nomor WhatsApp pelanggan tidak ditemukan',
+                ];
+            }
+        } catch (\Exception $e) {
+            // Log error jika gagal kirim WhatsApp
+            Log::error('Gagal kirim WhatsApp ke pelanggan (pembayaran ditolak): ' . $e->getMessage());
+            $waResult = [
+                'status' => false,
+                'message' => 'Gagal mengirim WhatsApp ke pelanggan. Silakan cek koneksi gateway atau nomor pelanggan.',
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Pembayaran ditolak',
+            'transaksi' => $transaksi,
+            'wa_result' => $waResult,
+        ]);
     }
 
     /**
