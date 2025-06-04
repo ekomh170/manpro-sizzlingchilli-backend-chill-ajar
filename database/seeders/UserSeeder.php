@@ -130,13 +130,24 @@ class UserSeeder extends Seeder
             ];
         }
 
-        // 5 pelanggan tambahan dengan nama, email, dan kota Indonesia acak
+        // 11 pelanggan tambahan dengan nama, email, dan kota Indonesia acak
         $namaPelanggan = [
             'Rina Wulandari',
             'Andi Saputra',
             'Sari Dewi',
             'Dian Prasetyo',
             'Yusuf Maulana',
+            'Putri Ayu',
+            'Rizky Ramadhan',
+            'Lina Marlina',
+            'Bayu Nugroho',
+            'Tia Rahmawati',
+            'Dewi Anggraini',
+            'Nina Kartika',
+            'Bambang Pamungkas',
+            'Sinta Oktaviani',
+            'Rudi Hartono',
+            'Mega Sari',
         ];
         $kotaPelanggan = [
             'Bandung',
@@ -144,8 +155,19 @@ class UserSeeder extends Seeder
             'Medan',
             'Makassar',
             'Palembang',
+            'Semarang',
+            'Depok',
+            'Bekasi',
+            'Bogor',
+            'Malang',
+            'Padang',
+            'Solo',
+            'Cirebon',
+            'Pontianak',
+            'Banjarmasin',
+            'Pekanbaru',
         ];
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 11; $i++) {
             $nama = $namaPelanggan[$i - 1];
             $namaEmail = strtolower(str_replace(' ', '', $nama));
             $users[] = [
