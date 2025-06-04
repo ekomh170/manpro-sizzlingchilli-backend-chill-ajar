@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\JadwalKursus;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class MentorController extends Controller
 {
@@ -89,7 +91,57 @@ class MentorController extends Controller
         $sesi->statusSesi = 'end';
         $sesi->save();
 
-        return response()->json(['message' => 'Sesi pengajaran selesai']);
+        // Kirim notifikasi WhatsApp ke pelanggan via whatsapp-web.js gateway
+        $waResult = null;
+        try {
+            // Ambil pelanggan dari relasi langsung field pelanggan_id
+            $pelanggan = \App\Models\Pelanggan::with('user')->find($sesi->pelanggan_id);
+            if ($pelanggan && $pelanggan->user && $pelanggan->user->nomorTelepon) {
+                $waNumber = $pelanggan->user->nomorTelepon;
+                // Format nomor WhatsApp pelanggan ke standar Indonesia (628xxxxxxxxxx)
+                // Jika nomor diawali '62' tapi setelahnya bukan '8', tambahkan '8' setelah '62'
+                if (strpos($waNumber, '62') === 0 && substr($waNumber, 2, 1) !== '8') {
+                    $waNumber = '628' . substr($waNumber, 2);
+                    // Jika nomor diawali '08', ubah menjadi '628'
+                } elseif (strpos($waNumber, '08') === 0) {
+                    $waNumber = '62' . substr($waNumber, 1);
+                }
+                // Hapus semua karakter selain angka
+                $waNumber = preg_replace('/[^0-9]/', '', $waNumber);
+                $mentorName = $sesi->mentor ? ($sesi->mentor->user->nama ?? '-') : '-';
+                $kursusName = $sesi->kursus ? ($sesi->kursus->namaKursus ?? '-') : '-';
+                $pelangganName = $pelanggan && $pelanggan->user ? ($pelanggan->user->nama ?? '-') : '-';
+                $message = "Halo kak $pelangganName, kami dari tim Chill Ajar ingin menyampaikan bahwa sesi pengajaran Anda bersama mentor $mentorName tentang $kursusName telah selesai.\n\nJangan lupa untuk memberikan testimoni melalui aplikasi ya! Testimoni Anda membantu kami untuk berkembang 😊🙏 Terima kasih!";
+                $client = new Client();
+                $gatewayUrl = env('WHATSAPP_GATEWAY_URL', 'http://localhost:3000/send-message');
+                $response = $client->post($gatewayUrl, [
+                    'json' => [
+                        'phone' => $waNumber,
+                        'message' => $message,
+                        'sender' => '6285173028290', // nomor sistem
+                    ],
+                    'timeout' => 10,
+                ]);
+                $waResult = json_decode($response->getBody()->getContents(), true);
+            } else {
+                $waResult = [
+                    'status' => false,
+                    'message' => 'Nomor WhatsApp pelanggan tidak ditemukan',
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error('Gagal kirim WhatsApp: ' . $e->getMessage());
+            $waResult = [
+                'status' => false,
+                'message' => 'Gagal kirim WhatsApp',
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Sesi pengajaran selesai',
+            'wa_result' => $waResult,
+        ]);
     }
 
     /**
