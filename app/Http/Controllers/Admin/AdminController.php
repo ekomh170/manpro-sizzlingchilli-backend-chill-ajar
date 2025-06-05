@@ -155,7 +155,8 @@ class AdminController extends Controller
     // CRUD Pelanggan
     public function daftarPelanggan()
     {
-        return response()->json(\App\Models\Pelanggan::all());
+        // Tampilkan pelanggan beserta relasi user
+        return response()->json(\App\Models\Pelanggan::with('user')->get());
     }
     public function detailPelanggan($id)
     {

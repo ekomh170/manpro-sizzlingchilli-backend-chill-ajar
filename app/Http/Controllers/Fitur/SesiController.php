@@ -10,7 +10,14 @@ class SesiController extends Controller
 {
     public function index()
     {
-        return response()->json(Sesi::with(['mentor', 'pelanggan', 'kursus', 'jadwalKursus', 'transaksi', 'testimoni'])->get());
+        return response()->json(Sesi::with([
+            'mentor.user',
+            'pelanggan.user',
+            'kursus',
+            'jadwalKursus',
+            'transaksi',
+            'testimoni'
+        ])->get());
     }
 
     public function show($id)
