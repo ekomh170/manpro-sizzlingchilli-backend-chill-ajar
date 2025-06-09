@@ -184,8 +184,99 @@ class AdminController extends Controller
         $transaksi = Transaksi::findOrFail($transaksiId);
         $transaksi->statusPembayaran = 'accepted';
         $transaksi->save();
-        // Kirim notifikasi ke pelanggan & mentor (integrasi Telegram)
-        return response()->json(['message' => 'Pembayaran berhasil diverifikasi', 'transaksi' => $transaksi]);
+
+        // Kirim notifikasi WhatsApp ke pelanggan
+        $waResultPelanggan = null;
+        try {
+            $pelanggan = $transaksi->pelanggan;
+            $mentor = $transaksi->mentor;
+            if ($pelanggan && $pelanggan->user && $pelanggan->user->nomorTelepon) {
+                $waNumber = $pelanggan->user->nomorTelepon;
+                $waNumber = trim($waNumber);
+                if (strpos($waNumber, '62') === 0 && substr($waNumber, 2, 1) !== '8') {
+                    $waNumber = '628' . substr($waNumber, 2);
+                } elseif (strpos($waNumber, '08') === 0) {
+                    $waNumber = '62' . substr($waNumber, 1);
+                }
+                $waNumber = preg_replace('/[^0-9]/', '', $waNumber);
+                $mentorName = $mentor && $mentor->user ? ($mentor->user->nama ?? '-') : '-';
+                $kursusName = $transaksi->sesi && $transaksi->sesi->kursus ? ($transaksi->sesi->kursus->namaKursus ?? '-') : '-';
+                $pelangganName = $pelanggan && $pelanggan->user ? ($pelanggan->user->nama ?? '-') : '-';
+                $message = "Halo kak $pelangganName, pembayaran Anda untuk sesi bersama mentor $mentorName (kursus $kursusName) telah diverifikasi. Sesi Anda akan segera diproses. Terima kasih telah menggunakan Chill Ajar!";
+                $client = new \GuzzleHttp\Client();
+                $gatewayUrl = env('WHATSAPP_GATEWAY_URL', 'http://localhost:3000/send-message');
+                $response = $client->post($gatewayUrl, [
+                    'json' => [
+                        'phone' => $waNumber,
+                        'message' => $message,
+                        'sender' => '6285173028290',
+                    ],
+                    'timeout' => 10,
+                ]);
+                $waResultPelanggan = json_decode($response->getBody()->getContents(), true);
+            } else {
+                $waResultPelanggan = [
+                    'status' => false,
+                    'message' => 'Nomor WhatsApp pelanggan tidak ditemukan',
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error('Gagal kirim WhatsApp ke pelanggan (pembayaran diverifikasi): ' . $e->getMessage());
+            $waResultPelanggan = [
+                'status' => false,
+                'message' => 'Gagal mengirim WhatsApp ke pelanggan. Silakan cek koneksi gateway atau nomor pelanggan.',
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        // Kirim notifikasi WhatsApp ke mentor
+        $waResultMentor = null;
+        try {
+            $mentor = $transaksi->mentor;
+            if ($mentor && $mentor->user && $mentor->user->nomorTelepon) {
+                $waNumberMentor = $mentor->user->nomorTelepon;
+                $waNumberMentor = trim($waNumberMentor);
+                if (strpos($waNumberMentor, '62') === 0 && substr($waNumberMentor, 2, 1) !== '8') {
+                    $waNumberMentor = '628' . substr($waNumberMentor, 2);
+                } elseif (strpos($waNumberMentor, '08') === 0) {
+                    $waNumberMentor = '62' . substr($waNumberMentor, 1);
+                }
+                $waNumberMentor = preg_replace('/[^0-9]/', '', $waNumberMentor);
+                $pelangganName = $transaksi->pelanggan && $transaksi->pelanggan->user ? ($transaksi->pelanggan->user->nama ?? '-') : '-';
+                $kursusName = $transaksi->sesi && $transaksi->sesi->kursus ? ($transaksi->sesi->kursus->namaKursus ?? '-') : '-';
+                $messageMentor = "Halo kak $mentorName, kami dari tim Chill Ajar ingin menginformasikan bahwa pembayaran dari pelanggan $pelangganName untuk sesi kursus $kursusName sudah diverifikasi. Selamat mengajar dan semoga sesi berjalan lancar! Jangan lupa untuk mulai sesi di web Chill Ajar saat pengajaran dimulai. Terima kasih atas dedikasi dan semangatnya menjadi mentor di Chill Ajar! 😊🙏";
+                $client = new \GuzzleHttp\Client();
+                $gatewayUrl = env('WHATSAPP_GATEWAY_URL', 'http://localhost:3000/send-message');
+                $response = $client->post($gatewayUrl, [
+                    'json' => [
+                        'phone' => $waNumberMentor,
+                        'message' => $messageMentor,
+                        'sender' => '6285173028290',
+                    ],
+                    'timeout' => 10,
+                ]);
+                $waResultMentor = json_decode($response->getBody()->getContents(), true);
+            } else {
+                $waResultMentor = [
+                    'status' => false,
+                    'message' => 'Nomor WhatsApp mentor tidak ditemukan',
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error('Gagal kirim WhatsApp ke mentor (pembayaran diverifikasi): ' . $e->getMessage());
+            $waResultMentor = [
+                'status' => false,
+                'message' => 'Gagal mengirim WhatsApp ke mentor. Silakan cek koneksi gateway atau nomor mentor.',
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        return response()->json([
+            'message' => 'Pembayaran berhasil diverifikasi',
+            'transaksi' => $transaksi,
+            'wa_result_pelanggan' => $waResultPelanggan,
+            'wa_result_mentor' => $waResultMentor,
+        ]);
     }
 
     /**
