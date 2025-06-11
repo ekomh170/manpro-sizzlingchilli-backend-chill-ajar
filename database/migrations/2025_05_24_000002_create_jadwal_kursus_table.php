@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->foreignId('kursus_id')->constrained('kursus')->onDelete('cascade');
             $table->date('tanggal');
             $table->time('waktu');
+            $table->string('gayaMengajar'); // WAJIB, tidak nullable
             $table->string('keterangan')->nullable();
             $table->string('tempat')->nullable();
             $table->timestamps();

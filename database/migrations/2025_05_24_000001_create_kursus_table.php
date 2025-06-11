@@ -12,7 +12,6 @@ return new class extends Migration {
             $table->string('namaKursus');
             $table->text('deskripsi')->nullable();
             $table->foreignId('mentor_id')->constrained('mentor')->onDelete('cascade');
-            $table->enum('gayaMengajar', ['online', 'offline']);
             $table->string('fotoKursus')->nullable();
             $table->timestamps();
         });
