@@ -25,13 +25,12 @@ class KursusController extends Controller
         $request->validate([
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
-            'gayaMengajar' => 'required|in:online,offline',
             'mentor_id' => 'required|exists:mentor,id', // Validasi mentor_id dari input
             'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
         ]);
-    
+
         $data = $request->all();
-    
+
         if ($request->hasFile('fotoKursus')) {
             $file = $request->file('fotoKursus');
             if (!$file->isValid()) {
@@ -40,47 +39,46 @@ class KursusController extends Controller
             $path = $file->store('foto_kursus', 'public');
             $data['fotoKursus'] = $path;
         }
-    
+
         $kursus = Kursus::create($data);
         return response()->json($kursus, 201);
     }
 
     public function update(Request $request, $id)
-{
-    // Cari kursus berdasarkan ID tanpa verifikasi mentor
-    $kursus = Kursus::findOrFail($id);
+    {
+        // Cari kursus berdasarkan ID tanpa verifikasi mentor
+        $kursus = Kursus::findOrFail($id);
 
-    // Validasi input
-    $request->validate([
-        'namaKursus' => 'sometimes|required|string',
-        'deskripsi' => 'nullable|string',
-        'gayaMengajar' => 'sometimes|required|in:online,offline',
-        'mentor_id' => 'required|exists:mentor,id', // Validasi mentor_id dari input
-        'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
-    ]);
+        // Validasi input
+        $request->validate([
+            'namaKursus' => 'sometimes|required|string',
+            'deskripsi' => 'nullable|string',
+            'mentor_id' => 'required|exists:mentor,id', // Validasi mentor_id dari input
+            'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
+        ]);
 
-    // Ambil data dari request
-    $data = $request->all();
+        // Ambil data dari request
+        $data = $request->all();
 
-    // Tangani upload foto jika ada
-    if ($request->hasFile('fotoKursus')) {
-        $file = $request->file('fotoKursus');
-        if (!$file->isValid()) {
-            return response()->json(['message' => 'Upload gambar gagal.'], 422);
+        // Tangani upload foto jika ada
+        if ($request->hasFile('fotoKursus')) {
+            $file = $request->file('fotoKursus');
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Upload gambar gagal.'], 422);
+            }
+            // Hapus file lama jika ada dan bukan default
+            if ($kursus->fotoKursus && !str_contains($kursus->fotoKursus, 'default')) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($kursus->fotoKursus);
+            }
+            $path = $file->store('foto_kursus', 'public');
+            $data['fotoKursus'] = $path;
         }
-        // Hapus file lama jika ada dan bukan default
-        if ($kursus->fotoKursus && !str_contains($kursus->fotoKursus, 'default')) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($kursus->fotoKursus);
-        }
-        $path = $file->store('foto_kursus', 'public');
-        $data['fotoKursus'] = $path;
+
+        // Update kursus
+        $kursus->update($data);
+
+        return response()->json($kursus);
     }
-
-    // Update kursus
-    $kursus->update($data);
-
-    return response()->json($kursus);
-}
 
     public function destroy($id)
     {
@@ -99,7 +97,6 @@ class KursusController extends Controller
         $request->validate([
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
-            'gayaMengajar' => 'required|in:online,offline',
             'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
         ]);
         $data = $request->all();
@@ -127,7 +124,6 @@ class KursusController extends Controller
         $request->validate([
             'namaKursus' => 'sometimes|required|string',
             'deskripsi' => 'nullable|string',
-            'gayaMengajar' => 'sometimes|required|in:online,offline',
             'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
         ]);
         $data = $request->all();
