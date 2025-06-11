@@ -16,7 +16,13 @@ class TestimoniController extends FiturController
      */
     public function index()
     {
-        return response()->json(Testimoni::with(['sesi.kursus', 'pelanggan.user', 'mentor.user'])->get());
+        // Pastikan relasi sesi.jadwal_kursus di-include agar field gayaMengajar tersedia di frontend
+        return response()->json(Testimoni::with([
+            'sesi.kursus',
+            'sesi.jadwalKursus', // relasi jadwal_kursus pada sesi
+            'pelanggan.user',
+            'mentor.user'
+        ])->get());
     }
 
     /**
@@ -24,7 +30,12 @@ class TestimoniController extends FiturController
      */
     public function show($id)
     {
-        $testimoni = Testimoni::with(['sesi', 'pelanggan', 'mentor'])->findOrFail($id);
+        $testimoni = Testimoni::with([
+            'sesi.kursus',
+            'sesi.jadwalKursus',
+            'pelanggan.user',
+            'mentor.user'
+        ])->findOrFail($id);
         return response()->json($testimoni);
     }
 
