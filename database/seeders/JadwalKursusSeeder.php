@@ -44,6 +44,7 @@ class JadwalKursusSeeder extends Seeder
                     'kursus_id' => $kursusIds[array_rand($kursusIds)],
                     'tanggal' => $tanggal,
                     'waktu' => sprintf('%02d:00:00', $jam),
+                    'gayaMengajar' => ['online', 'offline'][array_rand(['online', 'offline'])], // WAJIB
                     'keterangan' => 'Jadwal mentor user_id ' . $userId,
                     'tempat' => $tempatIdx < count($tempatList) ? $tempatList[$tempatIdx++] : 'Ruang A - Kampus Pusat, Lantai 2',
                 ]);
@@ -58,6 +59,7 @@ class JadwalKursusSeeder extends Seeder
                     'kursus_id' => $k->id,
                     'tanggal' => now()->addDays(rand(1, 10))->format('Y-m-d'),
                     'waktu' => sprintf('%02d:00:00', rand(8, 18)),
+                    'gayaMengajar' => ['online', 'offline'][array_rand(['online', 'offline'])], // WAJIB
                     'keterangan' => 'Jadwal minimal otomatis',
                     'tempat' => 'Ruang A - Kampus Pusat, Lantai 2',
                 ]);
@@ -71,8 +73,9 @@ class JadwalKursusSeeder extends Seeder
                 'kursus_id' => $kursusIds[array_rand($kursusIds)],
                 'tanggal' => now()->addDays(rand(11, 30)),
                 'waktu' => sprintf('%02d:00:00', rand(8, 18)),
+                'gayaMengajar' => ['online', 'offline'][array_rand(['online', 'offline'])], // WAJIB
                 'keterangan' => 'Jadwal dummy ke-' . $i,
-                'tempat' => 'Ruang A - Kampus Pusat, Lantai 2', // Contoh default tempat
+                'tempat' => 'Ruang A - Kampus Pusat, Lantai 2',
             ]);
         }
     }

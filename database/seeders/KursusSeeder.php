@@ -57,13 +57,10 @@ class KursusSeeder extends Seeder
         foreach ($mentorIds as $mentorId) {
             for ($j = 0; $j < $kursusPerMentor && $idx < $kursusCount; $j++, $idx++) {
                 $nama = $namaKursusList[$idx];
-                // Acak gayaMengajar antara 'online' dan 'offline' untuk setiap kursus
-                $gayaMengajar = ['online', 'offline'][array_rand(['online', 'offline'])];
                 $kursusList[] = [
                     'namaKursus' => $nama,
                     'deskripsi' => $deskripsiKursus[$nama] ?? ('Deskripsi untuk ' . $nama),
                     'mentor_id' => $mentorId,
-                    'gayaMengajar' => $gayaMengajar,
                     'fotoKursus' => 'foto_kursus/default.jpg', // default semua
                 ];
             }
