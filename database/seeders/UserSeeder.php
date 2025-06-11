@@ -88,7 +88,7 @@ class UserSeeder extends Seeder
                 'email' => 'firenzepelanggan@demo.com',
                 'password' => Hash::make('password'),
                 'nomorTelepon' => '085894310722',
-                'peran' => 'admin',
+                'peran' => 'pelanggan',
                 'alamat' => 'Bandung',
                 'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
@@ -97,7 +97,7 @@ class UserSeeder extends Seeder
                 'email' => 'farrelpelanggan@demo.com',
                 'password' => Hash::make('password'),
                 'nomorTelepon' => '081234567893',
-                'peran' => 'admin',
+                'peran' => 'pelanggan',
                 'alamat' => 'Yogyakarta',
                 'foto_profil' => 'foto_profil/default.png', // default foto profil
             ],
