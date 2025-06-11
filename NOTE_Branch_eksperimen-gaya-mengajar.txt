@@ -1,0 +1,13 @@
+# NOTE Branch eksperimen-gaya-mengajar
+
+Branch ini digunakan untuk pengembangan/eksperimen penambahan atau perubahan logic gayaMengajar pada kursus/jadwal.
+
+- Semua perubahan terkait field gayaMengajar di JadwalKursus, migration, seeder, dan endpoint dilakukan di branch ini.
+- Branch ini dibuat dari master/main agar terpisah dari branch backup dan branch stabil.
+- Lakukan commit dengan pesan yang jelas setiap ada perubahan signifikan.
+- Setelah fitur/logic stabil dan teruji, branch ini dapat di-merge ke main.
+- Jika terjadi error besar, bisa rollback ke branch backup.
+
+Last update: 9 Juni 2025
+
+Jangan hapus catatan ini tanpa izin developer utama.
