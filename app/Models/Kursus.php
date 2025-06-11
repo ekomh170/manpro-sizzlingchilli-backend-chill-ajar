@@ -15,7 +15,6 @@ class Kursus extends Model
         'namaKursus',
         'deskripsi',
         'mentor_id',
-        'gayaMengajar',
         'fotoKursus',
     ];
 

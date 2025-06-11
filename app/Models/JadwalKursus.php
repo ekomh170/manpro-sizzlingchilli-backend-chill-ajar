@@ -15,6 +15,7 @@ class JadwalKursus extends Model
         'kursus_id',
         'tanggal',
         'waktu',
+        'gayaMengajar',
         'keterangan',
         'tempat',
     ];
