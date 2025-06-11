@@ -21,50 +21,52 @@ class JadwalKursusController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Validasi input
-    $request->validate([
-        'kursus_id' => 'required|exists:kursus,id',
-        'id' => 'nullable|exists:jadwal_kursus,id',
-        'tanggal' => 'required|date',
-        'waktu' => 'required',
-        'keterangan' => 'nullable|string',
-        'tempat' => 'nullable|string',
-    ]);
+    {
+        // Validasi input
+        $request->validate([
+            'kursus_id' => 'required|exists:kursus,id',
+            'id' => 'nullable|exists:jadwal_kursus,id',
+            'tanggal' => 'required|date',
+            'waktu' => 'required',
+            'gayaMengajar' => 'required|in:online,offline', // WAJIB
+            'keterangan' => 'nullable|string',
+            'tempat' => 'nullable|string',
+        ]);
 
-    // Ambil data kursus
-    $kursus = Kursus::findOrFail($request->kursus_id);
+        // Ambil data kursus
+        $kursus = Kursus::findOrFail($request->kursus_id);
 
-    // Buat atau perbarui jadwal pengajaran
-    $jadwalData = [
-        'kursus_id' => $request->kursus_id,
-        'tanggal' => $request->tanggal,
-        'waktu' => $request->waktu,
-        'keterangan' => $request->keterangan,
-        'tempat' => $request->tempat,
-    ];
+        // Buat atau perbarui jadwal pengajaran
+        $jadwalData = [
+            'kursus_id' => $request->kursus_id,
+            'tanggal' => $request->tanggal,
+            'waktu' => $request->waktu,
+            'gayaMengajar' => $request->gayaMengajar, // WAJIB
+            'keterangan' => $request->keterangan,
+            'tempat' => $request->tempat,
+        ];
 
-    if ($request->has('id')) {
-        // Jika ID jadwal sudah ada, update jadwal yang ada
-        $jadwal = JadwalKursus::findOrFail($request->id);
-        // Pastikan jadwal ini milik kursus yang benar
-        if ($jadwal->kursus_id !== $kursus->id) {
-            return response()->json(['message' => 'Jadwal tidak ditemukan untuk kursus ini'], 404);
+        if ($request->has('id')) {
+            // Jika ID jadwal sudah ada, update jadwal yang ada
+            $jadwal = JadwalKursus::findOrFail($request->id);
+            // Pastikan jadwal ini milik kursus yang benar
+            if ($jadwal->kursus_id !== $kursus->id) {
+                return response()->json(['message' => 'Jadwal tidak ditemukan untuk kursus ini'], 404);
+            }
+            $jadwal->update($jadwalData);
+            $message = 'Jadwal pengajaran berhasil diperbarui';
+        } else {
+            // Jika ID tidak ada, buat jadwal baru
+            $jadwal = $kursus->jadwalKursus()->create($jadwalData);
+            $message = 'Jadwal pengajaran berhasil dibuat';
         }
-        $jadwal->update($jadwalData);
-        $message = 'Jadwal pengajaran berhasil diperbarui';
-    } else {
-        // Jika ID tidak ada, buat jadwal baru
-        $jadwal = $kursus->jadwalKursus()->create($jadwalData);
-        $message = 'Jadwal pengajaran berhasil dibuat';
-    }
 
-    // Kembalikan respons
-    return response()->json([
-        'message' => $message,
-        'jadwal' => $jadwal,
-    ]);
-}
+        // Kembalikan respons
+        return response()->json([
+            'message' => $message,
+            'jadwal' => $jadwal,
+        ]);
+    }
     public function update(Request $request, $id)
     {
         $jadwal = JadwalKursus::findOrFail($id);
@@ -72,6 +74,7 @@ class JadwalKursusController extends Controller
             'kursus_id' => 'sometimes|exists:kursus,id',
             'tanggal' => 'sometimes|date',
             'waktu' => 'sometimes',
+            'gayaMengajar' => 'sometimes|required|in:online,offline', // WAJIB
             'keterangan' => 'nullable|string',
             'tempat' => 'nullable|string',
         ]);
