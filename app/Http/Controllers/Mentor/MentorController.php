@@ -25,6 +25,7 @@ class MentorController extends Controller
             'id' => 'nullable|exists:jadwal_kursus,id',
             'tanggal' => 'required|date',
             'waktu' => 'required',
+            'gayaMengajar' => 'required|in:online,offline', // WAJIB
             'keterangan' => 'nullable|string',
             'tempat' => 'nullable|string',
         ]);
@@ -43,6 +44,7 @@ class MentorController extends Controller
             'kursus_id' => $request->kursus_id,
             'tanggal' => $request->tanggal,
             'waktu' => $request->waktu,
+            'gayaMengajar' => $request->gayaMengajar, // WAJIB
             'keterangan' => $request->keterangan,
             'tempat' => $request->tempat,
         ];
@@ -184,17 +186,18 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        
+
         // Ambil sesi dengan relasi testimoni, pelanggan, kursus, dan jadwal_kursus
         $sesi = $mentor->sesi()
             ->with([
                 'testimoni',
                 'pelanggan.user', // Relasi pelanggan dan user dari pelanggan
                 'kursus',        // Relasi kursus
+                'jadwalKursus',  // Tambahkan relasi jadwalKursus agar gayaMengajar tersedia
             ])
             ->has('testimoni') // Hanya ambil sesi yang memiliki testimoni
             ->get();
-    
+
         return response()->json($sesi);
     }
 }
