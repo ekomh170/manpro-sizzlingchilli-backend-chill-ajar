@@ -1,0 +1,41 @@
+// Persiapan Deploy Laravel ke Render.com
+
+1. Pastikan repository sudah di-push ke GitHub/GitLab/Bitbucket.
+2. Pastikan file .env.example sudah ada dan lengkap.
+3. Pastikan composer.json dan composer.lock sudah up-to-date.
+4. Pastikan database migration dan seeder sudah siap.
+5. Siapkan konfigurasi database (Render PostgreSQL/MySQL) dan update .env di dashboard Render.
+6. Tambahkan script build di Render:
+   - composer install --no-dev --optimize-autoloader
+   - php artisan key:generate
+   - php artisan migrate --force
+   - (Opsional) php artisan db:seed --force
+   - (Opsional) php artisan storage:link
+7. Pastikan folder storage dan bootstrap/cache writable.
+8. Pastikan APP_KEY, APP_ENV, APP_DEBUG, DB_* dan variabel penting lain sudah diatur di Environment di Render.
+9. Jika butuh queue/cron, gunakan Render Background Worker.
+10. Pastikan public/index.php sebagai web root di Render.
+
+Catatan tambahan:
+- Cek dokumentasi Render untuk Laravel: https://render.com/docs/deploy-laravel
+- Jika pakai storage (upload file), pastikan storage:link dijalankan.
+- Untuk email, sesuaikan konfigurasi mail di .env.
+
+Catatan MySQL di Render:
+- Untuk cek support MySQL di Render:
+  1. Login ke https://dashboard.render.com
+  2. Klik "New" → "Database"
+  3. Lihat apakah ada opsi "MySQL" di daftar database
+     - Jika ada, Render sudah support MySQL di akun/region Anda
+     - Jika tidak, fitur MySQL belum tersedia di akun/region Anda
+- Alternatif: cek dokumentasi https://render.com/docs/databases untuk update ketersediaan MySQL
+- Jika tidak tersedia, gunakan layanan MySQL eksternal (misal: PlanetScale, Aiven, dsb) dan hubungkan ke aplikasi via .env
+
+Catatan penyesuaian jika migrasi ke PostgreSQL:
+- Ubah DB_CONNECTION di .env menjadi pgsql, dan sesuaikan DB_HOST, DB_PORT (5432), DB_DATABASE, DB_USERNAME, DB_PASSWORD.
+- Di config/database.php, pastikan koneksi default adalah 'pgsql'.
+- Pastikan migration tidak menggunakan fitur MySQL-only seperti: engine, charset, collation, unsigned, auto_increment, enum, set.
+- id() pada migration Laravel otomatis kompatibel dengan PostgreSQL (pakai bigserial).
+- Seeder, model, controller, dan routing sudah aman karena pakai Eloquent, tidak ada query MySQL spesifik.
+- Jika ada query raw (DB::select, whereRaw, dsb), pastikan tidak ada sintaks MySQL-only.
+- Perhatikan perbedaan fungsi tanggal jika pakai query raw (pakai now() dari Laravel/Eloquent sudah aman).
