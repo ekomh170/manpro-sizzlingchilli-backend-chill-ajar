@@ -13,27 +13,27 @@ WORKDIR /var/www
 
 COPY . .
 
-# Copy .env_deploy to .env if exists
-RUN if [ -f .env_deploy ]; then cp .env_deploy .env; fi
+# (PRODUCTION RENDER) JANGAN copy .env_deploy ke .env, biarkan Laravel baca dari environment variable Render
+# RUN if [ -f .env_deploy ]; then cp .env_deploy .env; fi
 
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions for storage and bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# Laravel config cache
-RUN php artisan config:cache
+# HAPUS config:cache untuk Render, karena butuh file .env di build time
+# RUN php artisan config:cache
 
 # Expose port
 EXPOSE 8080
 
-# Start: generate APP_KEY, migrate, db:seed, storage:link, serve
-CMD php artisan key:generate --force && php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+# Start: migrate, db:seed, storage:link, serve
+CMD php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
 
 # Catatan troubleshooting:
+# Untuk Render, JANGAN copy/generate .env di container. Semua env penting diisi lewat dashboard Render.
 # Jika terjadi Bad Gateway di Render:
 # - Pastikan semua environment variable (APP_KEY, DB_*) sudah benar dan tidak kosong
-# - Jika pakai .env lokal, pastikan file .env_deploy di-commit dan sudah berisi/atau bisa diisi APP_KEY
 # - Cek log deploy untuk error migration/seeder/serve
 # - Pastikan database bisa diakses dari container
 # - Lihat NOTE_Deploy_Render.txt untuk troubleshooting detail
