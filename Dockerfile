@@ -27,13 +27,13 @@ RUN php artisan config:cache
 # Expose port
 EXPOSE 8080
 
-# Start: generate APP_KEY jika belum ada, migrate, db:seed, storage:link, serve
-CMD if ! grep -q "^APP_KEY=" .env || grep -q "^APP_KEY=$" .env; then php artisan key:generate --force; fi && php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+# Start: generate APP_KEY, migrate, db:seed, storage:link, serve
+CMD php artisan key:generate --force && php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
 
 # Catatan troubleshooting:
 # Jika terjadi Bad Gateway di Render:
 # - Pastikan semua environment variable (APP_KEY, DB_*) sudah benar dan tidak kosong
+# - Jika pakai .env lokal, pastikan file .env_deploy di-commit dan sudah berisi/atau bisa diisi APP_KEY
 # - Cek log deploy untuk error migration/seeder/serve
 # - Pastikan database bisa diakses dari container
-# - APP_KEY bisa diisi otomatis dengan CMD php artisan key:generate --force
 # - Lihat NOTE_Deploy_Render.txt untuk troubleshooting detail
