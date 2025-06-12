@@ -26,4 +26,4 @@ yarn-error.log
 /deploy
 NOTE_Commit_gayaMengajar_JADWAL_ONLY.txt
 NOTE_Perubahan_gayaMengajar_JADWAL_ONLY.txt
-.env_deploy
+.env.deploy

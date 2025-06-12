@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: laravel-app
+    env: docker
+    plan: free
+    ports:
+      - 8080
+    buildCommand: ""
+    startCommand: "php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080"
