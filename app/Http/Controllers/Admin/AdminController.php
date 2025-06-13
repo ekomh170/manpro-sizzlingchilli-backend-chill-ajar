@@ -3,14 +3,35 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Models\Pelanggan;
 use App\Models\Mentor;
 use App\Models\Transaksi;
+use App\Models\Sesi;
+use App\Models\Kursus;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
+  
+    /**
+     * Menampilkan jumlah pengguna, mentor, dan kursus
+     */
+    public function jumlahData()
+    {
+        return response()->json([
+            'jumlah_user' => User::count(),
+            'jumlah_pelanggan' => Pelanggan::count(),
+            'jumlah_mentor' => Mentor::count(),
+            'jumlah_kursus' => Kursus::count(),
+            'jumlah_sesi' => Sesi::count(),
+            'jumlah_transaksi' => Transaksi::count(),
+            
+            // tambah data lain jika perlu
+        ]);
+    }
+
     /**
      * Menampilkan daftar semua pengguna
      */

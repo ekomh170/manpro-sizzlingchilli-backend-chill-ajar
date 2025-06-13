@@ -76,7 +76,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/admin/tolak-pembayaran/{transaksiId}', [AdminController::class, 'tolakPembayaran']);
     // [POST] Kirim notifikasi ke mentor setelah pembayaran diverifikasi
     Route::post('/admin/notifikasi/mentor/{sessionId}', [AdminController::class, 'notifikasiKeMentor']);
-
+    // [GET] Statistik admin
+    Route::get('/admin/dashboard-info', [AdminController::class, 'jumlahData']);
     // ==================== MENTOR ====================
     // [GET] Profil mentor yang sedang login
     Route::get('/mentor/profil-saya', [MentorController::class, 'profilSaya']);
@@ -126,7 +127,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/pelanggan/beri-testimoni/{sessionId}', [PelangganController::class, 'beriTestimoni']);
     // [POST] Unggah ulang bukti pembayaran
     Route::post('/pelanggan/unggah-ulang-bukti/{transaksiId}', [PelangganController::class, 'unggahUlangBuktiPembayaran']);
-
+    // [GET] Statistik pelanggan
+    Route::get('/pelanggan/profil-info', [PelangganController::class, 'jumlahData']);
     // ==================== KURSUS ====================
     // [GET] Daftar kursus
     Route::get('/kursus', [KursusController::class, 'index']);
