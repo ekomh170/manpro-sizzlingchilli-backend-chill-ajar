@@ -196,4 +196,25 @@ class PelangganController extends Controller
             'mentor' => $sesi->mentor
         ], 201);
     }
+
+    public function jumlahData(Request $request)
+{
+    $user = $request->user();
+    $pelanggan = \App\Models\Pelanggan::where('user_id', $user->id)->firstOrFail();
+
+    // Jumlah sesi yang diikuti pelanggan
+    $jumlahSesi = $pelanggan->sesi()->count();
+
+    // Jumlah mentor unik yang pernah mengajar pelanggan
+    $jumlahMentor = $pelanggan->sesi()->distinct('mentor_id')->count('mentor_id');
+
+    // Jumlah kursus yang pernah diikuti pelanggan
+    $jumlahKursus = $pelanggan->sesi()->distinct('kursus_id')->count('kursus_id');
+
+    return response()->json([
+        'jumlah_sesi' => $jumlahSesi,
+        'jumlah_mentor' => $jumlahMentor,
+        'jumlah_kursus' => $jumlahKursus,
+    ]);
+}
 }
