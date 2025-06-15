@@ -20,6 +20,7 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions for storage and bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache public/storage && chmod -R 775 storage bootstrap/cache public/storage
 
 # HAPUS config:cache untuk Render, karena butuh file .env di build time
 # RUN php artisan config:cache
