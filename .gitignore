@@ -8,6 +8,7 @@
 /vendor
 .env
 .env.backup
+.env.deploy
 .env.production
 .phpactor.json
 .phpunit.result.cache
@@ -26,3 +27,6 @@ yarn-error.log
 /deploy
 NOTE_Commit_gayaMengajar_JADWAL_ONLY.txt
 NOTE_Perubahan_gayaMengajar_JADWAL_ONLY.txt
+
+# NOTE files (catatan internal, jangan diupload ke repo)
+NOTE_*.txt
