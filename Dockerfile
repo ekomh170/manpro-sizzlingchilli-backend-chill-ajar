@@ -13,8 +13,8 @@ WORKDIR /var/www
 
 COPY . .
 
-# (PRODUCTION RENDER) JANGAN copy .env_deploy ke .env, biarkan Laravel baca dari environment variable Render
-# RUN if [ -f .env_deploy ]; then cp .env_deploy .env; fi
+# Pastikan subfolder upload selalu ada
+RUN mkdir -p public/storage/bukti_bayar public/storage/bukti_pembayaran public/storage/foto_kursus public/storage/foto_profil
 
 RUN composer install --no-dev --optimize-autoloader
 
