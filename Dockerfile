@@ -13,23 +13,21 @@ WORKDIR /var/www
 
 COPY . .
 
-# Pastikan subfolder upload selalu ada
-RUN mkdir -p public/storage/bukti_bayar public/storage/bukti_pembayaran public/storage/foto_kursus public/storage/foto_profil
-
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions for storage and bootstrap/cache
+# Set permissions for storage dan bootstrap/cache saja (public/storage akan jadi symlink)
 RUN chmod -R 775 storage bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache public/storage && chmod -R 775 storage bootstrap/cache public/storage
-
-# HAPUS config:cache untuk Render, karena butuh file .env di build time
-# RUN php artisan config:cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Expose port
 EXPOSE 8080
 
-# Start: migrate, db:seed, storage:link, serve
-CMD php artisan migrate --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+# Start: migrate:fresh, db:seed, storage:link, serve
+CMD php artisan migrate:fresh --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+
+# Set permissions for storage dan bootstrap/cache saja (public/storage akan jadi symlink)
+RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Catatan troubleshooting:
 # Untuk Render, JANGAN copy/generate .env di container. Semua env penting diisi lewat dashboard Render.
@@ -38,3 +36,4 @@ CMD php artisan migrate --force && php artisan db:seed --force && php artisan st
 # - Cek log deploy untuk error migration/seeder/serve
 # - Pastikan database bisa diakses dari container
 # - Lihat NOTE_Deploy_Render.txt untuk troubleshooting detail
+# Permission public/storage mengikuti symlink ke storage/app/public
