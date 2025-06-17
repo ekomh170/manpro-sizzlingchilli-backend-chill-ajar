@@ -36,3 +36,7 @@ Route::get('/pentest/admin', function () {
     return view('pentest.admin');
 });
 // (endpoint automation hapus sesi expired dipindah ke api.php)
+
+Route::get('/debug-log', function () {
+    return response()->file(storage_path('logs/laravel.log'));
+});
