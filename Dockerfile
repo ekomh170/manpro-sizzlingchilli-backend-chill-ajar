@@ -22,8 +22,15 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Expose port
 EXPOSE 8080
 
-# Start: migrate:fresh, db:seed, storage:link, serve
-CMD php artisan migrate:fresh --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+# Start: migrate:fresh, db:seed, storage:link, buat folder upload, set permission, serve
+CMD php artisan migrate:fresh --force && php artisan db:seed --force && php artisan storage:link \
+    && mkdir -p public/storage/bukti_bayar public/storage/bukti_pembayaran public/storage/foto_kursus public/storage/foto_profil \
+    && chmod -R 775 public/storage/bukti_bayar public/storage/bukti_pembayaran public/storage/foto_kursus public/storage/foto_profil \
+    && chown -R www-data:www-data public/storage/bukti_bayar public/storage/bukti_pembayaran public/storage/foto_kursus public/storage/foto_profil \
+    && php artisan serve --host=0.0.0.0 --port=8080
+
+# CMD rm -rf public/storage && php artisan migrate:fresh --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+# Jika ingin otomatis di Dockerfile, tambahkan sebelum php artisan storage:link:
 
 # Set permissions for storage dan bootstrap/cache saja (public/storage akan jadi symlink)
 RUN chmod -R 775 storage bootstrap/cache
