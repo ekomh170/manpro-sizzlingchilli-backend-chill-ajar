@@ -25,10 +25,10 @@ Route::post('/register', [AuthController::class, 'registrasi']);
 Route::get('/public/kursus', function () {
     return \App\Models\Kursus::with('mentor.user', 'jadwalKursus')->get();
 });
-// [GET] Daftar mentor (public, dengan relasi user terpilih)
+// [GET] Daftar mentor (public, dengan relasi user terpilih dan foto profil)
 Route::get('/public/mentor', function () {
     return \App\Models\Mentor::with(['user' => function ($query) {
-        $query->select('id', 'nama', 'nomorTelepon', 'alamat');
+        $query->select('id', 'nama', 'nomorTelepon', 'alamat', 'foto_profil');
     }])
         ->select('id', 'user_id', 'rating', 'biayaPerSesi', 'deskripsi')
         ->get();
