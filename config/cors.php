@@ -6,8 +6,8 @@ return [
     'allowed_origins' => [
         'http://localhost:5173',
         'https://localhost:5173',
-        'https://*.vercel.app',
-        'https://manpro-sizzlingchilli-frontend.vercel.app', // ganti sesuai domain frontend
+        'https://chill-ajar.vercel.app',
+        'https://chill-ajar-pentest.vercel.app',
         'https://manpro-sizzlingchilli-backend-chill-ajar.onrender.com',
     ],
     'allowed_origins_patterns' => [],
