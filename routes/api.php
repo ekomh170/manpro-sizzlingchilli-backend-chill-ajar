@@ -34,6 +34,15 @@ Route::get('/public/mentor', function () {
         ->get();
 });
 
+// [GET] Daftar jadwal kursus yang diampu mentor (khusus mentor login)
+Route::get('/mentor/jadwal-kursus', function (Request $request) {
+    $user = $request->user();
+    $mentor = \App\Models\Mentor::where('user_id', $user->id)->firstOrFail();
+    $kursusIds = $mentor->kursus()->pluck('id');
+    $jadwal = \App\Models\JadwalKursus::whereIn('kursus_id', $kursusIds)->with('kursus')->get();
+    return response()->json($jadwal);
+});
+
 // ==================== PROTECTED ROUTES (SANCTUM) ====================
 Route::middleware(['auth:sanctum'])->group(function () {
     // [POST] Logout pengguna
@@ -99,14 +108,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/mentor/selesai-sesi/{sessionId}', [MentorController::class, 'selesaiSesi']);
     // [GET] Daftar testimoni yang diterima mentor
     Route::get('/mentor/daftar-testimoni', [MentorController::class, 'daftarTestimoni']);
-    // [GET] Daftar jadwal kursus yang diampu mentor (khusus mentor login)
-    Route::get('/mentor/jadwal-kursus', function (Request $request) {
-        $user = $request->user();
-        $mentor = \App\Models\Mentor::where('user_id', $user->id)->firstOrFail();
-        $kursusIds = $mentor->kursus()->pluck('id');
-        $jadwal = \App\Models\JadwalKursus::whereIn('kursus_id', $kursusIds)->with('kursus')->get();
-        return response()->json($jadwal);
-    });
 
     // ==================== PELANGGAN ====================
     // [GET] Profil pelanggan yang sedang login
