@@ -22,8 +22,9 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 # Expose port
 EXPOSE 8080
 
-# Start: migrate:fresh, db:seed, storage:link, serve
-CMD php artisan migrate:fresh --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+CMD ["/entrypoint.sh"]
 
 # CMD rm -rf public/storage && php artisan migrate:fresh --force && php artisan db:seed --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8080
 # Jika ingin otomatis di Dockerfile, tambahkan sebelum php artisan storage:link:
