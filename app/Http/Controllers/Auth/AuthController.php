@@ -108,7 +108,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = User::where('email', $request->email)->with('pelanggan')->first();
+            $user = User::where('email', $request->email)->with('pelanggan', 'mentor')->first();
             $token = $user->createToken('ChillAjarToken')->plainTextToken;
             return response()->json([
                 'message' => 'Login berhasil',
@@ -168,6 +168,8 @@ class AuthController extends Controller
             'nomorTelepon' => 'sometimes|nullable|string',
             'alamat' => 'sometimes|nullable|string',
             'foto_profil' => 'sometimes|image|max:5120',
+            'deskripsi' => 'sometimes|nullable|string', // tambahkan validasi deskripsi untuk mentor
+
         ]);
 
         // Update data user
@@ -191,6 +193,16 @@ class AuthController extends Controller
             $user->foto_profil = $path;
         }
         $user->save();
+
+         // Jika user adalah mentor, update juga deskripsi di tabel mentor
+    if ($user->peran === 'mentor' && $request->has('deskripsi')) {
+        $mentor = $user->mentor; // pastikan relasi mentor() ada di model User
+        if ($mentor) {
+            $mentor->deskripsi = $request->deskripsi;
+            $mentor->save();
+        }
+    }
+
         return response()->json([
             'message' => 'Profil berhasil diperbarui',
             'user' => $user

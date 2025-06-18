@@ -154,7 +154,14 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->with('user')->firstOrFail();
-        return response()->json($mentor);
+        $jumlahKursus = $mentor->kursus()->count();
+        $jumlahSesi = $mentor->sesi()->count();
+
+        return response()->json([
+            'mentor' => $mentor,
+            'jumlah_kursus' => $jumlahKursus,
+            'jumlah_sesi' => $jumlahSesi,
+        ]);
     }
 
     /**
