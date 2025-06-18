@@ -20,11 +20,12 @@ while true; do
   fi
 done
 
-log "Cek tabel users di database..."
-if php artisan db:show users > /dev/null 2>&1; then
-  log "Database sudah terisi, skip migrate:fresh dan db:seed"
+log "Cek data di tabel users..."
+USER_COUNT=$(php artisan tinker --execute="echo \DB::table('users')->count();")
+if [ "$USER_COUNT" -gt 0 ]; then
+  log "Database sudah ada data users ($USER_COUNT), skip migrate:fresh dan db:seed"
 else
-  log "Database kosong, jalankan migrate:fresh dan db:seed"
+  log "Database kosong, jalankan migrate:fresh dan db:seed untuk data dummy"
   php artisan migrate:fresh --force
   php artisan db:seed --force
 fi
