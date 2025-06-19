@@ -20,6 +20,9 @@ class AdminController extends Controller
      */
     public function jumlahData()
     {
+        // Ambil 5 user terbaru
+        $userTerbaru = User::orderBy('created_at', 'desc')->take(5)->get(['id', 'nama', 'email', 'peran', 'created_at']);
+
         return response()->json([
             'jumlah_user' => User::count(),
             'jumlah_pelanggan' => Pelanggan::count(),
@@ -27,6 +30,7 @@ class AdminController extends Controller
             'jumlah_kursus' => Kursus::count(),
             'jumlah_sesi' => Sesi::count(),
             'jumlah_transaksi' => Transaksi::count(),
+            'user_terbaru' => $userTerbaru, 
 
             // tambah data lain jika perlu
         ]);
