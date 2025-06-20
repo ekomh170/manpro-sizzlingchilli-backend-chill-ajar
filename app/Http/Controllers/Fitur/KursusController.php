@@ -26,7 +26,7 @@ class KursusController extends Controller
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
             'mentor_id' => 'required|exists:mentor,id', // Validasi mentor_id dari input
-            'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
+            'fotoKursus' => 'nullable|image|max:10240', // Validasi gambar 10MB
         ]);
 
         $data = $request->all();
@@ -54,7 +54,7 @@ class KursusController extends Controller
             'namaKursus' => 'sometimes|required|string',
             'deskripsi' => 'nullable|string',
             'mentor_id' => 'required|exists:mentor,id', // Validasi mentor_id dari input
-            'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
+            'fotoKursus' => 'nullable|image|max:10240', // Validasi gambar 10MB
         ]);
 
         // Ambil data dari request
@@ -97,7 +97,7 @@ class KursusController extends Controller
         $request->validate([
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
-            'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
+            'fotoKursus' => 'nullable|image|max:10240', // Validasi gambar 10MB
         ]);
         $data = $request->all();
         $data['mentor_id'] = $mentor->id;
@@ -124,7 +124,7 @@ class KursusController extends Controller
         $request->validate([
             'namaKursus' => 'sometimes|required|string',
             'deskripsi' => 'nullable|string',
-            'fotoKursus' => 'nullable|image|max:5120', // Validasi gambar 5MB
+            'fotoKursus' => 'nullable|image|max:10240', // Validasi gambar 10MB
         ]);
         $data = $request->all();
         if ($request->hasFile('fotoKursus')) {
