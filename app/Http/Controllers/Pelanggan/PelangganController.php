@@ -94,7 +94,7 @@ class PelangganController extends Controller
         // Jika status pembayaran sebelumnya 'ditolak', wajib file dan tanggal
         if ($transaksi->statusPembayaran === 'ditolak') {
             $request->validate([
-                'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+                'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
                 'tanggalPembayaran' => 'required|date',
             ]);
             $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
@@ -111,7 +111,7 @@ class PelangganController extends Controller
         // File tidak wajib, hanya update status dan simpan nama file jika ada
         if ($request->hasFile('buktiPembayaran')) {
             $request->validate([
-                'buktiPembayaran' => 'file|mimes:jpg,jpeg,png,pdf|max:5120',
+                'buktiPembayaran' => 'file|mimes:jpg,jpeg,png,pdf|max:10240',
             ]);
             $buktiPath = $request->file('buktiPembayaran')->store('bukti_pembayaran', 'public');
             $transaksi->buktiPembayaran = $buktiPath;
@@ -126,7 +126,7 @@ class PelangganController extends Controller
     public function unggahUlangBuktiPembayaran(Request $request, $transaksiId)
     {
         $request->validate([
-            'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'buktiPembayaran' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240',
             'tanggalPembayaran' => 'required|date',
         ]);
         $transaksi = \App\Models\Transaksi::findOrFail($transaksiId);
@@ -198,23 +198,23 @@ class PelangganController extends Controller
     }
 
     public function jumlahData(Request $request)
-{
-    $user = $request->user();
-    $pelanggan = \App\Models\Pelanggan::where('user_id', $user->id)->firstOrFail();
+    {
+        $user = $request->user();
+        $pelanggan = \App\Models\Pelanggan::where('user_id', $user->id)->firstOrFail();
 
-    // Jumlah sesi yang diikuti pelanggan
-    $jumlahSesi = $pelanggan->sesi()->count();
+        // Jumlah sesi yang diikuti pelanggan
+        $jumlahSesi = $pelanggan->sesi()->count();
 
-    // Jumlah mentor unik yang pernah mengajar pelanggan
-    $jumlahMentor = $pelanggan->sesi()->distinct('mentor_id')->count('mentor_id');
+        // Jumlah mentor unik yang pernah mengajar pelanggan
+        $jumlahMentor = $pelanggan->sesi()->distinct('mentor_id')->count('mentor_id');
 
-    // Jumlah kursus yang pernah diikuti pelanggan
-    $jumlahKursus = $pelanggan->sesi()->distinct('kursus_id')->count('kursus_id');
+        // Jumlah kursus yang pernah diikuti pelanggan
+        $jumlahKursus = $pelanggan->sesi()->distinct('kursus_id')->count('kursus_id');
 
-    return response()->json([
-        'jumlah_sesi' => $jumlahSesi,
-        'jumlah_mentor' => $jumlahMentor,
-        'jumlah_kursus' => $jumlahKursus,
-    ]);
-}
+        return response()->json([
+            'jumlah_sesi' => $jumlahSesi,
+            'jumlah_mentor' => $jumlahMentor,
+            'jumlah_kursus' => $jumlahKursus,
+        ]);
+    }
 }

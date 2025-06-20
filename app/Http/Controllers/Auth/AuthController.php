@@ -137,7 +137,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
         $request->validate([
-            'foto_profil' => 'required|image|max:5120',
+            'foto_profil' => 'required|image|max:10240', // Validasi gambar max 10MB
         ]);
         if ($request->hasFile('foto_profil')) {
             $file = $request->file('foto_profil');
@@ -167,7 +167,7 @@ class AuthController extends Controller
             'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
             'nomorTelepon' => 'sometimes|nullable|string',
             'alamat' => 'sometimes|nullable|string',
-            'foto_profil' => 'sometimes|image|max:5120',
+            'foto_profil' => 'sometimes|image|max:10240', // Validasi gambar max 10MB
             'deskripsi' => 'sometimes|nullable|string', // tambahkan validasi deskripsi untuk mentor
 
         ]);
@@ -194,14 +194,14 @@ class AuthController extends Controller
         }
         $user->save();
 
-         // Jika user adalah mentor, update juga deskripsi di tabel mentor
-    if ($user->peran === 'mentor' && $request->has('deskripsi')) {
-        $mentor = $user->mentor; // pastikan relasi mentor() ada di model User
-        if ($mentor) {
-            $mentor->deskripsi = $request->deskripsi;
-            $mentor->save();
+        // Jika user adalah mentor, update juga deskripsi di tabel mentor
+        if ($user->peran === 'mentor' && $request->has('deskripsi')) {
+            $mentor = $user->mentor; // pastikan relasi mentor() ada di model User
+            if ($mentor) {
+                $mentor->deskripsi = $request->deskripsi;
+                $mentor->save();
+            }
         }
-    }
 
         return response()->json([
             'message' => 'Profil berhasil diperbarui',

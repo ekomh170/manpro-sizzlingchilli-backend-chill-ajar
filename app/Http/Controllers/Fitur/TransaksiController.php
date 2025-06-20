@@ -36,7 +36,7 @@ class TransaksiController extends Controller
             'statusPembayaran' => 'required', // Bisa diatur ulang ke 'menunggu_verifikasi'
             'metodePembayaran' => 'required',
             'tanggalPembayaran' => 'required|date',
-            'buktiPembayaran' => 'image|max:2048', // Opsional untuk update
+            'buktiPembayaran' => 'image|max:10240', // Validasi gambar max 10MB
         ]);
 
         $transaksiData = [
