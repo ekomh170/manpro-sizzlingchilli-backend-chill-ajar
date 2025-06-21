@@ -86,3 +86,11 @@ Route::post('/pentest/wa', function (\Illuminate\Http\Request $request) {
         return redirect()->route('pentest.wa')->with('error', 'Gagal mengirim pesan: ' . $e->getMessage());
     }
 })->name('pentest.wa.send');
+
+Route::get('/cek-env', function () {
+    return [
+        'WA_GATEWAY_URL' => config('app.WA_GATEWAY_URL'),
+        'app_env' => config('app.env'),
+        'file_exists' => file_exists(base_path('.env')),
+    ];
+});

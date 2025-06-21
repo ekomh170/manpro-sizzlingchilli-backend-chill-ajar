@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -123,4 +122,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    // Tambahan custom config untuk WA Gateway
+    'WA_GATEWAY_URL' => env('WA_GATEWAY_URL', 'http://localhost:3000/send-message'),
 ];
