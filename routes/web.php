@@ -52,6 +52,14 @@ Route::post('/pentest/wa', function (\Illuminate\Http\Request $request) {
         'pesan' => 'required',
     ]);
     $wa_gateway_url = env('WA_GATEWAY_URL');
+    // Debug jika env tidak terbaca
+    if (!$wa_gateway_url) {
+        dd([
+            'WA_GATEWAY_URL' => env('WA_GATEWAY_URL'),
+            'file_exists' => file_exists(base_path('.env')),
+            'app_env' => env('APP_ENV'),
+        ]);
+    }
     // Normalisasi nomor WA: hapus non-digit, ubah 08... jadi 628..., pastikan prefix 628
     $nomor = preg_replace('/[^0-9]/', '', $request->nomor);
     if (strpos($nomor, '08') === 0) {
