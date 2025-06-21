@@ -9,7 +9,7 @@ Route::get('/', function () {
 
 // Pentest UI per controller
 Route::get('/pentest', function () {
-    $wa_gateway_url = env('WA_GATEWAY_URL');
+    $wa_gateway_url = config('app.WA_GATEWAY_URL');
     return view('pentest.index', compact('wa_gateway_url'));
 });
 Route::get('/pentest/auth', function () {
@@ -51,13 +51,13 @@ Route::post('/pentest/wa', function (\Illuminate\Http\Request $request) {
         'nomor' => 'required',
         'pesan' => 'required',
     ]);
-    $wa_gateway_url = env('WA_GATEWAY_URL');
-    // Debug jika env tidak terbaca
+    $wa_gateway_url = config('app.WA_GATEWAY_URL');
+    // Debug jika config tidak terbaca
     if (!$wa_gateway_url) {
         dd([
-            'WA_GATEWAY_URL' => env('WA_GATEWAY_URL'),
+            'WA_GATEWAY_URL' => config('app.WA_GATEWAY_URL'),
             'file_exists' => file_exists(base_path('.env')),
-            'app_env' => env('APP_ENV'),
+            'app_env' => config('app.env'),
         ]);
     }
     // Normalisasi nomor WA: hapus non-digit, ubah 08... jadi 628..., pastikan prefix 628
