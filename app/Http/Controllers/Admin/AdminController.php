@@ -30,7 +30,7 @@ class AdminController extends Controller
             'jumlah_kursus' => Kursus::count(),
             'jumlah_sesi' => Sesi::count(),
             'jumlah_transaksi' => Transaksi::count(),
-            'user_terbaru' => $userTerbaru, 
+            'user_terbaru' => $userTerbaru,
 
             // tambah data lain jika perlu
         ]);
@@ -173,8 +173,13 @@ class AdminController extends Controller
     public function hapusMentor($id)
     {
         $mentor = Mentor::findOrFail($id);
-        $mentor->delete();
-        return response()->json(['message' => 'Mentor berhasil dihapus']);
+        $user = $mentor->user; // relasi ke user
+        if ($user) {
+            $user->delete(); // ini otomatis akan menghapus mentor karena onDelete('cascade')
+        } else {
+            $mentor->delete(); // fallback jika user tidak ditemukan
+        }
+        return response()->json(['message' => 'Mentor & user terkait berhasil dihapus']);
     }
 
     // CRUD Pelanggan
