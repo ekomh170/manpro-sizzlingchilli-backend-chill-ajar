@@ -85,7 +85,7 @@ class AuthController extends Controller
         ]);
         $mentor = Mentor::create([
             'user_id' => $user->id,
-            'biayaPerSesi' => $request->biayaPerSesi,
+            'biayaPerSesi' => 25000, // Default biaya per sesi
             'deskripsi' => $request->deskripsi ?? null,
             'rating' => 0,
         ]);
