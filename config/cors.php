@@ -9,6 +9,7 @@ return [
         'https://chill-ajar-pentest.vercel.app',
         'https://manpro-sizzlingchilli-backend-chill-ajar.onrender.com',
         'http://35.188.34.254', // akses langsung ke IP server
+        'http://chillajar.biz.id', // akses langsung ke domain
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
