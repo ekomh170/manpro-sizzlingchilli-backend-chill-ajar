@@ -123,5 +123,5 @@ return [
     ],
 
     // Tambahan custom config untuk WA Gateway
-    'WA_GATEWAY_URL' => env('WA_GATEWAY_URL', 'http://peladen.my.id:3000/send-message'),
+    'WA_GATEWAY_URL' => env('WA_GATEWAY_URL', 'https://peladen.my.id:3000/send-message'),
 ];
