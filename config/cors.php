@@ -1,8 +1,7 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie', '*'],
-    'allowed_methods' => ['*'],
+'paths' => ['api/*', 'sanctum/csrf-cookie', 'storage/*', '*'],    'allowed_methods' => ['*'],
     'allowed_origins' => [
         'http://localhost:5173', // untuk dev React lokal
         'https://chill-ajar.vercel.app',

@@ -167,8 +167,31 @@ class AdminController extends Controller
     public function perbaruiMentor(Request $request, $id)
     {
         $mentor = Mentor::findOrFail($id);
-        $mentor->update($request->all());
-        return response()->json(['message' => 'Mentor berhasil diperbarui', 'mentor' => $mentor]);
+
+        // Ambil data dari request
+        $data = $request->all();
+    
+        // Tangani upload dokumen jika ada
+        if ($request->hasFile('dokumen_pendukung')) {
+            $file = $request->file('dokumen_pendukung');
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Upload dokumen gagal.'], 422);
+            }
+            // Hapus file lama jika ada
+            if ($mentor->dokumen_pendukung &&  \Illuminate\Support\Facades\Storage::disk('public')->exists($mentor->dokumen_pendukung)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($mentor->dokumen_pendukung);
+            }
+            $path = $file->store('dokumen_pendukung', 'public');
+            $data['dokumen_pendukung'] = $path;
+        }
+    
+        // Update mentor
+        $mentor->update($data);
+    
+        return response()->json([
+            'message' => 'Mentor berhasil diperbarui',
+            'mentor' => $mentor
+        ]);
     }
     public function hapusMentor($id)
     {

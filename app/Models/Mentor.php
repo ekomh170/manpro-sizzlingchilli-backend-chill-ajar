@@ -18,6 +18,8 @@ class Mentor extends Model
         'rating',        // Rating awal mentor
         'biayaPerSesi',  // Tarif mentor per sesi
         'deskripsi',     // Deskripsi tentang mentor (optional)
+        'status',        // Status mentor (active, pending, rejected)
+        'dokumen_pendukung', // Dokumen pendukung yang diunggah mentor (optional)
     ];
 
     /**

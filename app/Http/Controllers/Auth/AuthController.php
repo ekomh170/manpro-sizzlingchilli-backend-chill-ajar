@@ -74,6 +74,8 @@ class AuthController extends Controller
             'deskripsi' => 'nullable',
             'nomorTelepon' => 'required|string',
             'alamat' => 'required|string',
+            'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5048', // validasi file
+
         ]);
         $user = User::create([
             'nama' => $request->nama,
@@ -83,11 +85,23 @@ class AuthController extends Controller
             'nomorTelepon' => $request->nomorTelepon,
             'alamat' => $request->alamat,
         ]);
+
+        // Proses upload dokumen pendukung
+        $dokumenPath = null;
+        if ($request->hasFile('dokumen_pendukung')) {
+            $file = $request->file('dokumen_pendukung');
+            if (!$file->isValid()) {
+                return response()->json(['message' => 'Upload dokumen gagal.'], 422);
+            }
+            $dokumenPath = $file->store('dokumen_mentor', 'public');
+}
         $mentor = Mentor::create([
             'user_id' => $user->id,
             'biayaPerSesi' => 25000, // Default biaya per sesi
             'deskripsi' => $request->deskripsi ?? null,
             'rating' => 0,
+            'status' => 'pending', // Status awal mentor adalah pending
+            'dokumen_pendukung' => $dokumenPath, // Simpan path dokumen pendukung</s>
         ]);
         $token = $user->createToken('ChillAjarToken')->plainTextToken;
         return response()->json([
@@ -109,6 +123,17 @@ class AuthController extends Controller
         ]);
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = User::where('email', $request->email)->with('pelanggan', 'mentor')->first();
+
+              // Tambahkan pengecekan status mentor
+            if ($user->peran === 'mentor') {
+                $mentor = $user->mentor;
+                if ($mentor && in_array($mentor->status, ['pending', 'rejected'])) {
+                    return response()->json([
+                        'message' => 'Akun mentor Anda belum diverifikasi admin. mohon tunggu atau hubungi admin untuk informasi lebih lanjut.',
+                    ], 403);
+                }
+            }
+
             $token = $user->createToken('ChillAjarToken')->plainTextToken;
             return response()->json([
                 'message' => 'Login berhasil',

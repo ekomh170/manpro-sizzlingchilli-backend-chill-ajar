@@ -24,6 +24,8 @@ class MentorSeeder extends Seeder
                     'rating' => $dummyMentorData['rating'],
                     'biayaPerSesi' => $dummyMentorData['biayaPerSesi'],
                     'deskripsi' => $dummyMentorData['deskripsi'],
+                    'status' => 'active', // atau 'pending' jika ingin dummy mentor belum diverifikasi
+                    'dokumen_pendukung' => null, // atau path file dummy jika ingin testing upload
                 ]
             );
         }
