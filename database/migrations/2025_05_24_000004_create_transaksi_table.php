@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->foreignId('pelanggan_id')->constrained('pelanggan')->onDelete('cascade');
             $table->foreignId('mentor_id')->constrained('mentor')->onDelete('cascade');
             $table->foreignId('sesi_id')->constrained('sesi')->onDelete('cascade');
+            $table->foreignId('paket_id')->nullable()->constrained('paket')->onDelete('set null'); // Referensi ke paket (opsional)
             $table->float('jumlah');
             $table->string('statusPembayaran');
             $table->string('metodePembayaran')->nullable();

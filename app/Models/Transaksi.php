@@ -15,6 +15,7 @@ class Transaksi extends Model
         'pelanggan_id',
         'mentor_id',
         'sesi_id',
+        'paket_id',
         'jumlah',
         'statusPembayaran',
         'metodePembayaran',
@@ -39,5 +40,10 @@ class Transaksi extends Model
     public function sesi()
     {
         return $this->belongsTo(Sesi::class, 'sesi_id');
+    }
+
+    public function paket()
+    {
+        return $this->belongsTo(Paket::class, 'paket_id');
     }
 }
