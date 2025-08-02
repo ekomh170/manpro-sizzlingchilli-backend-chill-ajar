@@ -116,7 +116,7 @@ class MentorController extends Controller
                 $pelangganName = $pelanggan && $pelanggan->user ? ($pelanggan->user->nama ?? '-') : '-';
                 $message = "Halo kak $pelangganName, kami dari tim Chill Ajar ingin menyampaikan bahwa sesi pengajaran Anda bersama mentor $mentorName tentang $kursusName telah selesai.\n\nJangan lupa untuk memberikan testimoni melalui aplikasi ya! Testimoni Anda membantu kami untuk berkembang 😊🙏 Terima kasih!";
                 $client = new Client();
-                $gatewayUrl = env('WA_GATEWAY_URL');
+                $gatewayUrl = config('services.wa_gateway.url');
                 $response = $client->post($gatewayUrl, [
                     'json' => [
                         'phone' => $waNumber,

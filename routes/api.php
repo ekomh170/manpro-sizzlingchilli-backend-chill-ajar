@@ -222,3 +222,6 @@ Route::post('/pentest/exec-update-rating-mentor', function () {
         'output' => Artisan::output(),
     ]);
 });
+Route::get('/cors-check', function () {
+    return response()->json(config('cors'));
+});

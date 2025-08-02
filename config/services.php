@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -35,4 +34,9 @@ return [
         ],
     ],
 
+    // WhatsApp Gateway
+    'wa_gateway' => [
+        // Fallback: jika .env tidak ada, ambil dari config('app.WA_GATEWAY_URL')
+        'url' => env('WA_GATEWAY_URL', config('app.WA_GATEWAY_URL')),
+    ],
 ];

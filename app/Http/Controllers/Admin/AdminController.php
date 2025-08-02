@@ -257,7 +257,7 @@ class AdminController extends Controller
                 $pelangganName = $pelanggan && $pelanggan->user ? ($pelanggan->user->nama ?? '-') : '-';
                 $message = "Halo kak $pelangganName, pembayaran Anda untuk sesi bersama mentor $mentorName (kursus $kursusName) telah diverifikasi. Sesi Anda akan segera diproses. Terima kasih telah menggunakan Chill Ajar!";
                 $client = new \GuzzleHttp\Client();
-                $gatewayUrl = env('WA_GATEWAY_URL');
+                $gatewayUrl = config('services.wa_gateway.url');
                 $response = $client->post($gatewayUrl, [
                     'json' => [
                         'phone' => $waNumber,
@@ -299,7 +299,7 @@ class AdminController extends Controller
                 $kursusName = $transaksi->sesi && $transaksi->sesi->kursus ? ($transaksi->sesi->kursus->namaKursus ?? '-') : '-';
                 $messageMentor = "Halo kak $mentorName, kami dari tim Chill Ajar ingin menginformasikan bahwa pembayaran dari pelanggan $pelangganName untuk sesi kursus $kursusName sudah diverifikasi. Selamat mengajar dan semoga sesi berjalan lancar! Jangan lupa untuk mulai sesi di web Chill Ajar saat pengajaran dimulai. Terima kasih atas dedikasi dan semangatnya menjadi mentor di Chill Ajar! 😊🙏";
                 $client = new \GuzzleHttp\Client();
-                $gatewayUrl = env('WA_GATEWAY_URL');
+                $gatewayUrl = config('services.wa_gateway.url');
                 $response = $client->post($gatewayUrl, [
                     'json' => [
                         'phone' => $waNumberMentor,
@@ -360,7 +360,7 @@ class AdminController extends Controller
                 $pelangganName = $pelanggan && $pelanggan->user ? ($pelanggan->user->nama ?? '-') : '-';
                 $message = "Halo kak $pelangganName, kami dari tim Chill Ajar ingin menyampaikan bahwa pembayaran Anda untuk sesi bersama mentor $mentorName (kursus $kursusName) ditolak.\n\nSilakan upload ulang bukti pembayaran melalui website Chill Ajar agar sesi Anda dapat diproses kembali. Segera upload agar kami bisa segera proses ya! 🙏😊 Terima kasih.";
                 $client = new \GuzzleHttp\Client();
-                $gatewayUrl = env('WA_GATEWAY_URL');
+                $gatewayUrl = config('services.wa_gateway.url');
                 $response = $client->post($gatewayUrl, [
                     'json' => [
                         'phone' => $waNumber,
