@@ -36,6 +36,13 @@ Route::get('/pentest/testimoni', function () {
 Route::get('/pentest/admin', function () {
     return view('pentest.admin');
 });
+// Pentest Paket dan ItemPaket
+Route::get('/pentest/paket', function () {
+    return view('pentest.paket');
+});
+Route::get('/pentest/itempaket', function () {
+    return view('pentest.itempaket');
+});
 // (endpoint automation hapus sesi expired dipindah ke api.php)
 
 Route::get('/debug-log', function () {

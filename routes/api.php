@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Fitur\FiturController;
 use App\Http\Controllers\Fitur\KursusController;
 use App\Http\Controllers\Fitur\JadwalKursusController;
+use App\Http\Controllers\Fitur\PaketController;
+use App\Http\Controllers\Fitur\ItemPaketController;
 
 // ==================== AUTH ====================
 // [POST] Login pengguna
@@ -204,6 +206,30 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/jadwal-kursus/{id}', [JadwalKursusController::class, 'update']);
     // [DELETE] Hapus jadwal kursus
     Route::delete('/jadwal-kursus/{id}', [JadwalKursusController::class, 'destroy']);
+
+    // ==================== PAKET ====================
+    // [GET] Daftar semua paket
+    Route::get('/paket', [PaketController::class, 'index']);
+    // [POST] Tambah paket
+    Route::post('/paket', [PaketController::class, 'store']);
+    // [GET] Detail paket
+    Route::get('/paket/{id}', [PaketController::class, 'show']);
+    // [PUT] Update paket
+    Route::put('/paket/{id}', [PaketController::class, 'update']);
+    // [DELETE] Hapus paket
+    Route::delete('/paket/{id}', [PaketController::class, 'destroy']);
+
+    // ==================== ITEM PAKET ====================
+    // [GET] Daftar semua item paket
+    Route::get('/item-paket', [ItemPaketController::class, 'index']);
+    // [POST] Tambah item paket
+    Route::post('/item-paket', [ItemPaketController::class, 'store']);
+    // [GET] Detail item paket
+    Route::get('/item-paket/{id}', [ItemPaketController::class, 'show']);
+    // [PUT] Update item paket
+    Route::put('/item-paket/{id}', [ItemPaketController::class, 'update']);
+    // [DELETE] Hapus item paket
+    Route::delete('/item-paket/{id}', [ItemPaketController::class, 'destroy']);
 });
 
 // ==================== PENTEST ====================

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             SesiSeeder::class,
             TransaksiSeeder::class,
             TestimoniSeeder::class,
+            PaketSeeder::class,
         ]);
     }
 }
