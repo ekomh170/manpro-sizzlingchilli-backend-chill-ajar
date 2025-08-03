@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->id();
             $table->string('nama', 100); // Nama paket
             $table->integer('harga_dasar')->default(0); // Harga dasar paket
+            $table->integer('diskon')->default(0); // Diskon khusus paket
             $table->text('deskripsi')->nullable(); // Deskripsi paket
             $table->date('tanggal_mulai')->nullable(); // Tanggal mulai promo/aktif (NULL = unlimited)
             $table->date('tanggal_berakhir')->nullable(); // Tanggal berakhir promo/aktif (NULL = unlimited)

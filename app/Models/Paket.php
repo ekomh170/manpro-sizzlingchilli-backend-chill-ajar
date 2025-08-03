@@ -12,10 +12,19 @@ class Paket extends Model
     protected $fillable = [
         'nama',
         'harga_dasar',
+        'diskon',
         'deskripsi',
         'tanggal_mulai',
         'tanggal_berakhir',
         'max_pembelian_per_user',
+    ];
+
+    protected $casts = [
+        'harga_dasar' => 'integer',
+        'diskon' => 'integer',
+        'max_pembelian_per_user' => 'integer',
+        'tanggal_mulai' => 'date',
+        'tanggal_berakhir' => 'date',
     ];
 
     public function items()
