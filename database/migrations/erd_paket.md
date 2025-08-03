@@ -8,6 +8,7 @@ erDiagram
         int id PK
         string nama
         int harga_dasar
+        int diskon
         text deskripsi
         date tanggal_mulai
         date tanggal_berakhir
