@@ -32,4 +32,12 @@ class Kursus extends Model
     {
         return $this->hasMany(Sesi::class, 'kursus_id');
     }
+
+    /**
+     * Relasi ke visibilitas_paket (paket yang terlihat di kursus ini)
+     */
+    public function visibilitasPaket()
+    {
+        return $this->hasMany(\App\Models\VisibilitasPaket::class, 'kursus_id');
+    }
 }
