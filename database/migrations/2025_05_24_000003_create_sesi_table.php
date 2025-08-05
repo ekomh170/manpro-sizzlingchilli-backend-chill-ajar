@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->foreignId('kursus_id')->constrained('kursus')->onDelete('cascade');
             $table->foreignId('jadwal_kursus_id')->constrained('jadwal_kursus')->onDelete('cascade');
             $table->string('detailKursus')->nullable();
+            $table->integer('jumlahSementara')->nullable(); // Estimasi harga booking, diisi saat user pilih paket atau mentor
             $table->string('statusSesi'); //  ['pending', 'started', 'end', 'reviewed'];
             // pending : sesi belum dimulai
             // started : sesi sedang berlangsung

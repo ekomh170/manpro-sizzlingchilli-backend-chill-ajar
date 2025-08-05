@@ -67,10 +67,24 @@ class PelangganController extends Controller
             'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id',
             'detailKursus' => 'nullable|string',
             'statusSesi' => 'required|string',
-            // Misal: 'pending', 'confirmed', 'selesai'
+            'paket_id' => 'nullable|exists:paket,id',
         ]);
 
-        $sesi = Sesi::create($request->all());
+        // Hitung jumlahSementara: jika ada paket, pakai harga paket, jika tidak pakai biayaPerSesi mentor
+        $jumlahSementara = null;
+        $mentor = \App\Models\Mentor::find($request->mentor_id);
+        $biayaPerSesi = $mentor ? ($mentor->biayaPerSesi ?? 0) : 0;
+        if ($request->filled('paket_id')) {
+            $paket = \App\Models\Paket::find($request->paket_id);
+            $biayaPaket = $paket ? ($paket->harga_dasar - ($paket->diskon ?? 0)) : 0;
+            $jumlahSementara = $biayaPaket + $biayaPerSesi;
+        } else {
+            $jumlahSementara = $biayaPerSesi;
+        }
+
+        $sesiData = $request->all();
+        $sesiData['jumlahSementara'] = $jumlahSementara;
+        $sesi = Sesi::create($sesiData);
         return response()->json([
             'message' => 'Sesi berhasil dipesan',
             'sesi' => $sesi

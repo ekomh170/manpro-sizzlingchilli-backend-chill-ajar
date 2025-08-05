@@ -17,7 +17,12 @@ class Sesi extends Model
         'kursus_id',
         'jadwal_kursus_id',
         'detailKursus',
+        'jumlahSementara',
         'statusSesi',
+    ];
+
+    protected $casts = [
+        'jumlahSementara' => 'integer',
     ];
 
     public function mentor()
