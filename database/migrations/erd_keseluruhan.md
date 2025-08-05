@@ -63,6 +63,7 @@ erDiagram
         int pelanggan_id FK
         int kursus_id FK
         int jadwal_kursus_id FK
+        int jumlahSementara
         string detailKursus
         string statusSesi
         timestamp created_at

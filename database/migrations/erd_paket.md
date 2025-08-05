@@ -4,6 +4,18 @@ Berikut adalah Entity Relationship Diagram (ERD) dalam format teks untuk fitur p
 
 ```mermaid
 erDiagram
+    SESI {
+        int id PK
+        int mentor_id FK
+        int pelanggan_id FK
+        int kursus_id FK
+        int jadwal_kursus_id FK
+        int jumlahSementara
+        string detailKursus
+        string statusSesi
+        timestamp created_at
+        timestamp updated_at
+    }
     PAKET {
         int id PK
         string nama

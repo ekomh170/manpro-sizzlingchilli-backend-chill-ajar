@@ -3,7 +3,7 @@
 ## Alur Perhitungan
 
 1. **User memilih paket**
-   - Paket terdiri dari beberapa item (opsional) dan memiliki harga_dasar (total harga seluruh item di paket).
+- Paket terdiri dari beberapa item (opsional) dan memiliki harga_dasar (harga utama paket, bisa berbeda dari total seluruh item jika ada diskon atau custom harga).
 2. **User memilih mentor**
    - Setiap mentor memiliki tarif/harga per sesi (misal: kolom `biayaPerSesi` di tabel mentor).
 3. **Total transaksi**
