@@ -33,18 +33,31 @@ class TransaksiController extends Controller
             'pelanggan_id' => 'required|exists:pelanggan,id',
             'mentor_id' => 'required|exists:mentor,id',
             'sesi_id' => 'required|exists:sesi,id',
-            'jumlah' => 'required|numeric',
-            'statusPembayaran' => 'required', // Bisa diatur ulang ke 'menunggu_verifikasi'
+            'jumlah' => 'nullable|numeric', // Akan dihitung otomatis jika ada paket
+            'paket_id' => 'nullable|exists:paket,id',
+            'statusPembayaran' => 'required',
             'metodePembayaran' => 'required',
             'tanggalPembayaran' => 'required|date',
-            'buktiPembayaran' => 'image|max:10240', // Validasi gambar max 10MB
+            'buktiPembayaran' => 'image|max:10240',
         ]);
+
+        // Hitung jumlah transaksi
+        $mentor = \App\Models\Mentor::find($request->mentor_id);
+        $biayaPerSesi = $mentor ? ($mentor->biayaPerSesi ?? 0) : 0;
+        if ($request->filled('paket_id')) {
+            $paket = \App\Models\Paket::find($request->paket_id);
+            $biayaPaket = $paket ? ($paket->harga_dasar - ($paket->diskon ?? 0)) : 0;
+            $jumlah = $biayaPaket + $biayaPerSesi;
+        } else {
+            $jumlah = $biayaPerSesi;
+        }
 
         $transaksiData = [
             'pelanggan_id' => $request->pelanggan_id,
             'mentor_id' => $request->mentor_id,
             'sesi_id' => $request->sesi_id,
-            'jumlah' => $request->jumlah,
+            'paket_id' => $request->paket_id ?? null,
+            'jumlah' => $jumlah,
             'statusPembayaran' => $request->statusPembayaran,
             'metodePembayaran' => $request->metodePembayaran,
             'tanggalPembayaran' => $request->tanggalPembayaran,
@@ -60,15 +73,12 @@ class TransaksiController extends Controller
         }
 
         if ($request->has('id')) {
-            // Update transaksi yang sudah ada
             $transaksi = Transaksi::findOrFail($request->id);
             $transaksi->update($transaksiData);
-            // Set status kembali ke 'menunggu_verifikasi' saat update bukti
             $transaksi->statusPembayaran = 'menunggu_verifikasi';
             $transaksi->save();
             $message = 'Transaksi diperbarui dan menunggu verifikasi.';
         } else {
-            // Create transaksi baru
             $transaksi = Transaksi::create($transaksiData);
             $message = 'Transaksi baru berhasil dibuat.';
         }
