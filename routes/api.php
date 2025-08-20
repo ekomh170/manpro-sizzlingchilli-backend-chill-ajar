@@ -70,6 +70,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/admin/mentor/{id}', [AdminController::class, 'perbaruiMentor']);
     // [DELETE] Hapus mentor
     Route::delete('/admin/mentor/{id}', [AdminController::class, 'hapusMentor']);
+    // [GET] Download dokumen mentor
+    Route::get('/admin/download-dokumen-mentor/{id}', [AdminController::class, 'downloadDokumenMentor']);
     // [GET] Daftar pelanggan
     Route::get('/admin/pelanggan', [AdminController::class, 'daftarPelanggan']);
     // [GET] Detail pelanggan
@@ -82,6 +84,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/admin/verifikasi-pembayaran/{transaksiId}', [AdminController::class, 'verifikasiPembayaran']);
     // Pelanggan - Pembayaran Tolak - tolakPembayaran
     Route::post('/admin/tolak-pembayaran/{transaksiId}', [AdminController::class, 'tolakPembayaran']);
+    // [GET] Download bukti pembayaran
+    Route::get('/admin/download-bukti-pembayaran/{transaksiId}', [AdminController::class, 'downloadBuktiPembayaran']);
     // [POST] Kirim notifikasi ke mentor setelah pembayaran diverifikasi
     Route::post('/admin/notifikasi/mentor/{sessionId}', [AdminController::class, 'notifikasiKeMentor']);
     // [GET] Statistik admin
