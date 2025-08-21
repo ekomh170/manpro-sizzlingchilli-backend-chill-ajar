@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\FileDownloadHelper;
 
 class AdminController extends Controller
 {
@@ -409,163 +410,63 @@ class AdminController extends Controller
      * Function Download
      */
 
-      public function downloadDokumenMentor($id)
-{
-    try {
-        // Cari mentor berdasarkan ID dengan relasi user
-        $mentor = Mentor::with('user')->findOrFail($id);
-        
-        if (!$mentor->dokumen_pendukung) {
-            return response()->json(['message' => 'Dokumen pendukung tidak ditemukan'], 404);
-        }
-
-        // Coba beberapa kemungkinan path file (sebelumnya belum tau letak folder yg aslinya jadi nyoba beberapa path)
-        $possiblePaths = [
-            storage_path('app/public/' . $mentor->dokumen_pendukung), 
-        ];
-
-        $filePath = null;
-        foreach ($possiblePaths as $path) {
-            if (file_exists($path)) {
-                $filePath = $path;
-                break;
-            }
-        }
-        
-        // Cek apakah file ada
-        if (!$filePath) {
-            // Log untuk debugging 
-            Log::warning("File dokumen mentor tidak ditemukan untuk mentor ID: {$id}, dokumen_pendukung: {$mentor->dokumen_pendukung}");
-            Log::info("Paths yang dicoba: " . json_encode($possiblePaths));
-            
-            return response()->json([
-                'message' => 'File tidak ditemukan di server',
-                'dokumen_pendukung' => $mentor->dokumen_pendukung,
-                'paths_tried' => $possiblePaths
-            ], 404);
-        }
-
-        // Buat nama file yang deskriptif (sama seperti bukti pembayaran)
-        $mentorNama = $mentor->user->nama ?? 'Unknown';
-        $tanggal = $mentor->created_at 
-            ? date('d-m-Y', strtotime($mentor->created_at))
-            : date('d-m-Y');
-        
-        // Dapatkan ekstensi file
-        $pathInfo = pathinfo($mentor->dokumen_pendukung);
-        $extension = $pathInfo['extension'] ?? 'pdf';
-        
-        // Format nama file untuk download (sama seperti bukti pembayaran)
-        $downloadName = sprintf(
-            'DokumenMentor_%s_%s.%s',
-            str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $mentorNama),
-            $tanggal,
-            $extension
-        );
-
-        // Dapatkan MIME type yang tepat (sama seperti bukti pembayaran)
-        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
-
-        // Return file response dengan header yang tepat (sama seperti bukti pembayaran)
-        return response()->download($filePath, $downloadName, [
-            'Content-Type' => $mimeType,
-            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0'
-        ]);
-
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['message' => 'Mentor tidak ditemukan'], 404);
-    } catch (\Exception $e) {
-        Log::error('Error downloading dokumen mentor: ' . $e->getMessage());
-        Log::error('Stack trace: ' . $e->getTraceAsString());
-        
-        return response()->json([
-            'message' => 'Terjadi kesalahan server',
-            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-        ], 500);
-    }
-}
-
  public function downloadBuktiPembayaran($transaksiId)
 {
     try {
-        // Cari transaksi berdasarkan ID
-        $transaksi = Transaksi::with(['pelanggan.user', 'sesi.kursus'])->findOrFail($transaksiId);
+        $transaksi = Transaksi::findOrFail($transaksiId);
 
         if (!$transaksi->buktiPembayaran) {
             return response()->json(['message' => 'Bukti pembayaran tidak ditemukan'], 404);
         }
 
-        // Coba beberapa kemungkinan path file (sebelumnya belum tau letak folder yg aslinya jadi nyoba beberapa path)
-        $possiblePaths = [
-            storage_path('app/public/' . $transaksi->buktiPembayaran), 
-        ];
-
-        $filePath = null;
-        foreach ($possiblePaths as $path) {
-            if (file_exists($path)) {
-                $filePath = $path;
-                break;
-            }
-        }
+        $filePath = storage_path('app/public/' . $transaksi->buktiPembayaran);
         
-        // Cek apakah file ada
-        if (!$filePath) {
-            // Log untuk debugging
-            Log::warning("File bukti pembayaran tidak ditemukan untuk transaksi ID: {$transaksiId}, buktiPembayaran: {$transaksi->buktiPembayaran}");
-            Log::info("Paths yang dicoba: " . json_encode($possiblePaths));
-            
-            return response()->json([
-                'message' => 'File tidak ditemukan di server',
-                'bukti_pembayaran' => $transaksi->buktiPembayaran,
-                'paths_tried' => $possiblePaths
-            ], 404);
+        if (!file_exists($filePath)) {
+            return response()->json(['message' => 'File tidak ditemukan di server'], 404);
         }
 
-        // Buat nama file yang deskriptif
-        $pelangganNama = $transaksi->pelanggan->user->nama ?? 'Unknown';
-        $kursusNama = $transaksi->sesi->kursus->namaKursus ?? 'Course';
-        $tanggal = $transaksi->tanggalPembayaran 
-            ? date('d-m-Y', strtotime($transaksi->tanggalPembayaran))
-            : date('d-m-Y');
-        
-        // Dapatkan ekstensi file
-        $pathInfo = pathinfo($transaksi->buktiPembayaran);
-        $extension = $pathInfo['extension'] ?? 'jpg';
-        
-        // Format nama file untuk download
-        $downloadName = sprintf(
-            'BuktiPembayaran_%s_%s_%s.%s',
-            str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $pelangganNama),
-            str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $kursusNama),
-            $tanggal,
-            $extension
-        );
-
-        // Dapatkan MIME type yang tepat
         $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
 
-        // Return file response dengan header yang tepat
-        return response()->download($filePath, $downloadName, [
+
+        return response()->file($filePath, [
             'Content-Type' => $mimeType,
-            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0'
         ]);
 
     } catch (ModelNotFoundException $e) {
         return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
     } catch (\Exception $e) {
         Log::error('Error downloading bukti pembayaran: ' . $e->getMessage());
-        Log::error('Stack trace: ' . $e->getTraceAsString());
-        
-        return response()->json([
-            'message' => 'Terjadi kesalahan server',
-            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-        ], 500);
+        return response()->json(['message' => 'Terjadi kesalahan server'], 500);
     }
 }
+
+public function downloadDokumenMentor($mentorId)
+{
+    try {
+        $mentor = Mentor::findOrFail($mentorId);
+
+        if (!$mentor->dokumen_pendukung) {
+            return response()->json(['message' => 'Dokumen pendukung tidak tersedia'], 404);
+        }
+
+        $filePath = storage_path('app/public/' . $mentor->dokumen_pendukung);
+        
+        if (!file_exists($filePath)) {
+            return response()->json(['message' => 'File tidak ditemukan di server'], 404);
+        }
+
+        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+
+        return response()->file($filePath, [
+            'Content-Type' => $mimeType,
+        ]);
+
+    } catch (ModelNotFoundException $e) {
+        return response()->json(['message' => 'Mentor tidak ditemukan'], 404);
+    } catch (\Exception $e) {
+        Log::error('Error downloading dokumen mentor: ' . $e->getMessage());
+        return response()->json(['message' => 'Terjadi kesalahan server'], 500);
+    }
+}
+
 }
