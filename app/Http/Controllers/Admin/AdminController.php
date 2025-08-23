@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Helpers\FileDownloadHelper;
 
+
 class AdminController extends Controller
 {
 
@@ -42,10 +43,64 @@ class AdminController extends Controller
      * Menampilkan daftar semua pengguna
      */
     public function daftarPengguna()
-    {
-        $users = User::all();
+{
+    try {
+        $users = User::with(['pelanggan', 'mentor'])->get()->map(function ($user) {
+            $jumlahSesi = 0;
+            
+            try {
+                if ($user->peran === 'pelanggan' && $user->pelanggan) {
+                    // Hitung transaksi yang sudah accepted untuk pelanggan
+                    $jumlahSesi = Transaksi::where('pelanggan_id', $user->pelanggan->id)
+                                         ->where('statusPembayaran', 'accepted')
+                                         ->count();
+                                         
+                } elseif ($user->peran === 'mentor' && $user->mentor) {
+                    // Hitung sesi yang diajar mentor melalui transaksi
+                    $jumlahSesi = Transaksi::whereHas('sesi', function ($query) use ($user) {
+                        $query->where('mentor_id', $user->mentor->id);
+                    })->where('statusPembayaran', 'accepted')->count();
+                }
+            } catch (\Exception $e) {
+                // Jika ada error, set jumlah sesi ke 0
+                $jumlahSesi = 0;
+                Log::warning('Error calculating sesi for user ' . $user->id . ': ' . $e->getMessage());
+            }
+            
+            return [
+                'id' => $user->id,
+                'nama' => $user->nama,
+                'email' => $user->email,
+                'peran' => $user->peran,
+                'created_at' => $user->created_at,
+                'jumlah_sesi' => $jumlahSesi,
+                'nomorTelepon' => $user->nomorTelepon,
+                'alamat' => $user->alamat,
+            ];
+        });
+
+        return response()->json($users);
+        
+    } catch (\Exception $e) {
+        Log::error('Error in daftarPengguna: ' . $e->getMessage());
+
+        // Fallback: mereturn data pengguna seperti biasa
+        $users = User::all()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'nama' => $user->nama,
+                'email' => $user->email,
+                'peran' => $user->peran,
+                'created_at' => $user->created_at,
+                'jumlah_sesi' => 0,
+                'nomorTelepon' => $user->nomorTelepon,
+                'alamat' => $user->alamat,
+            ];
+        });
+        
         return response()->json($users);
     }
+}
 
     /**
      * Mengubah role pengguna (admin, mentor, pelanggan)
