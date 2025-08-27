@@ -15,7 +15,8 @@ class TransaksiController extends Controller
             'pelanggan.user',
             'mentor.user',
             'sesi.kursus',
-            'sesi.jadwalKursus'
+            'sesi.jadwalKursus',
+            'paket'
         ])->get();
         return response()->json($transaksi);
     }
@@ -52,6 +53,7 @@ class TransaksiController extends Controller
             $jumlah = $biayaPerSesi;
         }
 
+        
         $transaksiData = [
             'pelanggan_id' => $request->pelanggan_id,
             'mentor_id' => $request->mentor_id,

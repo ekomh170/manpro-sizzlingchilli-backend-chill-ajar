@@ -18,6 +18,7 @@ class Sesi extends Model
         'jadwal_kursus_id',
         'detailKursus',
         'jumlahSementara',
+        'paket_id',
         'statusSesi',
     ];
 
@@ -53,5 +54,10 @@ class Sesi extends Model
     public function testimoni()
     {
         return $this->hasOne(Testimoni::class, 'sesi_id');
+    }
+
+    public function paket()
+    {
+        return $this->belongsTo(Paket::class, 'paket_id');
     }
 }
