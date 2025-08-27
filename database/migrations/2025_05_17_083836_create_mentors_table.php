@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relasi ke users
             $table->float('rating')->default(0); // Rating awal default 0
             $table->float('biayaPerSesi')->nullable();
+            $table->float('biayaPerSesiOffline')->nullable();
             $table->text('deskripsi')->nullable(); // Deskripsi tentang mentor
             $table->string('status')->default('pending');
             $table->string('dokumen_pendukung')->nullable();

@@ -36,7 +36,7 @@ Route::get('/public/mentor', function () {
     return \App\Models\Mentor::with(['user' => function ($query) {
         $query->select('id', 'nama', 'nomorTelepon', 'alamat', 'foto_profil');
     }])
-        ->select('id', 'user_id', 'rating', 'biayaPerSesi', 'deskripsi', 'status')
+        ->select('id', 'user_id', 'rating', 'biayaPerSesi', 'biayaPerSesiOffline', 'deskripsi', 'status')
         ->get();
 });
 

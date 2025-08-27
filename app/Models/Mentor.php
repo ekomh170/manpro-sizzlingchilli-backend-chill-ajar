@@ -17,6 +17,7 @@ class Mentor extends Model
         'user_id',       // ID user yang terkait
         'rating',        // Rating awal mentor
         'biayaPerSesi',  // Tarif mentor per sesi
+        'biayaPerSesiOffline', // Tarif mentor per sesi offline
         'deskripsi',     // Deskripsi tentang mentor (optional)
         'status',        // Status mentor (active, pending, rejected)
         'dokumen_pendukung', // Dokumen pendukung yang diunggah mentor (optional)

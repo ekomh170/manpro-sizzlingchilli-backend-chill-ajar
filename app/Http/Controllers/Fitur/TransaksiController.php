@@ -15,7 +15,8 @@ class TransaksiController extends Controller
             'pelanggan.user',
             'mentor.user',
             'sesi.kursus',
-            'sesi.jadwalKursus'
+            'sesi.jadwalKursus',
+            'paket',
         ])->get();
         return response()->json($transaksi);
     }
@@ -42,16 +43,27 @@ class TransaksiController extends Controller
         ]);
 
         // Hitung jumlah transaksi
-        $mentor = \App\Models\Mentor::find($request->mentor_id);
-        $biayaPerSesi = $mentor ? ($mentor->biayaPerSesi ?? 0) : 0;
-        if ($request->filled('paket_id')) {
-            $paket = \App\Models\Paket::find($request->paket_id);
-            $biayaPaket = $paket ? ($paket->harga_dasar - ($paket->diskon ?? 0)) : 0;
-            $jumlah = $biayaPaket + $biayaPerSesi;
-        } else {
-            $jumlah = $biayaPerSesi;
-        }
+     $mentor = \App\Models\Mentor::find($request->mentor_id);
+$mode = $request->mode; // pastikan mode dikirim dari frontend
 
+if ($mentor) {
+    // Pilih biaya berdasarkan mode
+    if ($mode === 'offline' && !is_null($mentor->biayaPerSesiOffline)) {
+        $biayaPerSesi = $mentor->biayaPerSesiOffline ;
+    } else {
+        $biayaPerSesi = $mentor->biayaPerSesi ?? 0;
+    }
+} else {
+    $biayaPerSesi = 0;
+}
+
+if ($request->filled('paket_id')) {
+    $paket = \App\Models\Paket::find($request->paket_id);
+    $biayaPaket = $paket ? ($paket->harga_dasar - ($paket->diskon ?? 0)) : 0;
+    $jumlah = $biayaPaket + $biayaPerSesi;
+} else {
+    $jumlah = $biayaPerSesi;
+}
         $transaksiData = [
             'pelanggan_id' => $request->pelanggan_id,
             'mentor_id' => $request->mentor_id,

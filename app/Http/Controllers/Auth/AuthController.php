@@ -71,6 +71,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'biayaPerSesi' => 'nullable',
+            'biayaPerSesiOffline' => 'nullable',
             'deskripsi' => 'nullable',
             'nomorTelepon' => 'required|string',
             'alamat' => 'required|string',
@@ -98,6 +99,7 @@ class AuthController extends Controller
         $mentor = Mentor::create([
             'user_id' => $user->id,
             'biayaPerSesi' => 25000, // Default biaya per sesi
+            'biayaPerSesiOffline' => 30000, // Default biaya per sesi offline
             'deskripsi' => $request->deskripsi ?? null,
             'rating' => 0,
             'status' => 'pending', // Status awal mentor adalah pending

@@ -201,6 +201,7 @@ class AdminController extends Controller
             'password' => 'required',
             'deskripsi' => 'nullable',
             'biayaPerSesi' => 'nullable|numeric',
+            'biayaPerSesiOffline' => 'nullable|numeric',
         ]);
         $user = User::create([
             'nama' => $request->nama,
@@ -212,6 +213,7 @@ class AdminController extends Controller
             'user_id' => $user->id,
             'deskripsi' => $request->deskripsi,
             'biayaPerSesi' => $request->biayaPerSesi,
+            'biayaPerSesiOffline' => $request->biayaPerSesiOffline,
             // 'gayaMengajar' sudah tidak ada di Mentor, hanya di Kursus
         ]);
         return response()->json([

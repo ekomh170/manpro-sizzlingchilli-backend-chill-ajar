@@ -18,6 +18,7 @@ class Sesi extends Model
         'jadwal_kursus_id',
         'detailKursus',
         'jumlahSementara',
+        'paket_id',
         'statusSesi',
     ];
 
@@ -43,6 +44,11 @@ class Sesi extends Model
     public function jadwalKursus()
     {
         return $this->belongsTo(JadwalKursus::class, 'jadwal_kursus_id');
+    }
+
+     public function paket()
+    {
+        return $this->belongsTo(Paket::class, 'paket_id');
     }
 
     public function transaksi()

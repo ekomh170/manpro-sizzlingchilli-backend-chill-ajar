@@ -15,6 +15,7 @@ class MentorSeeder extends Seeder
         $dummyMentorData = [
             'rating' => 0,
             'biayaPerSesi' => 25000, // Semua mentor 25rb
+            'biayaPerSesiOffline' => 30000, // offline 30rb
             'deskripsi' => 'Mentor berpengalaman di bidangnya.'
         ];
         foreach ($mentorUsers as $user) {
@@ -23,6 +24,7 @@ class MentorSeeder extends Seeder
                 [
                     'rating' => $dummyMentorData['rating'],
                     'biayaPerSesi' => $dummyMentorData['biayaPerSesi'],
+                    'biayaPerSesiOffline' => $dummyMentorData['biayaPerSesiOffline'],
                     'deskripsi' => $dummyMentorData['deskripsi'],
                     'status' => 'active', // atau 'pending' jika ingin dummy mentor belum diverifikasi
                     'dokumen_pendukung' => null, // atau path file dummy jika ingin testing upload

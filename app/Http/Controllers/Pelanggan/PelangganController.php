@@ -70,25 +70,49 @@ class PelangganController extends Controller
             'paket_id' => 'nullable|exists:paket,id',
         ]);
 
-        // Hitung jumlahSementara: jika ada paket, pakai harga paket, jika tidak pakai biayaPerSesi mentor
-        $jumlahSementara = null;
-        $mentor = \App\Models\Mentor::find($request->mentor_id);
-        $biayaPerSesi = $mentor ? ($mentor->biayaPerSesi ?? 0) : 0;
-        if ($request->filled('paket_id')) {
-            $paket = \App\Models\Paket::find($request->paket_id);
-            $biayaPaket = $paket ? ($paket->harga_dasar - ($paket->diskon ?? 0)) : 0;
-            $jumlahSementara = $biayaPaket + $biayaPerSesi;
-        } else {
-            $jumlahSementara = $biayaPerSesi;
-        }
+       // Hitung jumlahSementara dengan memperhitungkan mode (online/offline)
+$jumlahSementara = null;
+$mentor = \App\Models\Mentor::find($request->mentor_id);
 
-        $sesiData = $request->all();
-        $sesiData['jumlahSementara'] = $jumlahSementara;
-        $sesi = Sesi::create($sesiData);
-        return response()->json([
-            'message' => 'Sesi berhasil dipesan',
-            'sesi' => $sesi
-        ], 201);
+// Ambil jadwal_kursus untuk mendapatkan mode
+$jadwalKursus = \App\Models\JadwalKursus::find($request->jadwal_kursus_id);
+$mode = $jadwalKursus ? $jadwalKursus->gayaMengajar : 'online'; // Default online jika tidak ada
+
+// Hitung biaya mentor berdasarkan mode
+$biayaPerSesi = 0;
+if ($mentor) {
+    if ($mode === 'offline' && !is_null($mentor->biayaPerSesiOffline)) {
+        $biayaPerSesi = $mentor->biayaPerSesiOffline;
+    } else {
+        $biayaPerSesi = $mentor->biayaPerSesi ?? 0;
+    }
+}
+
+if ($request->filled('paket_id')) {
+    $paket = \App\Models\Paket::find($request->paket_id);
+    // Hitung harga paket berdasarkan harga aktual items (setelah diskon item)
+    $biayaPaket = 0;
+    if ($paket && $paket->items) {
+        foreach ($paket->items as $item) {
+            $hargaItem = $item->harga ?? 0;
+            $diskonItem = $item->diskon ?? 0;
+            $biayaPaket += max($hargaItem - $diskonItem, 0);
+        }
+        // Kurangi diskon paket
+        $biayaPaket = max($biayaPaket - ($paket->diskon ?? 0), 0);
+    }
+    $jumlahSementara = $biayaPaket + $biayaPerSesi;
+} else {
+    $jumlahSementara = $biayaPerSesi;
+}
+
+$sesiData = $request->all();
+$sesiData['jumlahSementara'] = $jumlahSementara;
+$sesi = Sesi::create($sesiData);
+return response()->json([
+    'message' => 'Sesi berhasil dipesan',
+    'sesi' => $sesi
+], 201);
     }
 
     /**
@@ -98,7 +122,7 @@ class PelangganController extends Controller
     {
         $user = $request->user();
         $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
-        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus'])->get();
+        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus', 'paket'])->get();
         return response()->json($sesi);
     }
 

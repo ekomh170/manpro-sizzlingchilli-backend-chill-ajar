@@ -18,6 +18,7 @@ class SesiController extends Controller
             'kursus',
             'jadwalKursus',
             'transaksi',
+            'paket',
             'testimoni'
         ])->get());
     }
@@ -36,6 +37,7 @@ class SesiController extends Controller
             'kursus_id' => 'required|exists:kursus,id',
             'jadwal_kursus_id' => 'required|exists:jadwal_kursus,id',
             'detailKursus' => 'nullable|string',
+
             'statusSesi' => 'required|string',
         ]);
         $sesi = Sesi::create($request->all());
