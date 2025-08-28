@@ -43,37 +43,37 @@ class TransaksiController extends Controller
         ]);
 
         // Hitung jumlah transaksi
-     $mentor = \App\Models\Mentor::find($request->mentor_id);
-$mode = $request->mode; // pastikan mode dikirim dari frontend
+        $mentor = \App\Models\Mentor::find($request->mentor_id);
+        $mode = $request->mode; // pastikan mode dikirim dari frontend
 
-if ($mentor) {
-    // Pilih biaya berdasarkan mode
-    if ($mode === 'offline' && !is_null($mentor->biayaPerSesiOffline)) {
-        $biayaPerSesi = $mentor->biayaPerSesiOffline ;
-    } else {
-        $biayaPerSesi = $mentor->biayaPerSesi ?? 0;
-    }
-} else {
-    $biayaPerSesi = 0;
-}
-
-if ($request->filled('paket_id')) {
-    $paket = \App\Models\Paket::find($request->paket_id);
-    // Hitung harga paket berdasarkan harga aktual items (setelah diskon item)
-    $biayaPaket = 0;
-    if ($paket && $paket->items) {
-        foreach ($paket->items as $item) {
-            $hargaItem = $item->harga ?? 0;
-            $diskonItem = $item->diskon ?? 0;
-            $biayaPaket += max($hargaItem - $diskonItem, 0);
+        if ($mentor) {
+            // Pilih biaya berdasarkan mode
+            if ($mode === 'offline' && !is_null($mentor->biayaPerSesiOffline)) {
+                $biayaPerSesi = $mentor->biayaPerSesiOffline;
+            } else {
+                $biayaPerSesi = $mentor->biayaPerSesi ?? 0;
+            }
+        } else {
+            $biayaPerSesi = 0;
         }
-        // Kurangi diskon paket
-        $biayaPaket = max($biayaPaket - ($paket->diskon ?? 0), 0);
-    }
-    $jumlah = $biayaPaket + $biayaPerSesi;
-} else {
-    $jumlah = $biayaPerSesi;
-}
+
+        if ($request->filled('paket_id')) {
+            $paket = \App\Models\Paket::find($request->paket_id);
+            // Hitung harga paket berdasarkan harga aktual items (setelah diskon item)
+            $biayaPaket = 0;
+            if ($paket && $paket->items) {
+                foreach ($paket->items as $item) {
+                    $hargaItem = $item->harga ?? 0;
+                    $diskonItem = $item->diskon ?? 0;
+                    $biayaPaket += max($hargaItem - $diskonItem, 0);
+                }
+                // Kurangi diskon paket
+                $biayaPaket = max($biayaPaket - ($paket->diskon ?? 0), 0);
+            }
+            $jumlah = $biayaPaket + $biayaPerSesi;
+        } else {
+            $jumlah = $biayaPerSesi;
+        }
 
         $transaksiData = [
             'pelanggan_id' => $request->pelanggan_id,
