@@ -74,23 +74,23 @@ class PelangganController extends Controller
         $jumlahSementara = null;
         $mentor = \App\Models\Mentor::find($request->mentor_id);
         $biayaPerSesi = $mentor ? ($mentor->biayaPerSesi ?? 0) : 0;
-      if ($request->filled('paket_id')) {
-    $paket = \App\Models\Paket::find($request->paket_id);
-    // Hitung harga paket berdasarkan harga aktual items (setelah diskon item)
-    $biayaPaket = 0;
-    if ($paket && $paket->items) {
-        foreach ($paket->items as $item) {
-            $hargaItem = $item->harga ?? 0;
-            $diskonItem = $item->diskon ?? 0;
-            $biayaPaket += max($hargaItem - $diskonItem, 0);
+        if ($request->filled('paket_id')) {
+            $paket = \App\Models\Paket::find($request->paket_id);
+            // Hitung harga paket berdasarkan harga aktual items (setelah diskon item)
+            $biayaPaket = 0;
+            if ($paket && $paket->items) {
+                foreach ($paket->items as $item) {
+                    $hargaItem = $item->harga ?? 0;
+                    $diskonItem = $item->diskon ?? 0;
+                    $biayaPaket += max($hargaItem - $diskonItem, 0);
+                }
+                // Kurangi diskon paket
+                $biayaPaket = max($biayaPaket - ($paket->diskon ?? 0), 0);
+            }
+            $jumlahSementara = $biayaPaket + $biayaPerSesi;
+        } else {
+            $jumlahSementara = $biayaPerSesi;
         }
-        // Kurangi diskon paket
-        $biayaPaket = max($biayaPaket - ($paket->diskon ?? 0), 0);
-    }
-    $jumlahSementara = $biayaPaket + $biayaPerSesi;
-} else {
-    $jumlahSementara = $biayaPerSesi;
-}
 
         $sesiData = $request->all();
         $sesiData['jumlahSementara'] = $jumlahSementara;
@@ -108,7 +108,7 @@ class PelangganController extends Controller
     {
         $user = $request->user();
         $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
-        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus', 'paket'])->get();
+        $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus', 'paket.items'])->get();
         return response()->json($sesi);
     }
 

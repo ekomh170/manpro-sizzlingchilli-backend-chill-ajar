@@ -18,7 +18,8 @@ class SesiController extends Controller
             'kursus',
             'jadwalKursus',
             'transaksi',
-            'testimoni'
+            'testimoni',
+            'paket.items'
         ])->get());
     }
 
