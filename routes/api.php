@@ -58,6 +58,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/admin/users/{userId}/role', [AdminController::class, 'ubahRolePengguna']);
     // [POST] Tambah pengguna baru (admin/mentor/pelanggan)
     Route::post('/admin/users', [AdminController::class, 'tambahPengguna']);
+    // [DELETE] Hapus pengguna
+    Route::delete('/admin/users/{userId}', [AdminController::class, 'hapusPengguna']);
     // [POST] Tambah mentor langsung
     Route::post('/admin/mentor', [AdminController::class, 'tambahMentor']);
     // [POST] Tambah pelanggan langsung

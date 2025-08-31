@@ -42,104 +42,102 @@ class AdminController extends Controller
     /**
      * Menampilkan daftar semua pengguna
      */
-  public function daftarPengguna()
-{
-    try {
-        $users = User::with(['pelanggan', 'mentor'])->get()->map(function ($user) {
-            $jumlahSesi = 0;
-            $sesiMendatang = 0;
-            $sesiSelesai = 0;
-            $sesiBerlangsung = 0; 
-            
-            try {
-                if ($user->peran === 'pelanggan' && $user->pelanggan) {
-                    // Hitung sesi berdasarkan status untuk pelanggan
-                    $reviewedCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
-                        $query->where('pelanggan_id', $user->pelanggan->id)
-                              ->where('statusPembayaran', 'accepted');
-                    })->where('statusSesi', 'reviewed')->count();
-                    
-                    $pendingCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
-                        $query->where('pelanggan_id', $user->pelanggan->id)
-                              ->where('statusPembayaran', 'accepted');
-                    })->where('statusSesi', 'pending')->count();
-                    
-                    $startedCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
-                        $query->where('pelanggan_id', $user->pelanggan->id)
-                              ->where('statusPembayaran', 'accepted');
-                    })->where('statusSesi', 'started')->count();
-                    
-                    $endCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
-                        $query->where('pelanggan_id', $user->pelanggan->id)
-                              ->where('statusPembayaran', 'accepted');
-                    })->where('statusSesi', 'end')->count();
-                    
-                    $jumlahSesi = $reviewedCount;
-                    $sesiMendatang = $pendingCount;
-                    $sesiBerlangsung = $startedCount;
-                    $sesiSelesai = $endCount;
-
-                } elseif ($user->peran === 'mentor' && $user->mentor) {
-                    // Hitung sesi yang diajar mentor
-                    $reviewedCount = Sesi::where('mentor_id', $user->mentor->id)
-                                        ->whereHas('transaksi', function ($query) {
-                                            $query->where('statusPembayaran', 'accepted');
-                                        })
-                                        ->where('statusSesi', 'reviewed')->count();
-
-                    $pendingCount = Sesi::where('mentor_id', $user->mentor->id)
-                                         ->whereHas('transaksi', function ($query) {
-                                             $query->where('statusPembayaran', 'accepted');
-                                         })
-                                         ->where('statusSesi', 'pending')->count();
-
-                    $startedCount = Sesi::where('mentor_id', $user->mentor->id)
-                                       ->whereHas('transaksi', function ($query) {
-                                           $query->where('statusPembayaran', 'accepted');
-                                       })
-                                       ->where('statusSesi', 'started')->count();
-
-                    $endCount = Sesi::where('mentor_id', $user->mentor->id)
-                                         ->whereHas('transaksi', function ($query) {
-                                             $query->where('statusPembayaran', 'accepted');
-                                         })
-                                         ->where('statusSesi', 'end')->count();
-                    
-                    $jumlahSesi = $reviewedCount;
-                    $sesiMendatang = $pendingCount;
-                    $sesiBerlangsung = $startedCount;
-                    $sesiSelesai = $endCount;
-                }
-            } catch (\Exception $e) {
+    public function daftarPengguna()
+    {
+        try {
+            $users = User::with(['pelanggan', 'mentor'])->get()->map(function ($user) {
                 $jumlahSesi = 0;
                 $sesiMendatang = 0;
                 $sesiSelesai = 0;
                 $sesiBerlangsung = 0;
-                Log::warning('Error calculating sesi for user ' . $user->id . ': ' . $e->getMessage());
-            }
-            
-            return [
-                'id' => $user->id,
-                'nama' => $user->nama,
-                'email' => $user->email,
-                'peran' => $user->peran,
-                'created_at' => $user->created_at,
-                'jumlah_sesi' => $jumlahSesi,
-                'sesi_mendatang' => $sesiMendatang,
-                'sesi_dimulai' => $sesiBerlangsung,
-                'sesi_selesai' => $sesiSelesai,
-                'nomorTelepon' => $user->nomorTelepon,
-                'alamat' => $user->alamat,
-            ];
-        });
 
-        return response()->json($users);
-        
-    } catch (\Exception $e) {
-        Log::error('Error in daftarPengguna: ' . $e->getMessage());
-        return response()->json(['error' => 'Failed to fetch users'], 500);
+                try {
+                    if ($user->peran === 'pelanggan' && $user->pelanggan) {
+                        // Hitung sesi berdasarkan status untuk pelanggan
+                        $reviewedCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
+                            $query->where('pelanggan_id', $user->pelanggan->id)
+                                ->where('statusPembayaran', 'accepted');
+                        })->where('statusSesi', 'reviewed')->count();
+
+                        $pendingCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
+                            $query->where('pelanggan_id', $user->pelanggan->id)
+                                ->where('statusPembayaran', 'accepted');
+                        })->where('statusSesi', 'pending')->count();
+
+                        $startedCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
+                            $query->where('pelanggan_id', $user->pelanggan->id)
+                                ->where('statusPembayaran', 'accepted');
+                        })->where('statusSesi', 'started')->count();
+
+                        $endCount = Sesi::whereHas('transaksi', function ($query) use ($user) {
+                            $query->where('pelanggan_id', $user->pelanggan->id)
+                                ->where('statusPembayaran', 'accepted');
+                        })->where('statusSesi', 'end')->count();
+
+                        $jumlahSesi = $reviewedCount;
+                        $sesiMendatang = $pendingCount;
+                        $sesiBerlangsung = $startedCount;
+                        $sesiSelesai = $endCount;
+                    } elseif ($user->peran === 'mentor' && $user->mentor) {
+                        // Hitung sesi yang diajar mentor
+                        $reviewedCount = Sesi::where('mentor_id', $user->mentor->id)
+                            ->whereHas('transaksi', function ($query) {
+                                $query->where('statusPembayaran', 'accepted');
+                            })
+                            ->where('statusSesi', 'reviewed')->count();
+
+                        $pendingCount = Sesi::where('mentor_id', $user->mentor->id)
+                            ->whereHas('transaksi', function ($query) {
+                                $query->where('statusPembayaran', 'accepted');
+                            })
+                            ->where('statusSesi', 'pending')->count();
+
+                        $startedCount = Sesi::where('mentor_id', $user->mentor->id)
+                            ->whereHas('transaksi', function ($query) {
+                                $query->where('statusPembayaran', 'accepted');
+                            })
+                            ->where('statusSesi', 'started')->count();
+
+                        $endCount = Sesi::where('mentor_id', $user->mentor->id)
+                            ->whereHas('transaksi', function ($query) {
+                                $query->where('statusPembayaran', 'accepted');
+                            })
+                            ->where('statusSesi', 'end')->count();
+
+                        $jumlahSesi = $reviewedCount;
+                        $sesiMendatang = $pendingCount;
+                        $sesiBerlangsung = $startedCount;
+                        $sesiSelesai = $endCount;
+                    }
+                } catch (\Exception $e) {
+                    $jumlahSesi = 0;
+                    $sesiMendatang = 0;
+                    $sesiSelesai = 0;
+                    $sesiBerlangsung = 0;
+                    Log::warning('Error calculating sesi for user ' . $user->id . ': ' . $e->getMessage());
+                }
+
+                return [
+                    'id' => $user->id,
+                    'nama' => $user->nama,
+                    'email' => $user->email,
+                    'peran' => $user->peran,
+                    'created_at' => $user->created_at,
+                    'jumlah_sesi' => $jumlahSesi,
+                    'sesi_mendatang' => $sesiMendatang,
+                    'sesi_dimulai' => $sesiBerlangsung,
+                    'sesi_selesai' => $sesiSelesai,
+                    'nomorTelepon' => $user->nomorTelepon,
+                    'alamat' => $user->alamat,
+                ];
+            });
+
+            return response()->json($users);
+        } catch (\Exception $e) {
+            Log::error('Error in daftarPengguna: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch users'], 500);
+        }
     }
-}
 
     /**
      * Mengubah role pengguna (admin, mentor, pelanggan)
@@ -189,6 +187,53 @@ class AdminController extends Controller
         ]);
         return response()->json(['message' => 'Admin berhasil ditambah', 'user' => $user], 201);
     }
+
+    public function hapusPengguna($userId)
+    {
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $user = User::with(['mentor', 'pelanggan'])->findOrFail($userId);
+
+            // Jangan hapus admin terakhir
+            if ($user->peran === 'admin') {
+                $adminCount = User::where('peran', 'admin')->count();
+                if ($adminCount <= 1) {
+                    \Illuminate\Support\Facades\DB::rollBack();
+                    return response()->json(['message' => 'Tidak dapat menghapus admin terakhir'], 403);
+                }
+            }
+
+            // Hapus dokumen mentor jika ada, lalu record mentor
+            if ($user->mentor) {
+                $dok = $user->mentor->dokumen_pendukung;
+                if ($dok && \Illuminate\Support\Facades\Storage::disk('public')->exists($dok)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($dok);
+                }
+                $user->mentor->delete();
+            }
+
+            // Hapus record pelanggan jika ada
+            if ($user->pelanggan) {
+                $user->pelanggan->delete();
+            }
+
+            // Hapus user (akan menghapus akses dan account)
+            $user->delete();
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return response()->json(['message' => 'Pengguna dan data terkait berhasil dihapus']);
+        } catch (ModelNotFoundException $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return response()->json(['message' => 'Pengguna tidak ditemukan'], 404);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            Log::error('Error hapusPengguna: ' . $e->getMessage());
+            return response()->json(['message' => 'Gagal menghapus pengguna'], 500);
+        }
+    }
+
 
     /**
      * Tambah mentor baru (beserta identitas mentor)
@@ -251,6 +296,7 @@ class AdminController extends Controller
         ], 201);
     }
 
+
     // CRUD Mentor
     public function daftarMentor()
     {
@@ -266,7 +312,7 @@ class AdminController extends Controller
 
         // Ambil data dari request
         $data = $request->all();
-    
+
         // Tangani upload dokumen jika ada
         if ($request->hasFile('dokumen_pendukung')) {
             $file = $request->file('dokumen_pendukung');
@@ -280,10 +326,10 @@ class AdminController extends Controller
             $path = $file->store('dokumen_pendukung', 'public');
             $data['dokumen_pendukung'] = $path;
         }
-    
+
         // Update mentor
         $mentor->update($data);
-    
+
         return response()->json([
             'message' => 'Mentor berhasil diperbarui',
             'mentor' => $mentor
@@ -504,63 +550,60 @@ class AdminController extends Controller
      * Function Download
      */
 
- public function downloadBuktiPembayaran($transaksiId)
-{
-    try {
-        $transaksi = Transaksi::findOrFail($transaksiId);
+    public function downloadBuktiPembayaran($transaksiId)
+    {
+        try {
+            $transaksi = Transaksi::findOrFail($transaksiId);
 
-        if (!$transaksi->buktiPembayaran) {
-            return response()->json(['message' => 'Bukti pembayaran tidak ditemukan'], 404);
+            if (!$transaksi->buktiPembayaran) {
+                return response()->json(['message' => 'Bukti pembayaran tidak ditemukan'], 404);
+            }
+
+            $filePath = storage_path('app/public/' . $transaksi->buktiPembayaran);
+
+            if (!file_exists($filePath)) {
+                return response()->json(['message' => 'File tidak ditemukan di server'], 404);
+            }
+
+            $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+
+
+            return response()->file($filePath, [
+                'Content-Type' => $mimeType,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error downloading bukti pembayaran: ' . $e->getMessage());
+            return response()->json(['message' => 'Terjadi kesalahan server'], 500);
         }
-
-        $filePath = storage_path('app/public/' . $transaksi->buktiPembayaran);
-        
-        if (!file_exists($filePath)) {
-            return response()->json(['message' => 'File tidak ditemukan di server'], 404);
-        }
-
-        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
-
-
-        return response()->file($filePath, [
-            'Content-Type' => $mimeType,
-        ]);
-
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
-    } catch (\Exception $e) {
-        Log::error('Error downloading bukti pembayaran: ' . $e->getMessage());
-        return response()->json(['message' => 'Terjadi kesalahan server'], 500);
     }
-}
 
-public function downloadDokumenMentor($mentorId)
-{
-    try {
-        $mentor = Mentor::findOrFail($mentorId);
+    public function downloadDokumenMentor($mentorId)
+    {
+        try {
+            $mentor = Mentor::findOrFail($mentorId);
 
-        if (!$mentor->dokumen_pendukung) {
-            return response()->json(['message' => 'Dokumen pendukung tidak tersedia'], 404);
+            if (!$mentor->dokumen_pendukung) {
+                return response()->json(['message' => 'Dokumen pendukung tidak tersedia'], 404);
+            }
+
+            $filePath = storage_path('app/public/' . $mentor->dokumen_pendukung);
+
+            if (!file_exists($filePath)) {
+                return response()->json(['message' => 'File tidak ditemukan di server'], 404);
+            }
+
+            $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+
+            return response()->file($filePath, [
+                'Content-Type' => $mimeType,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Mentor tidak ditemukan'], 404);
+        } catch (\Exception $e) {
+            Log::error('Error downloading dokumen mentor: ' . $e->getMessage());
+            return response()->json(['message' => 'Terjadi kesalahan server'], 500);
         }
-
-        $filePath = storage_path('app/public/' . $mentor->dokumen_pendukung);
-        
-        if (!file_exists($filePath)) {
-            return response()->json(['message' => 'File tidak ditemukan di server'], 404);
-        }
-
-        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
-
-        return response()->file($filePath, [
-            'Content-Type' => $mimeType,
-        ]);
-
-    } catch (ModelNotFoundException $e) {
-        return response()->json(['message' => 'Mentor tidak ditemukan'], 404);
-    } catch (\Exception $e) {
-        Log::error('Error downloading dokumen mentor: ' . $e->getMessage());
-        return response()->json(['message' => 'Terjadi kesalahan server'], 500);
     }
-}
-
 }
