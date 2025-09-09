@@ -113,6 +113,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/mentor/selesai-sesi/{sessionId}', [MentorController::class, 'selesaiSesi']);
     // [GET] Daftar testimoni yang diterima mentor
     Route::get('/mentor/daftar-testimoni', [MentorController::class, 'daftarTestimoni']);
+    // [GET] Dashboard info untuk mentor (analytics & calendar)
+    Route::get('/mentor/dashboard-info', [MentorController::class, 'dashboardInfo']);
     // [GET] Daftar jadwal kursus yang diampu mentor (khusus mentor login)
     Route::get('/mentor/jadwal-kursus', function (Request $request) {
         $user = $request->user();
