@@ -248,13 +248,14 @@ class MentorController extends Controller
         })
             ->whereBetween('tanggal', [now()->startOfDay(), now()->addDays(30)->endOfDay()])
             ->with([
+
                 'kursus',
                 'sesi' => function ($query) {
                     $query->whereHas('transaksi', function ($subQuery) {
                         $subQuery->where('statusPembayaran', 'accepted');
                     })
                         ->where('statusSesi', 'pending') // Hanya sesi yang statusnya pending
-                        ->with('transaksi');
+                        ->with(['transaksi', 'pelanggan.user']); // Tambahkan relasi pelanggan.user
                 }
             ])
             ->whereHas('sesi', function ($query) {
@@ -278,6 +279,7 @@ class MentorController extends Controller
                     'tempat' => $jadwal->tempat,
                     'kursus' => $jadwal->kursus,
                     'sesi' => $sesi,
+                    'siswaNama' => $sesi && $sesi->pelanggan && $sesi->pelanggan->user ? $sesi->pelanggan->user->nama : null,
                     'status' => 'pending' // Semua yang masuk calendar pasti pending
                 ];
             });
