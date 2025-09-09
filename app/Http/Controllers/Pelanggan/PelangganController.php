@@ -27,7 +27,20 @@ class PelangganController extends Controller
      */
     public function daftarKursus()
     {
-        $kursus = Kursus::with('mentor.user', 'jadwalKursus')->get();
+        $kursus = Kursus::with([
+            'mentor.user',
+            'jadwalKursus' => function ($query) {
+                $query->whereDoesntHave('sesi', function ($sesiQuery) {
+                    $sesiQuery->whereHas('transaksi', function ($transaksiQuery) {
+                        $transaksiQuery->whereIn('statusPembayaran', ['accepted', 'menunggu_verifikasi']);
+                    });
+                })
+                    ->where('tanggal', '>=', now()->toDateString())
+                    ->orderBy('tanggal')
+                    ->orderBy('waktu');
+            }
+        ])->get();
+
         return response()->json($kursus);
     }
 
