@@ -25,7 +25,19 @@ Route::post('/register', [AuthController::class, 'registrasi']);
 // ==================== PUBLIC ENDPOINTS ====================
 // [GET] Daftar kursus (public, dengan relasi mentor dan user)
 Route::get('/public/kursus', function () {
-    return \App\Models\Kursus::with('mentor.user', 'jadwalKursus')->get();
+    return \App\Models\Kursus::with([
+        'mentor.user',
+        'jadwalKursus' => function ($query) {
+            $query->whereDoesntHave('sesi', function ($sesiQuery) {
+                $sesiQuery->whereHas('transaksi', function ($transaksiQuery) {
+                    $transaksiQuery->whereIn('statusPembayaran', ['accepted', 'menunggu_verifikasi']);
+                });
+            })
+                ->where('tanggal', '>=', now()->toDateString())
+                ->orderBy('tanggal')
+                ->orderBy('waktu');
+        }
+    ])->get();
 });
 
 // [GET] Daftar course
