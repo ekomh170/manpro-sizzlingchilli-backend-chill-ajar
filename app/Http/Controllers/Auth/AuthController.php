@@ -75,7 +75,7 @@ class AuthController extends Controller
             'deskripsi' => 'nullable',
             'nomorTelepon' => 'required|string',
             'alamat' => 'required|string',
-            'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5048', // validasi file
+            // 'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5048', // validasi file
 
         ]);
         $user = User::create([
@@ -88,22 +88,22 @@ class AuthController extends Controller
         ]);
 
         // Proses upload dokumen pendukung
-        $dokumenPath = null;
-        if ($request->hasFile('dokumen_pendukung')) {
-            $file = $request->file('dokumen_pendukung');
-            if (!$file->isValid()) {
-                return response()->json(['message' => 'Upload dokumen gagal.'], 422);
-            }
-            $dokumenPath = $file->store('dokumen_mentor', 'public');
-}
+        //         $dokumenPath = null;
+        //         if ($request->hasFile('dokumen_pendukung')) {
+        //             $file = $request->file('dokumen_pendukung');
+        //             if (!$file->isValid()) {
+        //                 return response()->json(['message' => 'Upload dokumen gagal.'], 422);
+        //             }
+        //             $dokumenPath = $file->store('dokumen_mentor', 'public');
+        // }
         $mentor = Mentor::create([
             'user_id' => $user->id,
             'biayaPerSesi' => 25000, // Default biaya per sesi
             'biayaPerSesiOffline' => 30000, // Default biaya per sesi offline
             'deskripsi' => $request->deskripsi ?? null,
             'rating' => 0,
-            'status' => 'pending', // Status awal mentor adalah pending
-            'dokumen_pendukung' => $dokumenPath, // Simpan path dokumen pendukung</s>
+            'status' => 'active', // Status awal mentor adalah active
+            // 'dokumen_pendukung' => $dokumenPath, // Simpan path dokumen pendukung</s>
         ]);
         $token = $user->createToken('ChillAjarToken')->plainTextToken;
         return response()->json([
@@ -126,7 +126,7 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = User::where('email', $request->email)->with('pelanggan', 'mentor')->first();
 
-              // Tambahkan pengecekan status mentor
+            // Tambahkan pengecekan status mentor
             if ($user->peran === 'mentor') {
                 $mentor = $user->mentor;
                 if ($mentor && in_array($mentor->status, ['pending', 'rejected'])) {
