@@ -182,8 +182,14 @@ class MentorController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $sesi = $mentor->sesi()->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket.items'])->get();
+        $sesi = $mentor->sesi()
+    ->whereHas('transaksi', function ($query) {
+        $query->where('statusPembayaran', 'accepted');
+    })
+    ->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket'])
+    ->get();
         return response()->json($sesi);
+
     }
 
     /**
