@@ -178,12 +178,18 @@ class MentorController extends Controller
     /**
      * Menampilkan daftar sesi yang diampu oleh mentor
      */
-    public function daftarSesiSaya(Request $request)
+       public function daftarSesiSaya(Request $request)
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $sesi = $mentor->sesi()->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket.items'])->get();
+        $sesi = $mentor->sesi()
+    ->whereHas('transaksi', function ($query) {
+        $query->where('statusPembayaran', 'accepted');
+    })
+    ->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket', 'transaksi'])
+    ->get();
         return response()->json($sesi);
+
     }
 
     /**
