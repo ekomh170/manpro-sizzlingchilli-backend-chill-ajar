@@ -25,7 +25,19 @@ Route::post('/register', [AuthController::class, 'registrasi']);
 // ==================== PUBLIC ENDPOINTS ====================
 // [GET] Daftar kursus (public, dengan relasi mentor dan user)
 Route::get('/public/kursus', function () {
-    return \App\Models\Kursus::with('mentor.user', 'jadwalKursus')->get();
+    return \App\Models\Kursus::with([
+                'mentor.user',
+                'jadwalKursus' => function ($query) {
+                    $query->whereDoesntHave('sesi', function ($sesiQuery) {
+                        $sesiQuery->whereHas('transaksi', function ($transaksiQuery) {
+                            $transaksiQuery->whereIn('statusPembayaran', ['accepted', 'menunggu_verifikasi']);
+                        });     
+                    })
+                        ->where('tanggal', '>=', now()->toDateString())
+                        ->orderBy('tanggal')
+                        ->orderBy('waktu');
+                }
+            ])->get();
 });
 
 // [GET] Daftar course
@@ -58,6 +70,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/admin/users/{userId}/role', [AdminController::class, 'ubahRolePengguna']);
     // [POST] Tambah pengguna baru (admin/mentor/pelanggan)
     Route::post('/admin/users', [AdminController::class, 'tambahPengguna']);
+    // [DELETE] Hapus pengguna
+    Route::delete('/admin/users/{userId}', [AdminController::class, 'hapusPengguna']);
     // [POST] Tambah mentor langsung
     Route::post('/admin/mentor', [AdminController::class, 'tambahMentor']);
     // [POST] Tambah pelanggan langsung
@@ -111,6 +125,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/mentor/selesai-sesi/{sessionId}', [MentorController::class, 'selesaiSesi']);
     // [GET] Daftar testimoni yang diterima mentor
     Route::get('/mentor/daftar-testimoni', [MentorController::class, 'daftarTestimoni']);
+    // [GET] Dashboard info untuk mentor (analytics & calendar)
+    Route::get('/mentor/dashboard-info', [MentorController::class, 'dashboardInfo']);
     // [GET] Daftar jadwal kursus yang diampu mentor (khusus mentor login)
     Route::get('/mentor/jadwal-kursus', function (Request $request) {
         $user = $request->user();

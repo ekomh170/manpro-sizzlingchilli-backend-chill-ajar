@@ -74,7 +74,7 @@ class AuthController extends Controller
             'deskripsi' => 'nullable',
             'nomorTelepon' => 'required|string',
             'alamat' => 'required|string',
-            'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5048', // validasi file
+            // 'dokumen_pendukung' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5048', // GAK DIPAKE KARENA SEKARANG MENTOR DI DAFTARIKAN OLEH ADMIN
 
         ]);
         $user = User::create([
@@ -86,22 +86,24 @@ class AuthController extends Controller
             'alamat' => $request->alamat,
         ]);
 
-        // Proses upload dokumen pendukung
-        $dokumenPath = null;
-        if ($request->hasFile('dokumen_pendukung')) {
-            $file = $request->file('dokumen_pendukung');
-            if (!$file->isValid()) {
-                return response()->json(['message' => 'Upload dokumen gagal.'], 422);
-            }
-            $dokumenPath = $file->store('dokumen_mentor', 'public');
-}
+        // Proses upload dokumen pendukung GAK DIPAKE KARENA SEKARANG MENTOR DI DAFTARIKAN OLEH ADMIN
+//         $dokumenPath = null;
+//         if ($request->hasFile('dokumen_pendukung')) {
+//             $file = $request->file('dokumen_pendukung');
+//             if (!$file->isValid()) {
+//                 return response()->json(['message' => 'Upload dokumen gagal.'], 422);
+//             }
+//             $dokumenPath = $file->store('dokumen_mentor', 'public');
+// }
         $mentor = Mentor::create([
             'user_id' => $user->id,
             'biayaPerSesi' => 25000, // Default biaya per sesi
             'deskripsi' => $request->deskripsi ?? null,
             'rating' => 0,
-            'status' => 'pending', // Status awal mentor adalah pending
-            'dokumen_pendukung' => $dokumenPath, // Simpan path dokumen pendukung</s>
+            'status' => 'active', // Status awal mentor adalah aktif // KARENA SEKARANG MENTOR DI DAFTARIKAN OLEH ADMIN
+
+            // 'dokumen_pendukung' => $dokumenPath, // Simpan path dokumen pendukung // GAK DIPAKE KARENA SEKARANG MENTOR DI DAFTARIKAN OLEH ADMIN
+
         ]);
         $token = $user->createToken('ChillAjarToken')->plainTextToken;
         return response()->json([

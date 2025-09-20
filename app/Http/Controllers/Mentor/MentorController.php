@@ -178,12 +178,18 @@ class MentorController extends Controller
     /**
      * Menampilkan daftar sesi yang diampu oleh mentor
      */
-    public function daftarSesiSaya(Request $request)
+       public function daftarSesiSaya(Request $request)
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
-        $sesi = $mentor->sesi()->with(['pelanggan.user', 'kursus', 'jadwalKursus'])->get();
+        $sesi = $mentor->sesi()
+    ->whereHas('transaksi', function ($query) {
+        $query->where('statusPembayaran', 'accepted');
+    })
+    ->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket.items'])
+    ->get();
         return response()->json($sesi);
+
     }
 
     /**
@@ -206,5 +212,96 @@ class MentorController extends Controller
             ->get();
 
         return response()->json($sesi);
+    }
+
+    /**
+     * Dashboard info untuk mentor - analytics dan calendar
+     */
+    public function dashboardInfo(Request $request)
+    {
+        $user = $request->user();
+        $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
+
+        // Analytics Data
+        $totalSesi = $mentor->sesi()->count();
+
+        // Sesi bulan ini
+        $sesiBuilnIni = $mentor->sesi()
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        // Total jam mengajar (estimasi 2 jam per sesi)
+        $totalJamMengajar = $totalSesi * 2;
+
+        // Siswa aktif (pelanggan unik)
+        $siswaAktif = $mentor->sesi()
+            ->distinct('pelanggan_id')
+            ->count('pelanggan_id');
+
+
+        // Jumlah kursus
+        $jumlahKursus = $mentor->kursus()->count();
+
+        // Jumlah testimoni
+        $jumlahTestimoni = $mentor->sesi()
+            ->has('testimoni')
+            ->count();
+
+        // Calendar Data - Jadwal 30 hari ke depan dengan sesi status pending saja
+        $calendar = JadwalKursus::whereHas('kursus', function ($query) use ($mentor) {
+            $query->where('mentor_id', $mentor->id);
+        })
+            ->whereBetween('tanggal', [now()->startOfDay(), now()->addDays(30)->endOfDay()])
+            ->with([
+
+                'kursus',
+                'sesi' => function ($query) {
+                    $query->whereHas('transaksi', function ($subQuery) {
+                        $subQuery->where('statusPembayaran', 'accepted');
+                    })
+                        ->where('statusSesi', 'pending') // Hanya sesi yang statusnya pending
+                        ->with(['transaksi', 'pelanggan.user']); // Tambahkan relasi pelanggan.user
+                }
+            ])
+            ->whereHas('sesi', function ($query) {
+                $query->whereHas('transaksi', function ($subQuery) {
+                    $subQuery->where('statusPembayaran', 'accepted');
+                })
+                    ->where('statusSesi', 'pending'); // Filter di level jadwal juga
+            })
+            ->orderBy('tanggal')
+            ->orderBy('waktu')
+            ->get()
+            ->map(function ($jadwal) {
+                $sesi = $jadwal->sesi->first();
+
+                return [
+                    'id' => $jadwal->id,
+                    'tanggal' => $jadwal->tanggal,
+                    'waktu' => $jadwal->waktu,
+                    'gayaMengajar' => $jadwal->gayaMengajar,
+                    'keterangan' => $jadwal->keterangan,
+                    'tempat' => $jadwal->tempat,
+                    'kursus' => $jadwal->kursus,
+                    'sesi' => $sesi,
+                    'siswaNama' => $sesi && $sesi->pelanggan && $sesi->pelanggan->user ? $sesi->pelanggan->user->nama : null,
+                    'status' => 'pending' // Semua yang masuk calendar pasti pending
+                ];
+            });
+
+        return response()->json([
+            'mentor_status' => $mentor->status, // approved, pending, rejected untuk badge
+            'analytics' => [
+                'total_sesi' => $totalSesi,
+                'sesi_bulan_ini' => $sesiBuilnIni,
+                'total_jam_mengajar' => $totalJamMengajar,
+                'siswa_aktif' => $siswaAktif,
+                'rating' => $mentor->rating, // Method di model Mentor
+                'jumlah_kursus' => $jumlahKursus,
+                'jumlah_testimoni' => $jumlahTestimoni
+            ],
+            'calendar' => $calendar
+        ]);
     }
 }
