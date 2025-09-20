@@ -186,7 +186,7 @@ class MentorController extends Controller
     ->whereHas('transaksi', function ($query) {
         $query->where('statusPembayaran', 'accepted');
     })
-    ->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket'])
+    ->with(['pelanggan.user', 'kursus', 'jadwalKursus', 'paket.items'])
     ->get();
         return response()->json($sesi);
 
