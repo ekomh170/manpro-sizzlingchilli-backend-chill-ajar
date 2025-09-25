@@ -18,7 +18,7 @@ class SesiController extends Controller
     }
     public function show($id)
     {
-        $sesi = Sesi::with(['mentor', 'pelanggan', 'kursus', 'jadwalKursus', 'transaksi', 'testimoni'])->findOrFail($id);
+        $sesi = Sesi::with(['mentor.user', 'pelanggan.user', 'kursus', 'jadwalKursus', 'transaksi', 'testimoni'])->findOrFail($id);
         return response()->json($sesi);
     }
 
