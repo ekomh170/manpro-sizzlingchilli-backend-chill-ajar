@@ -121,6 +121,21 @@ class PelangganController extends Controller
     {
         $user = $request->user();
         $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
+        $sesi = $pelanggan->sesi()->whereHas('transaksi', function ($query) {
+        $query->where('statusPembayaran', 'accepted');
+    })
+    ->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus', 'paket.items', 'transaksi'])->get();
+        return response()->json($sesi);
+    }
+
+    /**
+     * Menampilkan daftar sesi yang pernah diikuti pelanggan (khusus untuk halaman riwayat transaksi)
+     * Urgent (karena butuh sesi dihalaman transaksi yang belum difilter)
+     */
+    public function daftarSesiTransaksi(Request $request)
+    {
+        $user = $request->user();
+        $pelanggan = Pelanggan::where('user_id', $user->id)->firstOrFail();
         $sesi = $pelanggan->sesi()->with(['mentor.user', 'testimoni', 'jadwalKursus', 'kursus', 'paket.items'])->get();
         return response()->json($sesi);
     }
