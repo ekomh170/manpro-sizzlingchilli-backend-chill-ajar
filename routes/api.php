@@ -147,6 +147,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/pelanggan/pesan-sesi', [PelangganController::class, 'pesanSesi']);
     // [GET] Daftar sesi yang pernah diikuti pelanggan
     Route::get('/pelanggan/daftar-sesi', [PelangganController::class, 'daftarSesiMentor']);
+    // [GET] Daftar sesi yang pernah diikuti pelanggan
+    Route::get('/pelanggan/daftar-sesi-transaksi', [PelangganController::class, 'daftarSesiTransaksi']);
     // [POST] Unggah bukti pembayaran
     Route::post('/pelanggan/unggah-bukti/{transaksiId}', [PelangganController::class, 'unggahBuktiPembayaran']);
     // [POST] Beri testimoni
