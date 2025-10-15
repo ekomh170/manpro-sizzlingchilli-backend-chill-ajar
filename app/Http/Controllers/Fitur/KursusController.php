@@ -145,14 +145,19 @@ class KursusController extends Controller
         }
         // Update status visibilitas jika ada visibilitas_paket
         if ($request->has('visibilitas_paket')) {
-            foreach ($request->visibilitas_paket as $vp) {
-                $row = \App\Models\VisibilitasPaket::where('kursus_id', $kursus->id)->where('paket_id', $vp['paket_id'])->first();
-                if ($row) {
-                    $row->visibilitas = $vp['visibilitas'];
-                    $row->save();
-                }
-            }
+        foreach ($request->visibilitas_paket as $vp) {
+            // Gunakan updateOrCreate untuk memastikan entry selalu ada
+            \App\Models\VisibilitasPaket::updateOrCreate(
+                [
+                    'kursus_id' => $kursus->id,
+                    'paket_id' => $vp['paket_id']
+                ],
+                [
+                    'visibilitas' => $vp['visibilitas']
+                ]
+            );
         }
+    }
 
         // Kembalikan kursus beserta relasi visibilitas_paket, paket, dan item_paket
         return response()->json($kursus->load([
