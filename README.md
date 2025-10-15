@@ -147,5 +147,3 @@ Jika ada pertanyaan atau issue, silakan:
   Made with ❤️ by **Eko Muchamad Haryono**
 
 </div>
-
-```
