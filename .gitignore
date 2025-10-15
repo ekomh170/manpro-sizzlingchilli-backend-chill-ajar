@@ -26,9 +26,3 @@ yarn-error.log
 
 # Deploy Folder
 /deploy
-NOTE_Commit_gayaMengajar_JADWAL_ONLY.txt
-NOTE_Perubahan_gayaMengajar_JADWAL_ONLY.txt
-
-# NOTE files (catatan internal, jangan diupload ke repo)
-NOTE_*.txt
-NOTE_*.md
