@@ -26,11 +26,14 @@ class KursusController extends Controller
         $kursus = Kursus::with([
             'mentor',
             'jadwalKursus' => function ($query) {
-                // Hanya ambil jadwal yang tidak memiliki sesi dengan status 'end'
-                $query->whereDoesntHave('sesi', function ($q) {
-                    $q->whereIn('statusSesi', ['end', 'reviewed']);
+                // Hanya ambil jadwal yang tidak memiliki sesi ataupun punya sesi dengan status selain 'end' atau 'reviewed'
+                $query->where(function ($q) {
+                    $q->whereDoesntHave('sesi') // kursus baru tanpa sesi
+                        ->orWhereHas('sesi', function ($q2) {
+                            $q2->whereNotIn('statusSesi', ['end', 'reviewed']); // punya sesi aktif/pending
+                        });
                 })->with(['sesi' => function ($q) {
-                    $q->whereNotIn('statusSesi', ['end', 'reviewed']);
+                    $q->whereNotIn('statusSesi', ['end', 'reviewed']); // eager-load hanya sesi yang ingin ditampilkan
                 }]);
             },
             'visibilitasPaket.paket.items'
@@ -151,19 +154,19 @@ class KursusController extends Controller
         }
         // Update status visibilitas jika ada visibilitas_paket
         if ($request->has('visibilitas_paket')) {
-        foreach ($request->visibilitas_paket as $vp) {
-            // Gunakan updateOrCreate untuk memastikan entry selalu ada
-            \App\Models\VisibilitasPaket::updateOrCreate(
-                [
-                    'kursus_id' => $kursus->id,
-                    'paket_id' => $vp['paket_id']
-                ],
-                [
-                    'visibilitas' => $vp['visibilitas']
-                ]
-            );
+            foreach ($request->visibilitas_paket as $vp) {
+                // Gunakan updateOrCreate untuk memastikan entry selalu ada
+                \App\Models\VisibilitasPaket::updateOrCreate(
+                    [
+                        'kursus_id' => $kursus->id,
+                        'paket_id' => $vp['paket_id']
+                    ],
+                    [
+                        'visibilitas' => $vp['visibilitas']
+                    ]
+                );
+            }
         }
-    }
 
         // Kembalikan kursus beserta relasi visibilitas_paket, paket, dan item_paket
         return response()->json($kursus->load([
