@@ -28,9 +28,9 @@ class KursusController extends Controller
             'jadwalKursus' => function ($query) {
                 // Hanya ambil jadwal yang tidak memiliki sesi dengan status 'end'
                 $query->whereDoesntHave('sesi', function ($q) {
-                    $q->where('statusSesi', 'end');
+                    $q->whereIn('statusSesi', ['end', 'reviewed']);
                 })->with(['sesi' => function ($q) {
-                    $q->where('statusSesi', 'end');
+                    $q->whereNotIn('statusSesi', ['end', 'reviewed']);
                 }]);
             },
             'visibilitasPaket.paket.items'
