@@ -25,7 +25,14 @@ class KursusController extends Controller
         // Ambil detail kursus beserta relasi lengkap
         $kursus = Kursus::with([
             'mentor',
-            'jadwalKursus',
+            'jadwalKursus' => function ($query) {
+                // Hanya ambil jadwal yang tidak memiliki sesi dengan status 'end'
+                $query->whereDoesntHave('sesi', function ($q) {
+                    $q->where('statusSesi', 'end');
+                })->with(['sesi' => function ($q) {
+                    $q->where('statusSesi', 'end');
+                }]);
+            },
             'visibilitasPaket.paket.items'
         ])->findOrFail($id);
         return response()->json($kursus);
@@ -145,19 +152,19 @@ class KursusController extends Controller
         }
         // Update status visibilitas jika ada visibilitas_paket
         if ($request->has('visibilitas_paket')) {
-        foreach ($request->visibilitas_paket as $vp) {
-            // Gunakan updateOrCreate untuk memastikan entry selalu ada
-            \App\Models\VisibilitasPaket::updateOrCreate(
-                [
-                    'kursus_id' => $kursus->id,
-                    'paket_id' => $vp['paket_id']
-                ],
-                [
-                    'visibilitas' => $vp['visibilitas']
-                ]
-            );
+            foreach ($request->visibilitas_paket as $vp) {
+                // Gunakan updateOrCreate untuk memastikan entry selalu ada
+                \App\Models\VisibilitasPaket::updateOrCreate(
+                    [
+                        'kursus_id' => $kursus->id,
+                        'paket_id' => $vp['paket_id']
+                    ],
+                    [
+                        'visibilitas' => $vp['visibilitas']
+                    ]
+                );
+            }
         }
-    }
 
         // Kembalikan kursus beserta relasi visibilitas_paket, paket, dan item_paket
         return response()->json($kursus->load([
