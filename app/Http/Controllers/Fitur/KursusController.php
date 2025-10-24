@@ -25,12 +25,18 @@ class KursusController extends Controller
         // Ambil detail kursus beserta relasi lengkap
         $kursus = Kursus::with([
             'mentor',
-            'jadwalKursus',
+            'jadwalKursus' => function ($query) {
+                // Hanya ambil jadwal yang tidak memiliki sesi dengan status 'end'
+                $query->whereDoesntHave('sesi', function ($q) {
+                    $q->where('statusSesi', 'end');
+                })->with(['sesi' => function ($q) {
+                    $q->where('statusSesi', 'end');
+                }]);
+            },
             'visibilitasPaket.paket.items'
         ])->findOrFail($id);
         return response()->json($kursus);
     }
-
     public function store(Request $request)
     {
         // Jika visibilitas_paket dikirim sebagai string (FormData), decode dulu
