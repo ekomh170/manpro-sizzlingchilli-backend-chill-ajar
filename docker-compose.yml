@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # PHP Service (Laravel)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chillajar_php_service
+    container_name: chillajar_app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - chillajar-network
+    depends_on:
+      - db
+
+  # Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: chillajar_webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:80"
+      # Port 443 TIDAK diexpose karena SSL ditangani oleh reverse proxy server
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./storage/logs/nginx:/var/log/nginx
+    networks:
+      - chillajar-network
+    depends_on:
+      - app
+
+  # MySQL Service
+  db:
+    image: mysql:8.0
+    container_name: chillajar_db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "33061:3306"
+    environment:
+      MYSQL_DATABASE: db_manpro_sizzlingchilli_backend_chill
+      MYSQL_USER: dev_chill_ajar
+      MYSQL_PASSWORD: Manpro2025!
+      MYSQL_ROOT_PASSWORD: Manpro2025!
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - chillajar-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # PHPMyAdmin Service
+  phpmyadmin:
+    container_name: chillajar_phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: Manpro2025!
+      MYSQL_ROOT_PASSWORD: Manpro2025!
+      UPLOAD_LIMIT: 300M
+      MAX_EXECUTION_TIME: 600
+    networks:
+      - chillajar-network
+    depends_on:
+      - db
+
+# Docker Networks
+networks:
+  chillajar-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  mysql_data:
+    driver: local
