@@ -14,26 +14,12 @@ services:
     volumes:
       - app_data:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker/entrypoint.sh:/usr/local/bin/entrypoint.sh
     networks:
       - chillajar-network
     depends_on:
       - db
-    command: >
-      sh -c "
-      apt-get update &&
-      apt-get install -y git unzip libpng-dev libjpeg62-turbo-dev libfreetype6-dev libonig-dev libxml2-dev libzip-dev libicu-dev curl &&
-      docker-php-ext-configure gd --with-freetype --with-jpeg &&
-      docker-php-ext-install -j\$(nproc) pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache &&
-      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
-      if [ ! -f /var/www/composer.json ]; then
-        cd /var/www &&
-        git clone https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git . &&
-        composer install --no-dev --optimize-autoloader &&
-        chown -R www-data:www-data /var/www &&
-        chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-      fi &&
-      php-fpm
-      "
+    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
 
   # Nginx Service
   webserver:
