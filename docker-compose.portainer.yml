@@ -24,8 +24,6 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-Manpro2025!}
     volumes:
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-      - storage_data:/var/www/storage
-      - bootstrap_cache:/var/www/bootstrap/cache
     networks:
       - chillajar-network
     depends_on:
@@ -40,8 +38,9 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - app_data:/var/www:ro
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    volumes_from:
+      - app
     networks:
       - chillajar-network
     depends_on:
@@ -103,10 +102,4 @@ networks:
 # Volumes
 volumes:
   mysql_data:
-    driver: local
-  app_data:
-    driver: local
-  storage_data:
-    driver: local
-  bootstrap_cache:
     driver: local
