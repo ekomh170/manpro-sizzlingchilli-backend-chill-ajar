@@ -18,7 +18,7 @@ services:
       APP_DEBUG: "false"
       DB_CONNECTION: mysql
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: 33061
       DB_DATABASE: db_manpro_sizzlingchilli_backend_chill
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -56,17 +56,18 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "33062:3306"
+      - "33062:33061"
     environment:
       MYSQL_DATABASE: db_manpro_sizzlingchilli_backend_chill
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_TCP_PORT: 33061
       SERVICE_TAGS: production
       SERVICE_NAME: mysql
     volumes:
       - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password --port=33061
     networks:
       - chillajar-network
 
@@ -79,7 +80,7 @@ services:
       - "8083:80"
     environment:
       PMA_HOST: db
-      PMA_PORT: 3306
+      PMA_PORT: 33061
       PMA_USER: root
       PMA_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
