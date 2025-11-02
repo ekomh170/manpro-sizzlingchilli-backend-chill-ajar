@@ -1,20 +1,31 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # PHP Service (Laravel) - Menggunakan image standard tanpa build
+  # PHP Service (Laravel)
   app:
-    image: php:8.3-fpm
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chillajar-app:latest
     container_name: chillajar_app
     restart: unless-stopped
     tty: true
+    working_dir: /var/www
     environment:
       SERVICE_NAME: app
       SERVICE_TAGS: production
-    working_dir: /var/www
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: db_manpro_sizzlingchilli_backend_chill
+      DB_USERNAME: ${DB_USERNAME:-dev_chill_ajar}
+      DB_PASSWORD: ${DB_PASSWORD:-Manpro2025!}
     volumes:
-      - app_data:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-      - ./docker/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - storage_data:/var/www/storage
+      - bootstrap_cache:/var/www/bootstrap/cache
     networks:
       - chillajar-network
     depends_on:
@@ -29,12 +40,18 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - app_data:/var/www
+      - app_data:/var/www:ro
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - chillajar-network
     depends_on:
       - app
+    command: >
+      sh -c "
+      echo 'Waiting for app to be ready...' &&
+      sleep 10 &&
+      nginx -g 'daemon off;'
+      "
 
   # MySQL Service
   db:
@@ -54,14 +71,14 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    command: --default-authentication-plugin=mysql_native_password
     networks:
       - chillajar-network
-    command: --default-authentication-plugin=mysql_native_password
 
   # PHPMyAdmin Service
   phpmyadmin:
-    container_name: chillajar_phpmyadmin
     image: phpmyadmin/phpmyadmin:latest
+    container_name: chillajar_phpmyadmin
     restart: unless-stopped
     ports:
       - "8081:80"
@@ -73,10 +90,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Manpro2025!}
       UPLOAD_LIMIT: 300M
       MAX_EXECUTION_TIME: 600
-    networks:
-      - chillajar-network
     depends_on:
       - db
+    networks:
+      - chillajar-network
 
 # Docker Networks
 networks:
@@ -88,4 +105,8 @@ volumes:
   mysql_data:
     driver: local
   app_data:
+    driver: local
+  storage_data:
+    driver: local
+  bootstrap_cache:
     driver: local

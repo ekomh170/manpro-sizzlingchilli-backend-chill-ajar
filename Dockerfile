@@ -20,14 +20,12 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libicu-dev \
-    libpq-dev
+    libpq-dev \
+ && rm -rf /var/lib/apt/lists/*
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions required by Laravel 12
+# Install PHP extensions required by Laravel
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
+ && docker-php-ext-install -j$(nproc) \
     pdo \
     pdo_mysql \
     mbstring \
@@ -39,34 +37,29 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     intl \
     opcache
 
-# Install Composer
+# Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock ./
-
-# Install composer dependencies
-RUN composer install --no-scripts --no-autoloader --prefer-dist
-
-# Copy application files
+# Copy application code
 COPY . .
 
-# Generate optimized autoload files
-RUN composer dump-autoload --optimize
+# Install PHP dependencies (no dev for production)
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-# Create user for Laravel application
-RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+# Create necessary directories if they don't exist
+RUN mkdir -p storage/framework/sessions \
+ && mkdir -p storage/framework/views \
+ && mkdir -p storage/framework/cache \
+ && mkdir -p storage/logs \
+ && mkdir -p bootstrap/cache
 
-# Set permissions for Laravel directories
-RUN chown -R www:www /var/www \
-    && chmod -R 775 /var/www/storage \
-    && chmod -R 775 /var/www/bootstrap/cache
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www \
+ && chmod -R 775 storage \
+ && chmod -R 775 bootstrap/cache
 
-# Change current user to www
-USER www
-
-# Expose port 9000 and start php-fpm server
+# Expose port for php-fpm
 EXPOSE 9000
 
+# Start php-fpm
 CMD ["php-fpm"]
