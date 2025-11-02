@@ -26,3 +26,14 @@ yarn-error.log
 
 # Deploy Folder
 /deploy
+
+# Docker
+docker-compose.override.yml
+/storage/logs/nginx/
+
+# Sensitive Documentation (DO NOT COMMIT!)
+/docker/QUICK-REFERENCE.md
+**/credentials.md
+**/secrets.md
+*.credentials
+*.secrets

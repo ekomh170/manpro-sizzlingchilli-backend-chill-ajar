@@ -2,9 +2,9 @@
 
 <div align="center">
   <img src="./public/logo.png" alt="ChillAjar Logo" width="200" height="200">
-  
+
   **REST API Platform pembelajaran online yang menghubungkan siswa dengan mentor berkualitas**
-  
+
   Backend Laravel 12 modern dengan arsitektur scalable untuk mendukung ekosistem pembelajaran online yang lengkap!
 
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
@@ -110,10 +110,102 @@
 - **Error Logging** - Monolog untuk pelacakan error
 - **Git Version Control** - Workflow development kolaboratif
 
+---
+
+## 🐳 **Quick Start dengan Docker**
+
+Setup development environment dalam hitungan menit menggunakan Docker!
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac)
+- [Docker & Docker Compose](https://docs.docker.com/) (Linux)
+
+### Setup Otomatis (Recommended)
+```powershell
+# Windows PowerShell
+.\docker-helper.ps1
+
+# Linux/Mac
+chmod +x docker-helper.sh
+./docker-helper.sh
+```
+Pilih opsi **1) Setup awal** dan script akan otomatis:
+- ✅ Setup environment file
+- ✅ Build Docker containers (PHP, Nginx, MySQL, PHPMyAdmin)
+- ✅ Install dependencies
+- ✅ Generate application key
+- ✅ Run migrations & seeders
+- ✅ Setup storage link
+
+### Setup Manual
+```bash
+# 1. Copy environment file
+cp .env.docker .env
+
+# 2. Build & start containers
+docker-compose up -d --build
+
+# 3. Install dependencies
+docker-compose exec app composer install
+
+# 4. Setup Laravel
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate --seed
+docker-compose exec app php artisan storage:link
+docker-compose exec app php artisan config:cache
+```
+
+### Akses Services
+- 🌐 **Laravel API**: http://localhost:8080
+- 📊 **PHPMyAdmin**: http://localhost:8081
+- 🗄️ **MySQL**: `localhost:33061`
+
+### Dokumentasi Lengkap Docker
+📖 **[Baca dokumentasi lengkap Docker setup](./docker/README.md)**
 
 ---
 
-## 📄 **Lisensi & Kepemilikan**
+## � **Deployment ke Production (Portainer)**
+
+### Server Production
+Backend sudah siap di-deploy ke server VPS menggunakan Portainer container management.
+
+⚠️ **Informasi Credentials**: Untuk detail lengkap server, credentials, dan konfigurasi, lihat:
+- 📄 **`docker/QUICK-REFERENCE.md`** (file lokal, tidak ter-commit untuk keamanan)
+- 📄 **`docker/QUICK-REFERENCE.template.md`** (template yang bisa di-commit)
+
+### Platform & Tools
+- **Platform**: Portainer (Container Management)
+- **VPN**: Twingate (Required for access)
+- **Container Runtime**: Docker & Docker Compose
+
+### Port Configuration
+Port yang digunakan (aman dan tidak conflict):
+- `8080` - Laravel API
+- `8081` - PHPMyAdmin  
+- `33061` - MySQL
+
+### Quick Deploy Steps
+1. **Install & Connect** - Twingate VPN
+2. **Access Portainer** - Lihat URL di QUICK-REFERENCE.md
+3. **Create Stack** - Upload `docker-compose.yml`
+4. **Configure Environment** - Set production variables
+5. **Deploy & Verify** - Check container status
+
+### Dokumentasi Lengkap Deployment
+📖 **[Panduan lengkap deployment ke Portainer](./docker/DEPLOYMENT-PORTAINER.md)**
+
+Dokumentasi mencakup:
+- ✅ Setup VPN & akses server
+- ✅ Step-by-step deployment via Portainer
+- ✅ Konfigurasi environment variables production
+- ✅ Setup awal aplikasi (migration, seeder, admin)
+- ✅ Troubleshooting common issues
+- ✅ Monitoring & update aplikasi
+
+---
+
+## �📄 **Lisensi & Kepemilikan**
 
 Backend API ini dikembangkan sebagai bagian dari project kolaboratif pendidikan. Arsitektur backend, desain database, dan logika bisnis dikembangkan dengan fokus pada skalabilitas, keamanan, dan best practices Laravel.
 
@@ -141,7 +233,7 @@ Jika ada pertanyaan atau issue, silakan:
 ---
 
 <div align="center">
-  
+
   **⭐ Jika API ini membantu development, jangan lupa kasih star ya! ⭐**
 
   Made with ❤️ by **Eko Muchamad Haryono**
