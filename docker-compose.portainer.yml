@@ -37,7 +37,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "8080:80"
+      - "8082:8081"
     networks:
       - chillajar-network
     depends_on:
@@ -56,7 +56,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "33061:3306"
+      - "33062:3306"
     environment:
       MYSQL_DATABASE: db_manpro_sizzlingchilli_backend_chill
       MYSQL_USER: ${DB_USERNAME}
@@ -76,7 +76,7 @@ services:
     container_name: chillajar_phpmyadmin
     restart: unless-stopped
     ports:
-      - "8081:80"
+      - "8083:80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306

@@ -9,6 +9,6 @@ COPY docker/nginx/conf.d/app.conf /etc/nginx/conf.d/default.conf
 # Set proper permissions
 RUN chmod -R 755 /var/www/public
 
-EXPOSE 80
+EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]
