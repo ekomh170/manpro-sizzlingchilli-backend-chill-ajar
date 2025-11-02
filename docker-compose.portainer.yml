@@ -20,9 +20,10 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       DB_DATABASE: db_manpro_sizzlingchilli_backend_chill
-      DB_USERNAME: ${DB_USERNAME:-dev_chill_ajar}
-      DB_PASSWORD: ${DB_PASSWORD:-Manpro2025!}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
     volumes:
+      - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - chillajar-network
@@ -38,9 +39,8 @@ services:
     ports:
       - "8080:80"
     volumes:
+      - ./:/var/www
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
-    volumes_from:
-      - app
     networks:
       - chillajar-network
     depends_on:
@@ -62,9 +62,9 @@ services:
       - "33061:3306"
     environment:
       MYSQL_DATABASE: db_manpro_sizzlingchilli_backend_chill
-      MYSQL_USER: ${DB_USERNAME:-dev_chill_ajar}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-Manpro2025!}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Manpro2025!}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       SERVICE_TAGS: production
       SERVICE_NAME: mysql
     volumes:
@@ -85,8 +85,8 @@ services:
       PMA_HOST: db
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-Manpro2025!}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Manpro2025!}
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       UPLOAD_LIMIT: 300M
       MAX_EXECUTION_TIME: 600
     depends_on:
