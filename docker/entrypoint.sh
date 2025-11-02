@@ -2,6 +2,8 @@
 set -e
 
 echo "🚀 Starting ChillAjar Backend Setup..."
+echo "📍 Current directory: $(pwd)"
+echo "📁 Listing /var/www: $(ls -la /var/www || echo 'empty')"
 
 # Install system dependencies if not already installed
 if [ ! -f /usr/local/bin/composer ]; then
@@ -26,14 +28,29 @@ fi
 if [ ! -f /var/www/composer.json ]; then
     echo "📥 Cloning Laravel repository..."
     cd /var/www
-    git clone https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git .
+    
+    # Clear directory if not empty
+    if [ "$(ls -A /var/www)" ]; then
+        echo "⚠️  Directory not empty, clearing..."
+        rm -rf /var/www/*
+        rm -rf /var/www/.[!.]* 2>/dev/null || true
+    fi
+    
+    echo "🔄 Cloning from GitHub..."
+    git clone https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git . || {
+        echo "❌ Git clone failed!"
+        exit 1
+    }
     
     echo "📦 Installing Composer dependencies..."
-    composer install --no-dev --optimize-autoloader --no-interaction
+    composer install --no-dev --optimize-autoloader --no-interaction || {
+        echo "❌ Composer install failed!"
+        exit 1
+    }
     
     echo "🔐 Setting permissions..."
     chown -R www-data:www-data /var/www
-    chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+    chmod -R 775 /var/www/storage /var/www/bootstrap/cache || true
     
     echo "✅ Laravel setup complete!"
 else
