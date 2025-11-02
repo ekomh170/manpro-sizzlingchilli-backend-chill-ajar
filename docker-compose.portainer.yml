@@ -22,9 +22,6 @@ services:
       DB_DATABASE: db_manpro_sizzlingchilli_backend_chill
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - ./:/var/www
-      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - chillajar-network
     depends_on:
@@ -32,15 +29,15 @@ services:
 
   # Nginx Service
   webserver:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    image: chillajar-nginx:latest
     container_name: chillajar_webserver
     restart: unless-stopped
     tty: true
     ports:
       - "8080:80"
-    volumes:
-      - ./:/var/www
-      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - chillajar-network
     depends_on:
@@ -69,7 +66,6 @@ services:
       SERVICE_NAME: mysql
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     command: --default-authentication-plugin=mysql_native_password
     networks:
       - chillajar-network
