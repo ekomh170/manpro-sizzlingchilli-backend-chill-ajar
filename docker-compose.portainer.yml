@@ -19,7 +19,6 @@ services:
       - chillajar-network
     depends_on:
       - db
-    entrypoint: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
 
   # Nginx Service
   webserver:
