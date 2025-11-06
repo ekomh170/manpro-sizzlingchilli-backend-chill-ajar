@@ -37,3 +37,11 @@ docker-compose.override.yml
 **/secrets.md
 *.credentials
 *.secrets
+
+# Postman Collections (Contains API configuration)
+/postman/
+*.postman_collection.json
+*.postman_environment.json
+
+# Port Configuration (Server-specific)
+PORT-CONFIG.md
