@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  app:
+    image: ekomh170/chillajar-app:latest
+    container_name: chillajar_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - chillajar-network
+    environment:
+      - DB_HOST=chillajar_db
+      - DB_PORT=3306
+      - DB_DATABASE=chillajar_db
+      - DB_USERNAME=prod_chill_ajar
+      - DB_PASSWORD=rQoF5EWCOe4slVyXvZ0zSGdJ
+
+  webserver:
+    image: ekomh170/chillajar-nginx:latest
+    container_name: chillajar_webserver
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - chillajar-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: chillajar_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: chillajar_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: prod_chill_ajar
+      MYSQL_PASSWORD: rQoF5EWCOe4slVyXvZ0zSGdJ
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "33062:3306"
+    networks:
+      - chillajar-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: chillajar_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: chillajar_db
+      PMA_PORT: 3306
+      PMA_USER: prod_chill_ajar
+      PMA_PASSWORD: rQoF5EWCOe4slVyXvZ0zSGdJ
+      UPLOAD_LIMIT: 100M
+    ports:
+      - "8083:80"
+    networks:
+      - chillajar-network
+    depends_on:
+      - db
+
+networks:
+  chillajar-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

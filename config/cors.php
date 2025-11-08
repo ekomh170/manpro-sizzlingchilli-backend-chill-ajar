@@ -15,7 +15,9 @@ return [
         'https://manpro-sizzlingchilli-backend-chill-ajar.onrender.com',
         'https://35.188.34.254', // akses langsung ke IP server
         'https://chillajar.my.id', // akses langsung ke domain frontend
-        'https://peladen.my.id' // akses langsung ke domain backend
+        'https://peladen.my.id', // akses langsung ke domain backend
+        'http://ekomh29.biz.id', // domain baru untuk deployment
+        'https://ekomh29.biz.id' // domain baru dengan HTTPS
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],

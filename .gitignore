@@ -45,3 +45,5 @@ docker-compose.override.yml
 
 # Port Configuration (Server-specific)
 PORT-CONFIG.md
+DOCKER-PORT-SUMMARY.md
+PORTAINER-DEPLOYMENT-GUIDE.md
