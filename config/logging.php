@@ -54,7 +54,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', env('LOG_STACK', 'single')),
+            'channels' => explode(',', env('LOG_STACK', 'daily,stderr')),
             'ignore_exceptions' => false,
         ],
 
@@ -63,6 +63,7 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+            'permission' => 0664,
         ],
 
         'daily' => [
@@ -71,6 +72,34 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+            'permission' => 0664,
+        ],
+
+        // Custom channel untuk storage operations
+        'storage' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/storage.log'),
+            'level' => 'debug',
+            'days' => 7,
+            'permission' => 0664,
+        ],
+
+        // Custom channel untuk API requests
+        'api' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api.log'),
+            'level' => 'info',
+            'days' => 14,
+            'permission' => 0664,
+        ],
+
+        // Custom channel untuk database queries
+        'query' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/query.log'),
+            'level' => 'debug',
+            'days' => 7,
+            'permission' => 0664,
         ],
 
         'slack' => [
