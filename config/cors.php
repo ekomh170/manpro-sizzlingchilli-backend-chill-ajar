@@ -17,7 +17,9 @@ return [
         'https://chillajar.my.id', // akses langsung ke domain frontend
         'https://peladen.my.id', // akses langsung ke domain backend
         'http://ekomh29.biz.id', // domain baru untuk deployment
-        'https://ekomh29.biz.id' // domain baru dengan HTTPS
+        'https://ekomh29.biz.id', // domain baru dengan HTTPS
+        'http://chillajar.biz.id', // domain frontend production
+        'https://chillajar.biz.id' // domain frontend production dengan HTTPS
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
