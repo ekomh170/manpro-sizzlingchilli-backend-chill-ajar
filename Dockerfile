@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM php:8.3-fpm
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -7,27 +7,8 @@ ENV TZ=Asia/Jakarta
 # Set working directory
 WORKDIR /var/www
 
-# Install system dependencies and PHP 8.3
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    ca-certificates \
-    lsb-release \
-    apt-transport-https \
- && add-apt-repository ppa:ondrej/php -y \
- && apt-get update && apt-get install -y \
-    php8.3-fpm \
-    php8.3-cli \
-    php8.3-common \
-    php8.3-mysql \
-    php8.3-zip \
-    php8.3-gd \
-    php8.3-mbstring \
-    php8.3-curl \
-    php8.3-xml \
-    php8.3-bcmath \
-    php8.3-intl \
-    php8.3-opcache \
-    php8.3-redis \
     build-essential \
     libpng-dev \
     libjpeg62-turbo-dev \
@@ -43,13 +24,39 @@ RUN apt-get update && apt-get install -y \
     pngquant \
     gifsicle \
     vim \
-    nano \
-    emacs-nox \
     git \
     curl \
     wget \
     supervisor \
  && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    intl \
+    opcache
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    intl \
+    opcache
 
 # Configure locale
 RUN locale-gen en_US.UTF-8
@@ -58,19 +65,20 @@ ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Configure PHP-FPM
-RUN sed -i 's/;catch_workers_output = yes/catch_workers_output = yes/' /etc/php/8.3/fpm/pool.d/www.conf \
- && sed -i 's/;php_flag\[display_errors\] = off/php_flag[display_errors] = on/' /etc/php/8.3/fpm/pool.d/www.conf \
- && sed -i 's/;php_admin_value\[error_log\] = \/var\/log\/fpm-php.www.log/php_admin_value[error_log] = \/var\/www\/storage\/logs\/php-fpm.log/' /etc/php/8.3/fpm/pool.d/www.conf
+RUN echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/www.conf \
+ && echo "php_flag[display_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf \
+ && echo "php_admin_value[error_log] = /var/www/storage/logs/php-fpm.log" >> /usr/local/etc/php-fpm.d/www.conf
 
 # Configure PHP logging
-RUN echo "log_errors = On" >> /etc/php/8.3/fpm/php.ini \
- && echo "error_log = /var/www/storage/logs/php-errors.log" >> /etc/php/8.3/fpm/php.ini \
- && echo "error_reporting = E_ALL" >> /etc/php/8.3/fpm/php.ini \
- && echo "display_errors = On" >> /etc/php/8.3/fpm/php.ini \
- && echo "display_startup_errors = On" >> /etc/php/8.3/fpm/php.ini
+RUN echo "log_errors = On" >> /usr/local/etc/php/php.ini-production \
+ && echo "error_log = /var/www/storage/logs/php-errors.log" >> /usr/local/etc/php/php.ini-production \
+ && echo "error_reporting = E_ALL" >> /usr/local/etc/php/php.ini-production \
+ && echo "display_errors = On" >> /usr/local/etc/php/php.ini-production \
+ && echo "display_startup_errors = On" >> /usr/local/etc/php/php.ini-production \
+ && cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Copy application code
 COPY . .
@@ -116,7 +124,7 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
  && echo 'loglevel=info' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo '' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo '[program:php-fpm]' >> /etc/supervisor/conf.d/supervisord.conf \
- && echo 'command=/usr/sbin/php-fpm8.3 -F -R' >> /etc/supervisor/conf.d/supervisord.conf \
+ && echo 'command=/usr/local/sbin/php-fpm -F -R' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo 'autostart=true' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo 'autorestart=true' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo 'stdout_logfile=/var/www/storage/logs/php-fpm-stdout.log' >> /etc/supervisor/conf.d/supervisord.conf \
