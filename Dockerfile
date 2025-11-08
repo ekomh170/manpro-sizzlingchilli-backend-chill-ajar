@@ -53,6 +53,9 @@ RUN mkdir -p storage/framework/sessions \
  && mkdir -p storage/logs \
  && mkdir -p bootstrap/cache
 
+# Symlink storage
+RUN php artisan storage:link
+
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www \
  && chmod -R 775 storage \

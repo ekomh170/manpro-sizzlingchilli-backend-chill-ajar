@@ -27,6 +27,8 @@ services:
       - chillajar-network
     depends_on:
       - db
+    volumes:
+      - ./storage:/var/www/html/storage
 
   # Nginx Service
   webserver:
