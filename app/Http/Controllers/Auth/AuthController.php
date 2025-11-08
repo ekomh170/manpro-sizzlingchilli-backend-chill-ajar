@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\Mentor;
 
@@ -162,25 +163,84 @@ class AuthController extends Controller
      */
     public function uploadFotoProfil(Request $request)
     {
-        $user = $request->user();
-        $request->validate([
-            'foto_profil' => 'required|image|max:10240', // Validasi gambar max 10MB
-        ]);
-        if ($request->hasFile('foto_profil')) {
-            $file = $request->file('foto_profil');
-            if (!$file->isValid()) {
-                return response()->json(['message' => 'Upload foto gagal.'], 422);
+        try {
+            $user = $request->user();
+
+            Log::channel('storage')->info('Upload foto profil attempt', [
+                'user_id' => $user->id,
+                'user_name' => $user->nama,
+                'has_file' => $request->hasFile('foto_profil')
+            ]);
+
+            $request->validate([
+                'foto_profil' => 'required|image|max:10240', // Validasi gambar max 10MB
+            ]);
+
+            if ($request->hasFile('foto_profil')) {
+                $file = $request->file('foto_profil');
+
+                Log::channel('storage')->info('File foto profil received', [
+                    'user_id' => $user->id,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_size' => $file->getSize(),
+                    'mime_type' => $file->getMimeType()
+                ]);
+
+                if (!$file->isValid()) {
+                    Log::channel('storage')->error('Upload foto profil - invalid file', [
+                        'user_id' => $user->id,
+                        'file_name' => $file->getClientOriginalName()
+                    ]);
+                    return response()->json(['message' => 'Upload foto gagal.'], 422);
+                }
+
+                // Hapus foto lama jika bukan default
+                if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
+                    Storage::disk('public')->delete($user->foto_profil);
+
+                    Log::channel('storage')->info('Old foto profil deleted', [
+                        'user_id' => $user->id,
+                        'old_path' => $user->foto_profil
+                    ]);
+                }
+
+                $path = $file->store('foto_profil', 'public');
+                $user->foto_profil = $path;
+                $user->save();
+
+                Log::channel('storage')->info('Foto profil uploaded successfully', [
+                    'user_id' => $user->id,
+                    'file_path' => $path
+                ]);
+
+                return response()->json(['message' => 'Foto profil berhasil diunggah', 'foto_profil' => $path]);
             }
-            // Hapus foto lama jika bukan default
-            if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
-            }
-            $path = $file->store('foto_profil', 'public');
-            $user->foto_profil = $path;
-            $user->save();
-            return response()->json(['message' => 'Foto profil berhasil diunggah', 'foto_profil' => $path]);
+
+            Log::channel('storage')->warning('No file uploaded for foto profil', [
+                'user_id' => $user->id
+            ]);
+
+            return response()->json(['message' => 'Tidak ada file yang diunggah'], 400);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::channel('storage')->error('Validation failed for upload foto profil', [
+                'user_id' => $request->user()->id ?? null,
+                'errors' => $e->errors()
+            ]);
+            throw $e;
+
+        } catch (\Exception $e) {
+            Log::channel('storage')->error('Upload foto profil failed', [
+                'user_id' => $request->user()->id ?? null,
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Gagal mengunggah foto profil',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Tidak ada file yang diunggah'], 400);
     }
 
     /**
@@ -209,15 +269,39 @@ class AuthController extends Controller
         // Proses upload foto profil jika ada file
         if ($request->hasFile('foto_profil')) {
             $file = $request->file('foto_profil');
+
+            Log::channel('storage')->info('Update profil - foto profil received', [
+                'user_id' => $user->id,
+                'file_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+                'mime_type' => $file->getMimeType()
+            ]);
+
             if (!$file->isValid()) {
+                Log::channel('storage')->error('Update profil - invalid foto file', [
+                    'user_id' => $user->id,
+                    'file_name' => $file->getClientOriginalName()
+                ]);
                 return response()->json(['message' => 'Upload foto gagal.'], 422);
             }
+
             // Hapus foto lama jika bukan default
             if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->foto_profil);
+                Storage::disk('public')->delete($user->foto_profil);
+
+                Log::channel('storage')->info('Update profil - old foto deleted', [
+                    'user_id' => $user->id,
+                    'old_path' => $user->foto_profil
+                ]);
             }
+
             $path = $file->store('foto_profil', 'public');
             $user->foto_profil = $path;
+
+            Log::channel('storage')->info('Update profil - foto uploaded successfully', [
+                'user_id' => $user->id,
+                'file_path' => $path
+            ]);
         }
         $user->save();
 
