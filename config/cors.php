@@ -5,6 +5,7 @@ return [
         'api/*',
         'sanctum/csrf-cookie',
         'cors-check', // tambahkan endpoint untuk pengecekan CORS
+        'storage/*', // untuk akses file upload (foto profil, bukti pembayaran, dll)
         '*',
     ],
     'allowed_methods' => ['*'],
