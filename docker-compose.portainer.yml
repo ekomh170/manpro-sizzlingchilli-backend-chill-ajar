@@ -6,7 +6,7 @@ services:
     build:
       context: https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git#master
       dockerfile: Dockerfile
-    image: ekomh170/chillajar-app:latest
+    image: ekomh170/chillajar-app:v2.0
     container_name: chillajar_app
     restart: unless-stopped
     tty: true
@@ -46,7 +46,7 @@ services:
     build:
       context: https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git#master
       dockerfile: Dockerfile.nginx
-    image: ekomh170/chillajar-nginx:latest
+    image: ekomh170/chillajar-nginx:v2.0
     container_name: chillajar_webserver
     restart: unless-stopped
     tty: true
@@ -90,7 +90,7 @@ services:
     build:
       context: https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git#master
       dockerfile: Dockerfile.phpmyadmin
-    image: ekomh170/chillajar-phpmyadmin:latest
+    image: ekomh170/chillajar-phpmyadmin:v2.0
     container_name: chillajar_phpmyadmin
     restart: unless-stopped
     ports:
