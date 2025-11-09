@@ -108,6 +108,7 @@ RUN mkdir -p /var/log/supervisor \
 # Create supervisor config for PHP-FPM
 RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
  && echo 'nodaemon=true' >> /etc/supervisor/conf.d/supervisord.conf \
+ && echo 'user=root' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo 'logfile=/var/www/storage/logs/supervisord.log' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo 'loglevel=info' >> /etc/supervisor/conf.d/supervisord.conf \
  && echo '' >> /etc/supervisor/conf.d/supervisord.conf \
