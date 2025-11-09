@@ -83,8 +83,9 @@ RUN mkdir -p storage/framework/sessions \
  && mkdir -p storage/app/public/bukti_pembayaran \
  && mkdir -p bootstrap/cache
 
-# Symlink storage (akan error jika sudah ada, tapi tidak masalah)
-RUN php artisan storage:link || true
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set proper permissions for www-data
 RUN chown -R www-data:www-data /var/www \
@@ -122,5 +123,5 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/supervisord.conf \
 # Expose port for php-fpm
 EXPOSE 9000
 
-# Start supervisor (which will start php-fpm)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Use entrypoint script
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
