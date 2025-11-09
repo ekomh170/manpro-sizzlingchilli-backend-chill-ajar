@@ -39,7 +39,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./storage:/var/www/html/storage
+      - storage_data:/var/www/storage
 
   # Nginx Service
   webserver:
@@ -116,4 +116,6 @@ networks:
 # Volumes
 volumes:
   mysql_data:
+    driver: local
+  storage_data:
     driver: local
