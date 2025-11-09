@@ -9,6 +9,15 @@ COPY docker/nginx/conf.d/app.conf /etc/nginx/conf.d/default.conf
 # Set proper permissions
 RUN chmod -R 755 /var/www/public
 
+# Create entrypoint script for nginx
+RUN echo '#!/bin/sh' > /docker-entrypoint-nginx.sh && \
+    echo 'echo "Creating storage symlink for nginx..."' >> /docker-entrypoint-nginx.sh && \
+    echo 'rm -rf /var/www/public/storage' >> /docker-entrypoint-nginx.sh && \
+    echo 'ln -s /var/www/storage/app/public /var/www/public/storage' >> /docker-entrypoint-nginx.sh && \
+    echo 'echo "Starting nginx..."' >> /docker-entrypoint-nginx.sh && \
+    echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint-nginx.sh && \
+    chmod +x /docker-entrypoint-nginx.sh
+
 EXPOSE 8081
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint-nginx.sh"]
