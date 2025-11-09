@@ -6,7 +6,7 @@ services:
     build:
       context: https://github.com/ekomh170/manpro-sizzlingchilli-backend-chill-ajar.git#master
       dockerfile: Dockerfile
-    image: ekomh170/chillajar-app:v2.1
+    image: ekomh170/chillajar-app:v2.2
     container_name: chillajar_app
     restart: unless-stopped
     tty: true
