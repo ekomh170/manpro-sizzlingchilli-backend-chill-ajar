@@ -248,75 +248,131 @@ class AuthController extends Controller
      */
     public function updateProfil(Request $request)
     {
-        $user = $request->user();
-        $validated = $request->validate([
-            'nama' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-            'nomorTelepon' => 'sometimes|nullable|string',
-            'alamat' => 'sometimes|nullable|string',
-            'foto_profil' => 'sometimes|image|max:10240', // Validasi gambar max 10MB
-            'deskripsi' => 'sometimes|nullable|string', // tambahkan validasi deskripsi untuk mentor
+        try {
+            $user = $request->user();
 
-        ]);
-
-        // Update data user
-        foreach (['nama', 'email', 'nomorTelepon', 'alamat'] as $field) {
-            if ($request->has($field)) {
-                $user->$field = $request->$field;
-            }
-        }
-
-        // Proses upload foto profil jika ada file
-        if ($request->hasFile('foto_profil')) {
-            $file = $request->file('foto_profil');
-
-            Log::channel('storage')->info('Update profil - foto profil received', [
+            Log::channel('storage')->info('Update profil attempt', [
                 'user_id' => $user->id,
-                'file_name' => $file->getClientOriginalName(),
-                'file_size' => $file->getSize(),
-                'mime_type' => $file->getMimeType()
+                'user_name' => $user->nama,
+                'has_foto_profil' => $request->hasFile('foto_profil'),
+                'request_data' => $request->except(['password', 'foto_profil'])
             ]);
 
-            if (!$file->isValid()) {
-                Log::channel('storage')->error('Update profil - invalid foto file', [
-                    'user_id' => $user->id,
-                    'file_name' => $file->getClientOriginalName()
-                ]);
-                return response()->json(['message' => 'Upload foto gagal.'], 422);
-            }
+            $validated = $request->validate([
+                'nama' => 'sometimes|required|string|max:255',
+                'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+                'nomorTelepon' => 'sometimes|nullable|string',
+                'alamat' => 'sometimes|nullable|string',
+                'foto_profil' => 'sometimes|image|mimes:jpg,jpeg,png|max:10240', // Validasi gambar max 10MB
+                'deskripsi' => 'sometimes|nullable|string', // tambahkan validasi deskripsi untuk mentor
 
-            // Hapus foto lama jika bukan default
-            if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
-                Storage::disk('public')->delete($user->foto_profil);
-
-                Log::channel('storage')->info('Update profil - old foto deleted', [
-                    'user_id' => $user->id,
-                    'old_path' => $user->foto_profil
-                ]);
-            }
-
-            $path = $file->store('foto_profil', 'public');
-            $user->foto_profil = $path;
-
-            Log::channel('storage')->info('Update profil - foto uploaded successfully', [
-                'user_id' => $user->id,
-                'file_path' => $path
             ]);
-        }
-        $user->save();
 
-        // Jika user adalah mentor, update juga deskripsi di tabel mentor
-        if ($user->peran === 'mentor' && $request->has('deskripsi')) {
-            $mentor = $user->mentor; // pastikan relasi mentor() ada di model User
-            if ($mentor) {
-                $mentor->deskripsi = $request->deskripsi;
-                $mentor->save();
+            // Update data user
+            foreach (['nama', 'email', 'nomorTelepon', 'alamat'] as $field) {
+                if ($request->has($field)) {
+                    $user->$field = $request->$field;
+                }
             }
-        }
 
-        return response()->json([
-            'message' => 'Profil berhasil diperbarui',
-            'user' => $user
-        ]);
+            // Proses upload foto profil jika ada file
+            if ($request->hasFile('foto_profil')) {
+                $file = $request->file('foto_profil');
+
+                Log::channel('storage')->info('Update profil - foto profil received', [
+                    'user_id' => $user->id,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_size' => $file->getSize(),
+                    'file_size_mb' => round($file->getSize() / 1024 / 1024, 2),
+                    'mime_type' => $file->getMimeType(),
+                    'is_valid' => $file->isValid(),
+                    'error' => $file->getError()
+                ]);
+
+                if (!$file->isValid()) {
+                    $errorCode = $file->getError();
+                    $errorMessages = [
+                        UPLOAD_ERR_INI_SIZE => 'File terlalu besar (melebihi upload_max_filesize di php.ini)',
+                        UPLOAD_ERR_FORM_SIZE => 'File terlalu besar (melebihi MAX_FILE_SIZE di form)',
+                        UPLOAD_ERR_PARTIAL => 'File hanya terupload sebagian',
+                        UPLOAD_ERR_NO_FILE => 'Tidak ada file yang diupload',
+                        UPLOAD_ERR_NO_TMP_DIR => 'Folder temporary tidak ditemukan',
+                        UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk',
+                        UPLOAD_ERR_EXTENSION => 'Upload dihentikan oleh PHP extension'
+                    ];
+
+                    $errorMessage = $errorMessages[$errorCode] ?? 'Upload gagal dengan error code: ' . $errorCode;
+
+                    Log::channel('storage')->error('Update profil - invalid foto file', [
+                        'user_id' => $user->id,
+                        'file_name' => $file->getClientOriginalName(),
+                        'error_code' => $errorCode,
+                        'error_message' => $errorMessage
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Upload foto gagal.',
+                        'error' => $errorMessage
+                    ], 422);
+                }
+
+                // Hapus foto lama jika bukan default
+                if ($user->foto_profil && !str_contains($user->foto_profil, 'default')) {
+                    Storage::disk('public')->delete($user->foto_profil);
+
+                    Log::channel('storage')->info('Update profil - old foto deleted', [
+                        'user_id' => $user->id,
+                        'old_path' => $user->foto_profil
+                    ]);
+                }
+
+                $path = $file->store('foto_profil', 'public');
+                $user->foto_profil = $path;
+
+                Log::channel('storage')->info('Update profil - foto uploaded successfully', [
+                    'user_id' => $user->id,
+                    'file_path' => $path
+                ]);
+            }
+
+            $user->save();
+
+            // Jika user adalah mentor, update juga deskripsi di tabel mentor
+            if ($user->peran === 'mentor' && $request->has('deskripsi')) {
+                $mentor = $user->mentor; // pastikan relasi mentor() ada di model User
+                if ($mentor) {
+                    $mentor->deskripsi = $request->deskripsi;
+                    $mentor->save();
+                }
+            }
+
+            Log::channel('storage')->info('Update profil successful', [
+                'user_id' => $user->id
+            ]);
+
+            return response()->json([
+                'message' => 'Profil berhasil diperbarui',
+                'user' => $user
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::channel('storage')->error('Validation failed for update profil', [
+                'user_id' => $request->user()->id ?? null,
+                'errors' => $e->errors()
+            ]);
+            throw $e;
+
+        } catch (\Exception $e) {
+            Log::channel('storage')->error('Update profil failed', [
+                'user_id' => $request->user()->id ?? null,
+                'error_message' => $e->getMessage(),
+                'error_trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Gagal memperbarui profil',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
