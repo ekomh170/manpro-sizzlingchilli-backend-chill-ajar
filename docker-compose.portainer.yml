@@ -15,7 +15,7 @@ services:
       SERVICE_NAME: app
       SERVICE_TAGS: development
       APP_NAME: "ChillAjar Backend"
-      APP_ENV: local
+      APP_ENV: production
       APP_DEBUG: "true"
       APP_KEY: base64:ppL9GaVZsejan+xRJdDzowt3prxE+IIjtKjQNOenUj0=
       APP_LOCALE: id
