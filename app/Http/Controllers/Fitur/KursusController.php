@@ -190,13 +190,32 @@ class KursusController extends Controller
     {
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
+
+        // Jika visibilitas_paket dikirim sebagai string (FormData), decode dulu
+        if ($request->has('visibilitas_paket') && is_string($request->visibilitas_paket)) {
+            $decoded = json_decode($request->visibilitas_paket, true);
+            if (is_array($decoded)) {
+                $request->merge(['visibilitas_paket' => $decoded]);
+            }
+        }
+
         $request->validate([
             'namaKursus' => 'required|string',
             'deskripsi' => 'nullable|string',
             'fotoKursus' => 'nullable|image|max:10240', // Validasi gambar 10MB
+            'paket_ids' => 'required|array|min:1', // Wajib pilih minimal 1 paket
+            'paket_ids.*' => 'exists:paket,id', // Pastikan id paket valid
+            'visibilitas_paket' => 'nullable|array', // Visibilitas paket opsional
+            'visibilitas_paket.*.paket_id' => 'exists:paket,id', // Validasi id paket
+            'visibilitas_paket.*.visibilitas' => 'boolean', // Validasi status visibilitas
+        ], [
+            'paket_ids.required' => 'Minimal satu paket harus dipilih.',
+            'paket_ids.min' => 'Minimal satu paket harus dipilih.',
         ]);
-        $data = $request->all();
+
+        $data = $request->except(['paket_ids', 'visibilitas_paket']);
         $data['mentor_id'] = $mentor->id;
+
         if ($request->hasFile('fotoKursus')) {
             $file = $request->file('fotoKursus');
             if (!$file->isValid()) {
@@ -205,8 +224,41 @@ class KursusController extends Controller
             $path = $file->store('foto_kursus', 'public');
             $data['fotoKursus'] = $path;
         }
+
         $kursus = Kursus::create($data);
-        return response()->json($kursus, 201);
+
+        // Simpan relasi paket aktif ke kursus (tabel visibilitas_paket)
+        if ($request->has('paket_ids')) {
+            foreach ($request->paket_ids as $paket_id) {
+                \App\Models\VisibilitasPaket::updateOrCreate([
+                    'kursus_id' => $kursus->id,
+                    'paket_id' => $paket_id,
+                ], [
+                    'visibilitas' => true
+                ]);
+            }
+        }
+
+        // Jika ada pengaturan visibilitas khusus, terapkan
+        if ($request->has('visibilitas_paket')) {
+            foreach ($request->visibilitas_paket as $vp) {
+                \App\Models\VisibilitasPaket::updateOrCreate(
+                    [
+                        'kursus_id' => $kursus->id,
+                        'paket_id' => $vp['paket_id']
+                    ],
+                    [
+                        'visibilitas' => $vp['visibilitas']
+                    ]
+                );
+            }
+        }
+
+        return response()->json($kursus->load([
+            'mentor',
+            'jadwalKursus',
+            'visibilitasPaket.paket.items'
+        ]), 201);
     }
 
     /**
@@ -217,12 +269,29 @@ class KursusController extends Controller
         $user = $request->user();
         $mentor = Mentor::where('user_id', $user->id)->firstOrFail();
         $kursus = Kursus::where('id', $id)->where('mentor_id', $mentor->id)->firstOrFail();
+
+        // Jika visibilitas_paket dikirim sebagai string (FormData), decode dulu
+        if ($request->has('visibilitas_paket') && is_string($request->visibilitas_paket)) {
+            $decoded = json_decode($request->visibilitas_paket, true);
+            if (is_array($decoded)) {
+                $request->merge(['visibilitas_paket' => $decoded]);
+            }
+        }
+
         $request->validate([
             'namaKursus' => 'sometimes|required|string',
             'deskripsi' => 'nullable|string',
             'fotoKursus' => 'nullable|image|max:10240', // Validasi gambar 10MB
+            'paket_ids' => 'nullable|array',
+            'paket_ids.*' => 'exists:paket,id',
+            'visibilitas_paket' => 'nullable|array',
+            'visibilitas_paket.*.paket_id' => 'exists:paket,id',
+            'visibilitas_paket.*.visibilitas' => 'boolean',
         ]);
-        $data = $request->all();
+
+        $data = $request->except(['paket_ids', 'visibilitas_paket']);
+
+        // Tangani upload foto jika ada
         if ($request->hasFile('fotoKursus')) {
             $file = $request->file('fotoKursus');
             if (!$file->isValid()) {
@@ -235,7 +304,44 @@ class KursusController extends Controller
             $path = $file->store('foto_kursus', 'public');
             $data['fotoKursus'] = $path;
         }
+
+        // Update kursus
         $kursus->update($data);
-        return response()->json($kursus);
+
+        // Update relasi paket di visibilitas_paket jika ada paket_ids
+        if ($request->has('paket_ids')) {
+            // Hapus semua relasi lama, lalu tambahkan yang baru
+            \App\Models\VisibilitasPaket::where('kursus_id', $kursus->id)->delete();
+            foreach ($request->paket_ids as $paket_id) {
+                \App\Models\VisibilitasPaket::updateOrCreate([
+                    'kursus_id' => $kursus->id,
+                    'paket_id' => $paket_id,
+                ], [
+                    'visibilitas' => true
+                ]);
+            }
+        }
+        // Update status visibilitas jika ada visibilitas_paket
+        if ($request->has('visibilitas_paket')) {
+            foreach ($request->visibilitas_paket as $vp) {
+                // Gunakan updateOrCreate untuk memastikan entry selalu ada
+                \App\Models\VisibilitasPaket::updateOrCreate(
+                    [
+                        'kursus_id' => $kursus->id,
+                        'paket_id' => $vp['paket_id']
+                    ],
+                    [
+                        'visibilitas' => $vp['visibilitas']
+                    ]
+                );
+            }
+        }
+
+        // Kembalikan kursus beserta relasi visibilitas_paket, paket, dan item_paket
+        return response()->json($kursus->load([
+            'mentor',
+            'jadwalKursus',
+            'visibilitasPaket.paket.items'
+        ]));
     }
 }
