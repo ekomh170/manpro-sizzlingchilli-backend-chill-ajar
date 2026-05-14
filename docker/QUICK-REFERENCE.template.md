@@ -32,9 +32,9 @@ IP Internal: 172.17.0.1
 
 ### Ports Kita Gunakan (✅ SAFE)
 ```
-8080  - Laravel API
-8081  - PHPMyAdmin
-33061 - MySQL
+9500  - Laravel API
+9501  - PHPMyAdmin
+9502 - MySQL
 ```
 
 ### Ports TIDAK Boleh Dipakai (🚫 RESTRICTED)
@@ -51,7 +51,7 @@ IP Internal: 172.17.0.1
 ### MySQL (Production)
 ```
 Host: chillajar_db (internal Docker network)
-Port: 3306 (internal) / 33061 (external)
+Port: 3306 (internal) / 9502 (external)
 Database: db_manpro_sizzlingchilli_backend_chill
 Username: [SET IN .env]
 Password: [SET IN .env]
@@ -60,7 +60,7 @@ Root Password: [SET IN .env]
 
 ### PHPMyAdmin Access
 ```
-URL Internal: http://172.17.0.1:8081
+URL Internal: http://172.17.0.1:9501
 Server: chillajar_db
 Username: root
 Password: [USE ROOT PASSWORD FROM .env]
@@ -109,15 +109,15 @@ MAIL_PASSWORD=[APP PASSWORD]
 
 ### Development (Local Docker)
 ```
-Laravel API: http://localhost:8080
-PHPMyAdmin: http://localhost:8081
-MySQL: localhost:33061
+Laravel API: http://localhost:9500
+PHPMyAdmin: http://localhost:9501
+MySQL: localhost:9502
 ```
 
 ### Testing (Via VPN)
 ```
-Laravel API: http://172.17.0.1:8080
-PHPMyAdmin: http://172.17.0.1:8081
+Laravel API: http://172.17.0.1:9500
+PHPMyAdmin: http://172.17.0.1:9501
 ```
 
 ### Production (After Reverse Proxy)

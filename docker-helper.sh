@@ -59,7 +59,7 @@ show_menu() {
 
 setup_first_time() {
     print_info "Memulai setup awal ChillAjar Backend..."
-    
+
     # Check if .env exists
     if [ ! -f .env ]; then
         print_info "Copying .env.docker to .env..."
@@ -68,35 +68,35 @@ setup_first_time() {
     else
         print_warning ".env sudah ada, skip..."
     fi
-    
+
     # Build and start containers
     print_info "Building Docker containers..."
     docker-compose up -d --build
-    
+
     # Wait for database
     print_info "Menunggu MySQL siap (30 detik)..."
     sleep 30
-    
+
     # Install composer dependencies
     print_info "Installing Composer dependencies..."
     docker-compose exec -T app composer install
-    
+
     # Generate key
     print_info "Generating application key..."
     docker-compose exec -T app php artisan key:generate
-    
+
     # Run migrations
     print_info "Running database migrations..."
     docker-compose exec -T app php artisan migrate --seed
-    
+
     # Storage link
     print_info "Creating storage link..."
     docker-compose exec -T app php artisan storage:link
-    
+
     # Cache config
     print_info "Caching configuration..."
     docker-compose exec -T app php artisan config:cache
-    
+
     print_success "Setup selesai!"
     show_urls
 }
@@ -137,7 +137,7 @@ show_logs() {
     echo ""
     echo -n "Pilih [1-5]: "
     read log_choice
-    
+
     case $log_choice in
         1) docker-compose logs -f ;;
         2) docker-compose logs -f app ;;
@@ -160,7 +160,7 @@ database_menu() {
     echo ""
     echo -n "Pilih [1-6]: "
     read db_choice
-    
+
     case $db_choice in
         1)
             print_info "Opening MySQL CLI..."
@@ -222,7 +222,7 @@ artisan_menu() {
     echo ""
     echo -n "Pilih [1-9]: "
     read artisan_choice
-    
+
     case $artisan_choice in
         1) docker-compose exec app php artisan cache:clear ;;
         2) docker-compose exec app php artisan config:clear ;;
@@ -254,7 +254,7 @@ composer_menu() {
     echo ""
     echo -n "Pilih [1-5]: "
     read composer_choice
-    
+
     case $composer_choice in
         1) docker-compose exec app composer install ;;
         2) docker-compose exec app composer update ;;
@@ -285,7 +285,7 @@ shell_menu() {
     echo ""
     echo -n "Pilih [1-4]: "
     read shell_choice
-    
+
     case $shell_choice in
         1) docker-compose exec app bash ;;
         2) docker-compose exec -u www app bash ;;
@@ -301,14 +301,14 @@ clean_up() {
     print_warning "This will remove all containers, volumes, and data!"
     echo -n "Are you sure? (y/n): "
     read confirm
-    
+
     if [ "$confirm" = "y" ]; then
         print_info "Stopping and removing containers..."
         docker-compose down -v
-        
+
         print_info "Removing images..."
         docker rmi chillajar_php_service 2>/dev/null || true
-        
+
         print_success "Clean up completed!"
         print_info "Run setup (option 1) to start fresh"
     else
@@ -320,9 +320,9 @@ show_urls() {
     echo ""
     print_info "=== ChillAjar Backend URLs ==="
     echo ""
-    echo "  🌐 Laravel API:     http://localhost:8080"
-    echo "  📊 PHPMyAdmin:      http://localhost:8081"
-    echo "  🗄️  MySQL:          localhost:33061"
+    echo "  🌐 Laravel API:     http://localhost:9500"
+    echo "  📊 PHPMyAdmin:      http://localhost:9501"
+    echo "  🗄️  MySQL:          localhost:9502"
     echo ""
     echo "  Database Credentials:"
     echo "    Database: db_manpro_sizzlingchilli_backend_chill"
@@ -337,7 +337,7 @@ show_header
 while true; do
     show_menu
     read choice
-    
+
     case $choice in
         1) setup_first_time ;;
         2) start_containers ;;
@@ -359,7 +359,7 @@ while true; do
             print_error "Pilihan tidak valid"
             ;;
     esac
-    
+
     echo ""
     echo "Press Enter to continue..."
     read

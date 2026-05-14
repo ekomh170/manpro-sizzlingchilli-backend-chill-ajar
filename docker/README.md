@@ -94,9 +94,9 @@ Setelah semua container running, akses service melalui:
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| **Laravel API** | http://localhost:8080 | - |
-| **PHPMyAdmin** | http://localhost:8081 | User: `root` atau `dev_chill_ajar`<br>Password: `Manpro2025!` |
-| **MySQL** | `localhost:33061` | Host: `localhost`<br>Port: `33061`<br>Database: `db_manpro_sizzlingchilli_backend_chill`<br>User: `dev_chill_ajar`<br>Password: `Manpro2025!` |
+| **Laravel API** | http://localhost:9500 | - |
+| **PHPMyAdmin** | http://localhost:9501 | User: `root` atau `dev_chill_ajar`<br>Password: `Manpro2025!` |
+| **MySQL** | `localhost:9502` | Host: `localhost`<br>Port: `9502`<br>Database: `db_manpro_sizzlingchilli_backend_chill`<br>User: `dev_chill_ajar`<br>Password: `Manpro2025!` |
 
 ---
 
@@ -110,19 +110,19 @@ Setelah semua container running, akses service melalui:
 
 ### 2. **webserver** (Nginx Alpine)
 - Web server untuk serve Laravel
-- Port: **8080** (HTTP)
+- Port: **9500** (HTTP)
 - Auto-configured untuk Laravel
 - Logs di `storage/logs/nginx/`
 
 ### 3. **db** (MySQL 8.0)
 - Database server
-- Port: **33061** (mapped dari 3306)
+- Port: **9502** (mapped dari 3306)
 - Data persisten di Docker volume `mysql_data`
 - Config custom di `docker/mysql/my.cnf`
 
 ### 4. **phpmyadmin**
 - Web UI untuk manage database
-- Port: **8081**
+- Port: **9501**
 - Auto-login dengan credentials MySQL
 
 ---

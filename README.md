@@ -156,9 +156,9 @@ docker-compose exec app php artisan config:cache
 ```
 
 ### Akses Services
-- 🌐 **Laravel API**: http://localhost:8080
-- 📊 **PHPMyAdmin**: http://localhost:8081
-- 🗄️ **MySQL**: `localhost:33061`
+- 🌐 **Laravel API**: http://localhost:9500
+- 📊 **PHPMyAdmin**: http://localhost:9501
+ - 🗄️ **MySQL**: `localhost:9502`
 
 ### Dokumentasi Lengkap Docker
 📖 **[Baca dokumentasi lengkap Docker setup](./docker/README.md)**
@@ -181,9 +181,9 @@ Backend sudah siap di-deploy ke server VPS menggunakan Portainer container manag
 
 ### Port Configuration
 Port yang digunakan (aman dan tidak conflict):
-- `8080` - Laravel API
-- `8081` - PHPMyAdmin  
-- `33061` - MySQL
+- `9500` - Laravel API
+- `9501` - PHPMyAdmin  
+- `9502` - MySQL
 
 ### Quick Deploy Steps
 1. **Install & Connect** - Twingate VPN

@@ -1,0 +1,89 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: chillajar-app-local
+    container_name: chillajar_app
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - chillajar-network
+    depends_on:
+      - db
+
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    image: chillajar-nginx-local
+    container_name: chillajar_webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "9500:8081"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - chillajar-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: chillajar_db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "9502:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-Manpro2025!}"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - chillajar-network
+
+  phpmyadmin:
+    build:
+      context: .
+      dockerfile: Dockerfile.phpmyadmin
+    image: chillajar-phpmyadmin-local
+    container_name: chillajar_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "9501:8084"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: "${DB_ROOT_PASSWORD:-Manpro2025!}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-Manpro2025!}"
+      UPLOAD_LIMIT: 300M
+      MAX_EXECUTION_TIME: 600
+    depends_on:
+      - db
+    networks:
+      - chillajar-network
+
+networks:
+  chillajar-network:
+    name: chillajar-network
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

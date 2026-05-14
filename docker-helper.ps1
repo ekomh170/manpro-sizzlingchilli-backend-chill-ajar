@@ -287,9 +287,9 @@ function Show-Urls {
     Write-Host ""
     Print-Info "=== ChillAjar Backend URLs ==="
     Write-Host ""
-    Write-Host "  🌐 Laravel API:     http://localhost:8080" -ForegroundColor White
-    Write-Host "  📊 PHPMyAdmin:      http://localhost:8081" -ForegroundColor White
-    Write-Host "  🗄️  MySQL:          localhost:33061" -ForegroundColor White
+    Write-Host "  🌐 Laravel API:     http://localhost:9500" -ForegroundColor White
+    Write-Host "  📊 PHPMyAdmin:      http://localhost:9501" -ForegroundColor White
+    Write-Host "  🗄️  MySQL:          localhost:9502" -ForegroundColor White
     Write-Host ""
     Write-Host "  Database Credentials:" -ForegroundColor Yellow
     Write-Host "    Database: db_manpro_sizzlingchilli_backend_chill" -ForegroundColor White
