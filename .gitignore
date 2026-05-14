@@ -31,6 +31,12 @@ yarn-error.log
 docker-compose.override.yml
 /storage/logs/nginx/
 
+# Ignore public storage runtime files and placeholders
+public/storage/
+
+# Runtime files
+supervisord.pid
+
 # Sensitive Documentation (DO NOT COMMIT!)
 /docker/QUICK-REFERENCE.md
 **/credentials.md
