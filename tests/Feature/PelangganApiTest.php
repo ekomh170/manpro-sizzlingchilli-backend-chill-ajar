@@ -8,10 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Pelanggan;
 use App\Models\Mentor;
-use App\Models\Course;
-use App\Models\Session;
-use App\Models\Payment;
-use App\Models\Testimoni;
+use App\Models\Kursus;
 
 class PelangganApiTest extends TestCase
 {
@@ -20,7 +17,7 @@ class PelangganApiTest extends TestCase
     public function test_profil_saya_endpoint()
     {
         $user = User::factory()->create(['peran' => 'pelanggan']);
-        $pelanggan = Pelanggan::factory()->create(['user_id' => $user->id]);
+        Pelanggan::factory()->create(['user_id' => $user->id]);
         $token = $user->createToken('test')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
@@ -30,18 +27,16 @@ class PelangganApiTest extends TestCase
             ->assertJsonFragment(['user_id' => $user->id]);
     }
 
-    public function test_daftar_course_endpoint()
+    public function test_daftar_kursus_endpoint()
     {
-        $user = User::factory()->create(['peran' => 'pelanggan']);
-        $token = $user->createToken('test')->plainTextToken;
         $mentor = Mentor::factory()->create();
-        $course = Course::factory()->create(['mentor_id' => $mentor->id]);
+        $kursus = Kursus::factory()->create(['mentor_id' => $mentor->id]);
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson('/api/pelanggan/daftar-course');
+        // Endpoint publik, tidak perlu token
+        $response = $this->getJson('/api/pelanggan/daftar-kursus');
 
         $response->assertStatus(200)
-            ->assertJsonFragment(['id' => $course->id]);
+            ->assertJsonFragment(['id' => $kursus->id]);
     }
 
     public function test_cari_mentor_endpoint()
@@ -49,10 +44,10 @@ class PelangganApiTest extends TestCase
         $user = User::factory()->create(['peran' => 'pelanggan']);
         $token = $user->createToken('test')->plainTextToken;
         $mentor = Mentor::factory()->create();
-        $course = Course::factory()->create(['mentor_id' => $mentor->id, 'namaCourse' => 'Matematika']);
+        Kursus::factory()->create(['mentor_id' => $mentor->id, 'namaKursus' => 'Matematika']);
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->getJson('/api/pelanggan/cari-mentor?namaCourse=Matematika');
+            ->getJson('/api/pelanggan/cari-mentor?namaKursus=Matematika');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['id' => $mentor->id]);

@@ -79,9 +79,11 @@ class RegisTest extends TestCase
             'peran' => 'mentor',
             'nama' => 'Fatiya Labibah',
         ]);
-        // Pastikan data mentor juga masuk ke tabel mentor
+        // Pastikan data mentor juga masuk ke tabel mentor.
+        // biayaPerSesi dari request diabaikan: mentor baru selalu mendapat default 25000
+        // (lihat AuthController::registrasi, commit 2da98e8).
         $this->assertDatabaseHas('mentor', [
-            'biayaPerSesi' => 100000,
+            'biayaPerSesi' => 25000,
         ]);
     }
 
