@@ -22,6 +22,9 @@ Folder ini berisi dokumentasi lengkap tentang API Backend ChillAjar, termasuk sp
 - **[changelog-paket-sesi.md](./changelog-paket-sesi.md)** - Riwayat perubahan fitur paket & sesi
 - **[catatan-pengembangan-paket.md](./catatan-pengembangan-paket.md)** - Catatan pengembangan sistem paket
 
+### Proposal Fitur
+- **[fitur-paket-unlimited-waktu.md](./fitur-paket-unlimited-waktu.md)** - Proposal toggle "paket tidak terbatas waktu" agar admin tidak perlu update tanggal berkala
+
 ## 🚀 Cara Menggunakan
 
 1. **Testing API**: Gunakan Pentest UI (lihat pentest-ui-documentation.md)

@@ -97,8 +97,16 @@ class PelangganController extends Controller
                     $diskonItem = $item->diskon ?? 0;
                     $biayaPaket += max($hargaItem - $diskonItem, 0);
                 }
-                // Kurangi diskon paket
-                $biayaPaket = max($biayaPaket - ($paket->diskon ?? 0), 0);
+                // Diskon paket hanya berlaku jika promo masih aktif
+                $diskonPaket = 0;
+                $now = now()->toDateString();
+                $promoAktif = $paket->tanggal_mulai && $paket->tanggal_berakhir
+                    && $paket->tanggal_mulai <= $now
+                    && $paket->tanggal_berakhir >= $now;
+                if ($promoAktif) {
+                    $diskonPaket = $paket->diskon ?? 0;
+                }
+                $biayaPaket = max($biayaPaket - $diskonPaket, 0);
             }
             $jumlahSementara = $biayaPaket + $biayaPerSesi;
         } else {

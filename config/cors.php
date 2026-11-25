@@ -12,6 +12,7 @@ return [
     'allowed_origins' => [
         'http://localhost:5173', // untuk dev React lokal
         'https://chill-ajar.vercel.app',
+        'https://chill-ajar-frontend-pentest.vercel.app',
         'https://chill-ajar-pentest.vercel.app',
         'https://manpro-sizzlingchilli-backend-chill-ajar.onrender.com',
         'https://35.188.34.254', // akses langsung ke IP server
